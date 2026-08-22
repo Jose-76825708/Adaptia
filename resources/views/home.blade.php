@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{{ asset('images/logo.png') }}">
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>Adaptia</title>
 </head>
 
@@ -37,7 +37,7 @@
 
     <main>
 
-        <section class="flex">
+        <section class="flex reveal">
 
             <div class="flex-1 flex p-8 py-20 px-20 pl-30 flex-col gap-5">
 
@@ -45,9 +45,9 @@
                     espacio</h1>
                 <p class="flex text-[1.5em] text-[#787878]">Nuestro sistema analiza las condiciones reales <br> de tu
                     hogar y te recomienda las plantas que <br> mejor se adaptan a ti.</p>
-                <a class="flex items-center px-1 py-5 justify-center text-[1.5em] w-[65%] bg-[#7cb22b] text-white rounded-[20px] font-bold hover:scale-110 transition duration-300"
-                    href="#">Empezar ahora</a>
-                <p class="flex text-[1.2em] text-[#787878]">Recomendaciones 100% personalizadas</p>
+                <a class="flex items-center px-1 py-5 gap-6 justify-center text-[1.5em] w-[65%] bg-[#7cb22b] text-white rounded-[20px] font-bold hover:scale-110 transition duration-300"
+                    href="#">Empezar ahora <img class="w-[1em] h-auto" src="{{ asset('images/hora_blanca.png') }}" alt=""></a>
+                <p class="flex items-center gap-4 text-[1.2em] text-[#787878]"> <img class="w-[1.4em] h-auto" src="{{ asset('images/check_verde.png') }}" alt=""> Recomendaciones 100% personalizadas</p>
             </div>
             <div class="flex-1 flex items-center justify-center p-4 pr-10">
 
@@ -57,7 +57,7 @@
 
         </section>
 
-        <section class="flex flex-col items-center justify-center gap-2 p-20 bg-[#f6f7f6]">
+        <section class="flex flex-col items-center justify-center gap-2 p-20 bg-[#f6f7f6] reveal">
 
             <div class="flex items-center justify-center text-[#0d3225] font-bold text-[2.5em]">
                 <h2>Cómo funciona</h2>
@@ -131,7 +131,7 @@
 
         </section>
 
-        <section class="flex flex-col items-center px-3 py-20 gap-8">
+        <section class="flex flex-col items-center px-3 py-20 gap-8 reveal">
 
             <div class="flex flex-col items-center justify-center w-full">
                 <h2 class="text-[2.5em] text-[#063829] font-bold">Plantas recomendadas para ti</h2>
@@ -153,10 +153,10 @@
                         <h3 class="text-[1.4em] tex-[#0b271e] font-semibold">Sansevieria</h3>
                         <p class="text-[#747474]">Resistente y purificadora</p>
 
-                        <div class="flex py-4 gap-15 text-[#747474] font-semibold">
+                        <div class="flex py-4 gap-6 text-[#747474] font-semibold">
 
-                            <p>Luz baja</p>
-                            <p>Riesgo bajo</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/sol.png') }}" alt="">Luz baja</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/gota.png') }}" alt="">Riesgo bajo</p>
 
                         </div>
 
@@ -178,10 +178,10 @@
                         <h3 class="text-[1.4em] tex-[#0b271e] font-semibold">Photo</h3>
                         <p class="text-[#747474]">Fácil de cuidar</p>
 
-                        <div class="flex py-4 gap-15 text-[#747474] font-semibold">
+                        <div class="flex py-4 gap-6 text-[#747474] font-semibold">
 
-                            <p>Luz baja</p>
-                            <p>Riesgo bajo</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/sol.png') }}" alt="">Luz media</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/gota.png') }}" alt="">Riesgo moderado</p>
 
                         </div>
 
@@ -203,10 +203,10 @@
                         <h3 class="text-[1.4em] tex-[#0b271e] font-semibold">Lirio de paz</h3>
                         <p class="text-[#747474]">Flor elegante y purificadora</p>
 
-                        <div class="flex py-4 gap-15 text-[#747474] font-semibold">
+                        <div class="flex py-4 gap-6 text-[#747474] font-semibold">
 
-                            <p>Luz baja</p>
-                            <p>Riesgo bajo</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/sol.png') }}" alt="">Luz baja</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/gota.png') }}" alt="">Riesgo moderado</p>
 
                         </div>
 
@@ -228,10 +228,10 @@
                         <h3 class="text-[1.4em] tex-[#0b271e] font-semibold">Zamioculca</h3>
                         <p class="text-[#747474]">Ideal para principiantes</p>
 
-                        <div class="flex py-4 gap-15 text-[#747474] font-semibold">
+                        <div class="flex py-4 gap-6 text-[#747474] font-semibold">
 
-                            <p>Luz baja</p>
-                            <p>Riesgo bajo</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/sol.png') }}" alt="">Luz baja</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/gota.png') }}" alt="">Riesgo bajo</p>
 
                         </div>
 
@@ -244,20 +244,20 @@
 
             <div>
 
-                <a class="flex items-center justify-center py-5 px-20 border-3 border-[#cee5b8] rounded-[1.2em] font-semibold text-[#92b866] text-[1.3em] hover:scale-110 transition duration-300"
-                    href="#">Ver Catalogo completo</a>
+                <a class="flex items-center justify-center gap-6 py-5 px-20 border-3 border-[#cee5b8] rounded-[1.2em] font-semibold text-[#92b866] text-[1.3em] hover:scale-110 transition duration-300"
+                    href="#">Ver catálogo completo <img class="w-[1em] h-auto" src="{{ asset('images/hoja_verde.png') }}" alt=""></a>
 
             </div>
 
         </section>
 
-        <section class="flex items-center justify-center py-20 px-40 bg-[#f7f8f6]">
+        <section class="flex items-center justify-center py-20 px-40 bg-[#f7f8f6] reveal">
 
             <div class="flex-1 flex flex-col items-start justify-center gap-10">
 
-                <h2 class="text-[2.5em] text-[#063829] font-bold">¿Por qué elegir Adaptia</h2>
+                <h2 class="text-[2.5em] text-[#063829] font-bold">¿Por qué elegir Adaptia?</h2>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-6">
                     <div class="flex items-center justify-center p-3 bg-[#7aae2a] rounded-[50%]">
 
                         <img class="size-[2em]" src="{{ asset('images/hoja.png') }}" alt="imagen de una plantita">
@@ -269,7 +269,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-6">
                     <div class="flex items-center justify-center p-3 bg-[#7aae2a] rounded-[50%]">
 
                         <img class="size-[2em]" src="{{ asset('images/reloj.png') }}" alt="imagen de una reloj">
@@ -281,7 +281,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-6">
                     <div class="flex items-center justify-center p-3 bg-[#7aae2a] rounded-[50%]">
 
                         <img class="size-[2em]" src="{{ asset('images/corazon.png') }}" alt="imagen de un corazon">
@@ -305,19 +305,20 @@
         </section>
 
     </main>
-    <footer class="flex flex-col items-center p-6 px-50 justify-center text-white bg-[#053a28] gap-10 w-full">
+    <footer class="flex flex-col items-center px-50 justify-center text-white bg-[#053a28] gap-10 w-full reveal">
 
-        <div class="flex gap-20 w-full">
+        <div class="flex gap-20 w-full pt-10">
 
-            <div class="flex-1 flex items-center justify-center text-left">
+            <div class="flex-1 flex flex-col items-start justify-center text-left gap-6 text-[1.1em]">
 
-                {{-- imagen --}}
-                <p>Tecnología y naturaleza para ayudarte a vivir en armonía con las plantas</p>
+                <img class="w-[60%] h-auto" src="{{ asset('images/logotipo_blanco.png') }}" alt="logotipo de adaptia con color blanco">
+
+                <p>Tecnología y naturaleza para <br> ayudarte a vivir en armonía <br> con las plantas</p>
 
             </div>
-            <div class="flex-2 flex justify-between">
+            <div class="flex-2 flex justify-between text-[1.1em]">
 
-                <div class="flex flex-col gap-6">
+                <div class="flex flex-col pt-11 gap-6">
 
                     <h3 class="font-bold">Navegación</h3>
                     <ul class="flex flex-col gap-3">
@@ -327,7 +328,7 @@
                     </ul>
 
                 </div>
-                <div class="flex flex-col gap-6">
+                <div class="flex flex-col pt-11 gap-6">
 
                     <h3 class="font-bold">Recursos</h3>
                     <ul class="flex flex-col gap-3">
@@ -337,7 +338,7 @@
                     </ul>
 
                 </div>
-                <div class="flex flex-col gap-6">
+                <div class="flex flex-col pt-11 gap-6">
 
                     <h3 class="font-bold">Legal</h3>
                     <ul class="flex flex-col gap-3">
