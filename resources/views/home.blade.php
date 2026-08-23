@@ -20,9 +20,9 @@
         <div class="flex-1">
 
             <ul class="flex justify-between gap-4 text-[#3e5a51] font-bold">
-                <li><a href="#">Cómo funciona</a></li>
-                <li><a href="#">Catálogo</a></li>
-                <li><a href="#">Nosotros</a></li>
+                <li><a href="#funcionamiento">Cómo funciona</a></li>
+                <li><a href="#catalogo">Catálogo</a></li>
+                <li><a href="#nosotros">Nosotros</a></li>
             </ul>
 
         </div>
@@ -57,7 +57,7 @@
 
         </section>
 
-        <section class="flex flex-col items-center justify-center gap-2 p-20 bg-[#f6f7f6] reveal">
+        <section class="flex flex-col items-center justify-center gap-2 p-20 bg-[#f6f7f6] reveal" id="funcionamiento">
 
             <div class="flex items-center justify-center text-[#0d3225] font-bold text-[2.5em]">
                 <h2>Cómo funciona</h2>
@@ -131,7 +131,7 @@
 
         </section>
 
-        <section class="flex flex-col items-center px-3 py-20 gap-8 reveal">
+        <section class="flex flex-col items-center px-3 py-20 gap-8 reveal" id="catalogo">
 
             <div class="flex flex-col items-center justify-center w-full">
                 <h2 class="text-[2.5em] text-[#063829] font-bold">Plantas recomendadas para ti</h2>
@@ -251,7 +251,7 @@
 
         </section>
 
-        <section class="flex items-center justify-center py-20 px-40 bg-[#f7f8f6] reveal">
+        <section class="flex items-center justify-center py-20 px-40 bg-[#f7f8f6] reveal" id="nosotros">
 
             <div class="flex-1 flex flex-col items-start justify-center gap-10">
 
@@ -322,9 +322,9 @@
 
                     <h3 class="font-bold">Navegación</h3>
                     <ul class="flex flex-col gap-3">
-                        <li>Cómo funciona</li>
-                        <li>Catálogo</li>
-                        <li>Nosotros</li>
+                        <li><a href="#funcionamiento">Cómo funciona</a></li>
+                        <li><a href="#catalogo">Catálogo</a></li>
+                        <li><a href="#nosotros">Nosotros</a></li>
                     </ul>
 
                 </div>
