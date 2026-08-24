@@ -12,7 +12,7 @@ Route::get('/home', [HomeController::class, 'index']);
 Route::resource('plantas',PlantaController::class);
 
 Route::resource('tipoPlantas',TipoPlantaController::class);
-Route::get('/auth', [AuthController::class, 'index']);
 
-Route::get('/recomendation', [RecomendationController::class, 'index']);
+
+
 
