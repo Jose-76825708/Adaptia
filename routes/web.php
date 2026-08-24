@@ -1,8 +1,6 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\RecomendationController;
 use Illuminate\Support\Facades\Route;
    use App\Http\Controllers\PlantaController;
 use App\Http\Controllers\TipoPlantaController;
