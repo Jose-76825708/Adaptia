@@ -129,7 +129,7 @@ class RecomendacionService
     public function plantasNoToxicas () 
     {
         return Planta::where('toxicidad',false)->get();
-    }
+    }//testead
 
     public function generarRecomendaciones (array $perfil_usuario)
     {
