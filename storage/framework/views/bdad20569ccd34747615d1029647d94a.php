@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{ asset('images/logo.png') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="icon" href="<?php echo e(asset('images/logo.png')); ?>">
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <title>Adaptia</title>
 </head>
 
@@ -14,7 +14,7 @@
 
         <div class="flex-1">
 
-            <img class="w-50 h-auto" src="{{ asset('images/logotipo.png') }}" alt="logotipo de adaptia">
+            <img class="w-50 h-auto" src="<?php echo e(asset('images/logotipo.png')); ?>" alt="logotipo de adaptia">
 
         </div>
         <div class="flex-1">
@@ -46,12 +46,12 @@
                 <p class="flex text-[1.5em] text-[#787878]">Nuestro sistema analiza las condiciones reales <br> de tu
                     hogar y te recomienda las plantas que <br> mejor se adaptan a ti.</p>
                 <a class="flex items-center px-1 py-5 gap-6 justify-center text-[1.5em] w-[65%] bg-[#7cb22b] text-white rounded-[20px] font-bold hover:scale-110 transition duration-300"
-                    href="#">Empezar ahora <img class="w-[1em] h-auto" src="{{ asset('images/hora_blanca.png') }}" alt=""></a>
-                <p class="flex items-center gap-4 text-[1.2em] text-[#787878]"> <img class="w-[1.4em] h-auto" src="{{ asset('images/check_verde.png') }}" alt=""> Recomendaciones 100% personalizadas</p>
+                    href="#">Empezar ahora <img class="w-[1em] h-auto" src="<?php echo e(asset('images/hora_blanca.png')); ?>" alt=""></a>
+                <p class="flex items-center gap-4 text-[1.2em] text-[#787878]"> <img class="w-[1.4em] h-auto" src="<?php echo e(asset('images/check_verde.png')); ?>" alt=""> Recomendaciones 100% personalizadas</p>
             </div>
             <div class="flex-1 flex items-center justify-center p-4 pr-10">
 
-                <img class="w-170 h-auto" src="{{ asset('images/hero-image.png') }}" alt="imagen de una planta">
+                <img class="w-170 h-auto" src="<?php echo e(asset('images/hero-image.png')); ?>" alt="imagen de una planta">
 
             </div>
 
@@ -68,7 +68,7 @@
 
                     <div class="flex items-center justify-center w-40 h-40 bg-[#eef0e9] rounded-full">
 
-                        <img class="w-30 h-30 object-contain" src="{{ asset('images/paso_1.png') }}"
+                        <img class="w-30 h-30 object-contain" src="<?php echo e(asset('images/paso_1.png')); ?>"
                             alt="imagen de un tablero verde">
 
                     </div>
@@ -82,7 +82,7 @@
 
                 <div class="flex items-start h-50">
 
-                    <img class="w-50 h-auto" src="{{ asset('images/separacion.png') }}"
+                    <img class="w-50 h-auto" src="<?php echo e(asset('images/separacion.png')); ?>"
                         alt="separacion de puntos verdes">
 
                 </div>
@@ -91,7 +91,7 @@
 
                     <div class="flex items-center justify-center w-40 h-40 bg-[#eef0e9] rounded-full">
 
-                        <img class="w-30 h-30 object-contain" src="{{ asset('images/paso_2.png') }}"
+                        <img class="w-30 h-30 object-contain" src="<?php echo e(asset('images/paso_2.png')); ?>"
                             alt="imagen de un tablero verde">
 
                     </div>
@@ -106,7 +106,7 @@
 
                 <div class="flex items-start h-50">
 
-                    <img class="w-50 h-auto" src="{{ asset('images/separacion.png') }}"
+                    <img class="w-50 h-auto" src="<?php echo e(asset('images/separacion.png')); ?>"
                         alt="separacion de puntos verdes">
 
                 </div>
@@ -115,7 +115,7 @@
 
                     <div class="flex items-center justify-center w-40 h-40 bg-[#eef0e9] rounded-full">
 
-                        <img class="w-30 h-30 object-contain" src="{{ asset('images/paso_3.png') }}"
+                        <img class="w-30 h-30 object-contain" src="<?php echo e(asset('images/paso_3.png')); ?>"
                             alt="imagen de un tablero verde">
 
                     </div>
@@ -144,7 +144,7 @@
 
                     <div class="flex items-center justify-center bg-[#f1f1ef] h-62.5 w-full">
 
-                        <img class="w-[80%] h-full object-contain" src="{{ asset('images/sansevieria.png') }}"
+                        <img class="w-[80%] h-full object-contain" src="<?php echo e(asset('images/sansevieria.png')); ?>"
                             alt="imagen de planta sansevieria">
 
                     </div>
@@ -155,8 +155,8 @@
 
                         <div class="flex py-4 gap-6 text-[#747474] font-semibold">
 
-                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/sol.png') }}" alt="">Luz baja</p>
-                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/gota.png') }}" alt="">Riesgo bajo</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="<?php echo e(asset('images/sol.png')); ?>" alt="">Luz baja</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="<?php echo e(asset('images/gota.png')); ?>" alt="">Riesgo bajo</p>
 
                         </div>
 
@@ -169,7 +169,7 @@
 
                     <div class="flex items-center justify-center bg-[#f1f1ef] h-62.5 w-full">
 
-                        <img class="w-[80%] h-full object-contain" src="{{ asset('images/photo.png') }}"
+                        <img class="w-[80%] h-full object-contain" src="<?php echo e(asset('images/photo.png')); ?>"
                             alt="imagen de planta photo">
 
                     </div>
@@ -180,8 +180,8 @@
 
                         <div class="flex py-4 gap-6 text-[#747474] font-semibold">
 
-                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/sol.png') }}" alt="">Luz media</p>
-                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/gota.png') }}" alt="">Riesgo moderado</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="<?php echo e(asset('images/sol.png')); ?>" alt="">Luz media</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="<?php echo e(asset('images/gota.png')); ?>" alt="">Riesgo moderado</p>
 
                         </div>
 
@@ -194,7 +194,7 @@
 
                     <div class="flex items-center justify-center bg-[#f1f1ef] h-62.5 w-full">
 
-                        <img class="w-[80%] h-full object-contain" src="{{ asset('images/lirio_paz.png') }}"
+                        <img class="w-[80%] h-full object-contain" src="<?php echo e(asset('images/lirio_paz.png')); ?>"
                             alt="imagen de planta lirio de paz">
 
                     </div>
@@ -205,8 +205,8 @@
 
                         <div class="flex py-4 gap-6 text-[#747474] font-semibold">
 
-                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/sol.png') }}" alt="">Luz baja</p>
-                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/gota.png') }}" alt="">Riesgo moderado</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="<?php echo e(asset('images/sol.png')); ?>" alt="">Luz baja</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="<?php echo e(asset('images/gota.png')); ?>" alt="">Riesgo moderado</p>
 
                         </div>
 
@@ -219,7 +219,7 @@
 
                     <div class="flex items-center justify-center bg-[#f1f1ef] h-62.5 w-full">
 
-                        <img class="w-[80%] h-full object-contain" src="{{ asset('images/zamioculca.png') }}"
+                        <img class="w-[80%] h-full object-contain" src="<?php echo e(asset('images/zamioculca.png')); ?>"
                             alt="imagen de planta zamioculca">
 
                     </div>
@@ -230,8 +230,8 @@
 
                         <div class="flex py-4 gap-6 text-[#747474] font-semibold">
 
-                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/sol.png') }}" alt="">Luz baja</p>
-                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="{{ asset('images/gota.png') }}" alt="">Riesgo bajo</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="<?php echo e(asset('images/sol.png')); ?>" alt="">Luz baja</p>
+                            <p class="flex items-center gap-1"><img class="w-[2em] h-auto" src="<?php echo e(asset('images/gota.png')); ?>" alt="">Riesgo bajo</p>
 
                         </div>
 
@@ -245,7 +245,7 @@
             <div>
 
                 <a class="flex items-center justify-center gap-6 py-5 px-20 border-3 border-[#cee5b8] rounded-[1.2em] font-semibold text-[#92b866] text-[1.3em] hover:scale-110 transition duration-300"
-                    href="#">Ver catálogo completo <img class="w-[1em] h-auto" src="{{ asset('images/hoja_verde.png') }}" alt=""></a>
+                    href="#">Ver catálogo completo <img class="w-[1em] h-auto" src="<?php echo e(asset('images/hoja_verde.png')); ?>" alt=""></a>
 
             </div>
 
@@ -260,7 +260,7 @@
                 <div class="flex items-center gap-6">
                     <div class="flex items-center justify-center p-3 bg-[#7aae2a] rounded-[50%]">
 
-                        <img class="size-[2em]" src="{{ asset('images/hoja.png') }}" alt="imagen de una plantita">
+                        <img class="size-[2em]" src="<?php echo e(asset('images/hoja.png')); ?>" alt="imagen de una plantita">
 
                     </div>
                     <div>
@@ -272,7 +272,7 @@
                 <div class="flex items-center gap-6">
                     <div class="flex items-center justify-center p-3 bg-[#7aae2a] rounded-[50%]">
 
-                        <img class="size-[2em]" src="{{ asset('images/reloj.png') }}" alt="imagen de una reloj">
+                        <img class="size-[2em]" src="<?php echo e(asset('images/reloj.png')); ?>" alt="imagen de una reloj">
 
                     </div>
                     <div>
@@ -284,7 +284,7 @@
                 <div class="flex items-center gap-6">
                     <div class="flex items-center justify-center p-3 bg-[#7aae2a] rounded-[50%]">
 
-                        <img class="size-[2em]" src="{{ asset('images/corazon.png') }}" alt="imagen de un corazon">
+                        <img class="size-[2em]" src="<?php echo e(asset('images/corazon.png')); ?>" alt="imagen de un corazon">
 
                     </div>
                     <div>
@@ -298,7 +298,7 @@
             </div>
             <div class="flex-1 flex items-center justify-center">
 
-                <img class="w-[60%] h-auto" src="{{ asset('images/logo.png') }}" alt="imagen del logo">
+                <img class="w-[60%] h-auto" src="<?php echo e(asset('images/logo.png')); ?>" alt="imagen del logo">
 
             </div>
 
@@ -311,7 +311,7 @@
 
             <div class="flex-1 flex flex-col items-start justify-center text-left gap-6 text-[1.1em]">
 
-                <img class="w-[60%] h-auto" src="{{ asset('images/logotipo_blanco.png') }}" alt="logotipo de adaptia con color blanco">
+                <img class="w-[60%] h-auto" src="<?php echo e(asset('images/logotipo_blanco.png')); ?>" alt="logotipo de adaptia con color blanco">
 
                 <p>Tecnología y naturaleza para <br> ayudarte a vivir en armonía <br> con las plantas</p>
 
@@ -361,3 +361,4 @@
 </body>
 
 </html>
+<?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/home.blade.php ENDPATH**/ ?>

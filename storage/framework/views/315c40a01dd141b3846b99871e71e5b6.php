@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{ asset('images/logo.png') }}">
-    @vite('resources/css/app.css')
+    <link rel="icon" href="<?php echo e(asset('images/logo.png')); ?>">
+    <?php echo app('Illuminate\Foundation\Vite')('resources/css/app.css'); ?>
     <title>Tipo Planta</title>
 </head>
 
@@ -13,7 +13,7 @@
     <aside class="flex flex-1 flex-col items-left gap-15 p-2 bg-[#013623] h-full">
         <div class="flex items-center justify-center pt-8">
 
-            <img src="{{ asset('images/logotipo_blanco.png') }}" class="w-[80%] h-auto" alt="logotipo de adaptia">
+            <img src="<?php echo e(asset('images/logotipo_blanco.png')); ?>" class="w-[80%] h-auto" alt="logotipo de adaptia">
 
         </div>
 
@@ -21,12 +21,12 @@
             <ul class="flex flex-col gap-8 p-3 text-[white]">
                 <li
                     class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
-                    <a class="flex gap-3" href="#"><img class="w-5 h-auto" src="{{ asset('images/tipo-planta.png') }}"
+                    <a class="flex gap-3" href="#"><img class="w-5 h-auto" src="<?php echo e(asset('images/tipo-planta.png')); ?>"
                             alt="">Tipos de plantas</a>
                 </li>
                 <li
                     class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] hover:bg-[#6eab26] transition duration-300 cursor-pointer">
-                    <a class="flex gap-2" href="#"><img class="w-7 h-auto" src="{{ asset('images/plantas.png') }}"
+                    <a class="flex gap-2" href="#"><img class="w-7 h-auto" src="<?php echo e(asset('images/plantas.png')); ?>"
                             alt="">Plantas</a>
                 </li>
             </ul>
@@ -41,7 +41,7 @@
             <div class="flex-1">
                 <a href="#"
                     class="flex items-center justify-between py-3 px-6 bg-[#629f22] text-[#fbfbfb] rounded-[10px] gap-3 hover:scale-110 transition duration-300">
-                    <img class="w-[10%] h-auto" src="{{ asset('images/anadir.png') }}" alt="Añadir">
+                    <img class="w-[10%] h-auto" src="<?php echo e(asset('images/anadir.png')); ?>" alt="Añadir">
                     Crear Tipo de Planta
                 </a>
             </div>
@@ -60,10 +60,10 @@
                         <td class="p-4">Interior</td>
                         <td class="flex gap-6 p-4">
                             <a class="flex flex-1 items-center justify-center gap-3 bg-[#f5f9f0] py-2 text-[#77a856] font-bold rounded-[10px] hover:scale-110 transition duration-300"
-                                href="#"><img class="w-[10%] h-auto" src="{{ asset('images/editar.png') }}"
+                                href="#"><img class="w-[10%] h-auto" src="<?php echo e(asset('images/editar.png')); ?>"
                                     alt=""> Editar</a>
                             <a class="flex flex-1 items-center justify-center gap-3 bg-[#fdebeb] py-2 text-[#f06f73] font-bold rounded-[10px] hover:scale-110 transition duration-300"
-                                href="#"><img class="w-[10%] h-auto" src="{{ asset('images/eliminar.png') }}"
+                                href="#"><img class="w-[10%] h-auto" src="<?php echo e(asset('images/eliminar.png')); ?>"
                                     alt=""> Eliminar</a>
                         </td>
                     </tr>
@@ -75,3 +75,4 @@
 </body>
 
 </html>
+<?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/tipoPlantas/index.blade.php ENDPATH**/ ?>
