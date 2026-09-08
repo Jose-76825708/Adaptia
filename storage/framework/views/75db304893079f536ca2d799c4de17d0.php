@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="<?php echo e(asset('images/logo.png')); ?>">
     <?php echo app('Illuminate\Foundation\Vite')('resources/css/app.css'); ?>
-    <title>Crear Tipo de Planta</title>
+    <title>Editar Tipo de Planta</title>
 </head>
 
 <body class="flex font-sans h-screen">
@@ -23,15 +23,16 @@
 
         <section class="flex items-center justify-between mb-8">
             <div class="flex-4">
-                <h1 class="text-[#103928] font-bold text-[2.5em]">Crear Tipo de Planta</h1>
-                <p class="text-[#8b8d8f] text-[1em]">Registra una nueva categoría de plantas para organizar mejor tu catálogo.</p>
+                <h1 class="text-[#103928] font-bold text-[2.5em]">Editar Tipo de Planta</h1>
+                <p class="text-[#8b8d8f] text-[1em]">Modifica la información de la categoría seleccionada.</p>
             </div>
         </section>
 
         <section class="flex justify-center">
             <div class="flex flex-col p-10 bg-[#fefdfe] rounded-[20px] shadow-xl w-full max-w-2xl gap-8 border border-[#ecedea]">
-                <form action="<?php echo e(route('tipoPlantas.store')); ?>" method="POST" class="flex flex-col gap-6">
+                <form action="<?php echo e(route('tipoPlantas.update', $find->id)); ?>" method="POST" class="flex flex-col gap-6">
                     <?php echo csrf_field(); ?>
+                    <?php echo method_field('PUT'); ?>
 
                     <div class="flex flex-col gap-2">
                         <label for="nombre" class="text-[#304e42] font-semibold text-[1.1em]">Nombre del Tipo de Planta</label>
@@ -45,7 +46,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?> rounded-[10px] outline-none focus:border-[#629f22] transition duration-300"
                                placeholder="Ej: Suculentas, Helechos..."
-                               value="<?php echo e(old('nombre')); ?>" required>
+                               value="<?php echo e(old('nombre', $find->nombre)); ?>" required>
                         <?php $__errorArgs = ['nombre'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -61,8 +62,8 @@ unset($__errorArgs, $__bag); ?>
                     <div class="flex justify-end mt-4">
                         <button type="submit"
                                 class="flex items-center justify-between py-3 px-8 bg-[#629f22] text-[#fbfbfb] rounded-[10px] gap-3 hover:scale-110 transition duration-300 font-bold">
-                            <img class="w-[1.2em] h-auto" src="<?php echo e(asset('images/anadir.png')); ?>" alt="Añadir">
-                            Guardar Tipo de Planta
+                            <img class="w-[1.2em] h-auto" src="<?php echo e(asset('images/anadir.png')); ?>" alt="Actualizar">
+                            Actualizar Tipo de Planta
                         </button>
                     </div>
                 </form>
@@ -74,4 +75,4 @@ unset($__errorArgs, $__bag); ?>
 </body>
 
 </html>
-<?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/tipoPlantas/create.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/tipoPlantas/edit.blade.php ENDPATH**/ ?>

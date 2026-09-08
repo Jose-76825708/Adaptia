@@ -2,74 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TipoPlanta;
+use App\Services\TipoPlantaService;
 use Illuminate\Http\Request;
 
 class TipoPlantaController extends Controller
 {
+    protected $service;
+
+    public function __construct(TipoPlantaService $service)
+    {
+        $this->service = $service;
+    }
 
     public function index()
     {
-        $posts = TipoPlanta::all();
+        $posts = $this->service->getAll();
 
         return view('tipoPlantas.index', compact('posts'));
     }
 
-    
     public function create()
     {
         return view('tipoPlantas.create');
     }
 
-    
     public function store(Request $request)
     {
         $validar_datos = $request->validate([
-
             'nombre' => 'required|string'
-
         ]);
 
-        TipoPlanta::create($validar_datos);
+        $this->service->createTipo($validar_datos);
 
         return redirect()->route('tipoPlantas.index');
     }
 
-    
-    public function show(string $id)
+public function edit(string $id)
     {
-        $find = TipoPlanta::find($id);
-
-        return view('tipoPlantas.show', compact('find'));
-    }
-
-    
-    public function edit(string $id)
-    {
-        $find = TipoPlanta::find($id);
+        $find = $this->service->getTipoById($id);
 
         return view('tipoPlantas.edit', compact('find'));
     }
 
-    
     public function update(Request $request, string $id)
     {
         $validar_datos = $request->validate([
-
             'nombre' => 'required|string'
-
         ]);
 
-        $tipo_encontrado = TipoPlanta::find($id);
-
-        $tipo_encontrado->update($validar_datos);
+        $this->service->updateTipo($id, $validar_datos);
 
         return redirect()->route('tipoPlantas.index');
     }
 
     public function destroy(string $id)
     {
-        TipoPlanta::destroy($id);
+        $this->service->deleteTipo($id);
 
         return redirect()->route('tipoPlantas.index');
     }

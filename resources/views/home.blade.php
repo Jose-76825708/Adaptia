@@ -29,7 +29,7 @@
         <div class="flex-1 flex justify-end">
 
             <a class="bg-[#7cb22b] text-white px-7 py-3 rounded-[20px] text-[19px] font-bold hover:scale-110 transition duration-300"
-                href="#">Empezar</a>
+                href="{{ Auth::check() ? route('perfil.edit') : route('login') }}">Empezar</a>
 
         </div>
 
@@ -46,7 +46,7 @@
                 <p class="flex text-[1.5em] text-[#787878]">Nuestro sistema analiza las condiciones reales <br> de tu
                     hogar y te recomienda las plantas que <br> mejor se adaptan a ti.</p>
                 <a class="flex items-center px-1 py-5 gap-6 justify-center text-[1.5em] w-[65%] bg-[#7cb22b] text-white rounded-[20px] font-bold hover:scale-110 transition duration-300"
-                    href="#">Empezar ahora <img class="w-[1em] h-auto" src="{{ asset('images/hora_blanca.png') }}" alt=""></a>
+                    href="{{ Auth::check() ? route('perfil.edit') : route('login') }}">Empezar ahora <img class="w-[1em] h-auto" src="{{ asset('images/hora_blanca.png') }}" alt=""></a>
                 <p class="flex items-center gap-4 text-[1.2em] text-[#787878]"> <img class="w-[1.4em] h-auto" src="{{ asset('images/check_verde.png') }}" alt=""> Recomendaciones 100% personalizadas</p>
             </div>
             <div class="flex-1 flex items-center justify-center p-4 pr-10">
