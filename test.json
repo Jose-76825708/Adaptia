@@ -1,0 +1,10 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "max_tokens": 100,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Di solamente FUNCIONA"
+    }
+  ]
+}
