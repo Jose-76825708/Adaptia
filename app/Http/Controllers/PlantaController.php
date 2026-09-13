@@ -22,8 +22,9 @@ class PlantaController extends Controller
     public function index()
     {
         $posts = $this->plantaService->getAll();
+        $plantasStockBajo = $this->plantaService->getPlantasConStockBajo();
 
-        return view('plantas.index', compact('posts'));
+        return view('plantas.index', compact('posts', 'plantasStockBajo'));
     }
 
     public function create()

@@ -19,6 +19,16 @@ class PlantaService
     }
 
     /**
+     * Obtiene todas las plantas con stock actual por debajo del mínimo
+     *
+     * @return Collection
+     */
+    public function getPlantasConStockBajo(): Collection
+    {
+        return Planta::whereColumn('stock_actual', '<', 'stock_minimo')->get();
+    }
+
+    /**
      * Busca una planta por su ID.
      *
      * @param string $id

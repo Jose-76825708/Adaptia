@@ -28,6 +28,74 @@
             </div>
         </section>
 
+        @if ($plantasStockBajo->isNotEmpty())
+            <section class="flex p-6 bg-[#fff8f8] text-[#991b1b] rounded-[10px] shadow-lg mb-6">
+                <div class="flex-4">
+                    <h2 class="text-[1.8em] font-bold flex items-center">
+                        ⚠️ Plantas con Stock Bajo
+                    </h2>
+                    <p class="text-[0.9em] mt-1">
+                        {{ $plantasStockBajo->count() }} planta{{ $plantasStockBajo->count() > 1 ? 's' : '' }} requieren atención inmediata
+                    </p>
+                </div>
+                <div class="flex-1 flex items-end justify-end">
+                    <a href="{{ route('movimientos-inventario.create') }}"
+                       class="bg-[#dc2626] text-[#fbfbfb] px-5 py-2 rounded-[8px] text-[0.9em] hover:bg-[#b91c1c] transition">
+                        Registrar Entrada de Stock
+                    </a>
+                </div>
+            </section>
+
+            <section class="bg-[#fff8f8] border border-[#fee2e2] rounded-[10px] p-6 mb-6">
+                <h3 class="text-[1.2em] font-bold text-[#991b1b] mb-4">Detalle de Plantas con Stock Bajo</h3>
+                <div class="space-y-4">
+                    @foreach ($plantasStockBajo as $planta)
+                        <div class="flex p-4 bg-[#fefefe] rounded-[8px] border border-[#fecaca]">
+                            <div class="flex-3">
+                                <div class="font-medium">{{ $planta->nombre }}</div>
+                                <div class="text-[0.9em] text-[#64748b] mt-1">
+                                    Tipo: {{ $planta->tipoPlanta->nombre }}
+                                </div>
+                            </div>
+                            <div class="flex-2 flex items-center justify-between">
+                                <div class="text-center">
+                                    <div class="text-[0.9em] font-medium">Stock Actual</div>
+                                    <div class="text-[1.3em] font-bold bg-red-100 text-red-600 px-3 py-1 rounded">
+                                        {{ $planta->stock_actual }}
+                                    </div>
+                                    <div class="text-[0.8em] text-red-500 mt-1">und.</div>
+                                </div>
+                                <div class="w-1"></div>
+                                <div class="text-center">
+                                    <div class="text-[0.9em] font-medium">Stock Mínimo</div>
+                                    <div class="text-[1.3em] font-bold bg-blue-100 text-blue-600 px-3 py-1 rounded">
+                                        {{ $planta->stock_minimo }}
+                                    </div>
+                                    <div class="text-[0.8em] text-blue-500 mt-1">und.</div>
+                                </div>
+                            </div>
+                            <div class="flex-1 flex items-center justify-end">
+                                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-[6px] text-[0.9em]">
+                                    {{ $planta->stock_minimo - $planta->stock_actual }} und. faltantes
+                                </span>
+                            </div>
+                        </div>
+                        @if (!$loop->last)
+                            <div class="h-1"></div>
+                        @endif
+                    @endforeach
+                </div>
+                @if ($plantasStockBajo->count() > 0)
+                    <div class="mt-4 text-center">
+                        <a href="{{ route('movimientos-inventario.create') }}"
+                           class="bg-[#629f22] text-[#fbfbfb] px-6 py-2 rounded-[8px] text-[0.9em] hover:bg-[#50801b] transition">
+                            Ir a Registrar Movimiento de Inventario
+                        </a>
+                    </div>
+                @endif
+            </section>
+        @endif
+
         <section class="flex p-8 bg-[#fefdfe] text-[#304e42] rounded-[10px] shadow-xl overflow-x-auto">
             <table class="w-full text-left">
                 <thead class="bg-[#f3f5f3]">

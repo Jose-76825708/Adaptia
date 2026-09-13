@@ -30,8 +30,8 @@ adelantarlo?") en vez de simplemente ejecutarlo.
 ### FASE 1 — Administrador
 - [x] CRUD `tipos_planta`
 - [x] CRUD `plantas`
-- [ ] CRUD `movimientos_inventario` (entradas/salidas de stock)
-- [ ] Alerta de stock bajo por especie (RF-12)
+- [x] CRUD `movimientos_inventario` (entradas/salidas de stock)
+- [x] Alerta de stock bajo por especie (RF-12)
 - [ ] CRUD `sensores` (registrar sensores disponibles antes de asignarlos)
 
 ### FASE 2 — Cliente

@@ -7,6 +7,8 @@ use App\Models\Planta;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class MovimientoInventarioService
 {
@@ -55,6 +57,25 @@ class MovimientoInventarioService
             }
             $planta->save();
 
+            // Verificar y notificar stock bajo después de actualizar el inventario
+            if ($planta->stock_actual < $planta->stock_minimo) {
+                // Flash message para feedback inmediato al usuario
+                Session::flash('stock_warning',
+                    "Advertencia: El stock de {$planta->nombre} está bajo el mínimo. " .
+                    "Actual: {$planta->stock_actual}, Mínimo: {$planta->stock_minimo}"
+                );
+
+                // Entrada en log para historial permanente y auditoría
+                Log::warning("Stock bajo detectado tras movimiento de inventario", [
+                    'planta_id' => $planta->id,
+                    'planta_nombre' => $planta->nombre,
+                    'stock_actual' => $planta->stock_actual,
+                    'stock_minimo' => $planta->stock_minimo,
+                    'tipo_movimiento' => $data['tipo'],
+                    'cantidad' => $data['cantidad']
+                ]);
+            }
+
             return $movimiento;
         });
     }
@@ -100,6 +121,28 @@ class MovimientoInventarioService
             }
             $planta->save();
 
+            // Verificar y notificar stock bajo después de actualizar el inventario
+            if ($planta->stock_actual < $planta->stock_minimo) {
+                // Flash message para feedback inmediato al usuario
+                Session::flash('stock_warning',
+                    "Advertencia: El stock de {$planta->nombre} está bajo el mínimo. " .
+                    "Actual: {$planta->stock_actual}, Mínimo: {$planta->stock_minimo}"
+                );
+
+                // Entrada en log para historial permanente y auditoría
+                Log::warning("Stock bajo detectado tras actualización de movimiento", [
+                    'planta_id' => $planta->id,
+                    'planta_nombre' => $planta->nombre,
+                    'stock_actual' => $planta->stock_actual,
+                    'stock_minimo' => $planta->stock_minimo,
+                    'tipo_movimiento_original' => $movimiento->tipo,
+                    'nuevo_tipo_movimiento' => $data['tipo'] ?? $movimiento->tipo,
+                    'cantidad_original' => $movimiento->cantidad,
+                    'nueva_cantidad' => $data['cantidad'] ?? $movimiento->cantidad,
+                    'diferencia_stock' => $diferencia
+                ]);
+            }
+
             return $movimiento;
         });
     }
@@ -129,6 +172,25 @@ class MovimientoInventarioService
                 $planta->increment('stock_actual', $movimiento->cantidad);
             }
             $planta->save();
+
+            // Verificar y notificar stock bajo después de actualizar el inventario
+            if ($planta->stock_actual < $planta->stock_minimo) {
+                // Flash message para feedback inmediato al usuario
+                Session::flash('stock_warning',
+                    "Advertencia: El stock de {$planta->nombre} está bajo el mínimo. " .
+                    "Actual: {$planta->stock_actual}, Mínimo: {$planta->stock_minimo}"
+                );
+
+                // Entrada en log para historial permanente y auditoría
+                Log::warning("Stock bajo detectado tras eliminación de movimiento", [
+                    'planta_id' => $planta->id,
+                    'planta_nombre' => $planta->nombre,
+                    'stock_actual' => $planta->stock_actual,
+                    'stock_minimo' => $planta->stock_minimo,
+                    'tipo_movimiento' => $movimiento->tipo,
+                    'cantidad_revertida' => $movimiento->cantidad
+                ]);
+            }
 
             // Eliminar el movimiento
             return $movimiento->delete();
