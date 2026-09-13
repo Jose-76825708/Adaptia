@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Planta;
 use App\Services\MovimientoInventarioService;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,7 @@ class MovimientoInventarioController extends Controller
 
     public function create()
     {
-        $plantas = $this->service->getAll();
+        $plantas = Planta::all();
         return view('movimientos-inventario.create', compact('plantas'));
     }
 
@@ -45,7 +46,7 @@ class MovimientoInventarioController extends Controller
     public function edit(string $id)
     {
         $movimiento = $this->service->getById($id);
-        $plantas = $this->service->getAll();
+        $plantas = Planta::all();
 
         return view('movimientos-inventario.edit', compact('movimiento', 'plantas'));
     }
