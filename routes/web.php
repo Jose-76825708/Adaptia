@@ -1,6 +1,7 @@
 <?php
 
 
+
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlantaController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\TipoPlantaController;
 use App\Http\Controllers\MovimientoInventarioController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\SensorController;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
@@ -25,10 +27,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('plantas', PlantaController::class);
     Route::resource('tipoPlantas', TipoPlantaController::class)->except(['show']);
     Route::resource('movimientos-inventario', MovimientoInventarioController::class);
+    Route::resource('sensores', SensorController::class);
     Route::get('/perfil/edit', [PerfilController::class, 'edit'])->name('perfil.edit');
     Route::post('/perfil/update', [PerfilController::class, 'update'])->name('perfil.update');
 });
-
-
-
-

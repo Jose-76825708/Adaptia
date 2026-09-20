@@ -42,11 +42,11 @@
                     <?php echo csrf_field(); ?>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- ESPACIO -->
+                        <!-- TAMAÑO ADULTO -->
                         <div class="flex flex-col gap-2">
-                            <label for="espacio" class="text-[#304e42] font-semibold text-[1.1em]">Espacio Disponible</label>
-                            <select name="espacio" id="espacio"
-                                    class="p-4 bg-[#f3f5f3] border-2 <?php $__errorArgs = ['espacio'];
+                            <label for="tamaño_adulto" class="text-[#304e42] font-semibold text-[1.1em]">Tamaño Adulto de la Planta</label>
+                            <select name="tamaño_adulto" id="tamaño_adulto"
+                                    class="p-4 bg-[#f3f5f3] border-2 <?php $__errorArgs = ['tamaño_adulto'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -54,12 +54,12 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php else: ?> bord
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?> rounded-[10px] outline-none focus:border-[#629f22] transition duration-300" required>
-                                <option value="" disabled <?php echo e(is_null($perfil) || old('espacio', $perfil->espacio) == '' ? 'selected' : ''); ?>>Seleccione espacio...</option>
-                                <option value="pequena" <?php echo e(old('espacio', $perfil->espacio ?? '') == 'pequena' ? 'selected' : ''); ?>>Pequeña (Estante/Mesa)</option>
-                                <option value="mediana" <?php echo e(old('espacio', $perfil->espacio ?? '') == 'mediana' ? 'selected' : ''); ?>>Mediana (Habitación)</option>
-                                <option value="grande" <?php echo e(old('espacio', $perfil->espacio ?? '') == 'grande' ? 'selected' : ''); ?>>Grande (Jardín/Patio)</option>
+                                <option value="" disabled <?php echo e(is_null($perfil) || old('tamaño_adulto', $perfil->tamaño_adulto) == '' ? 'selected' : ''); ?>>Seleccione tamaño...</option>
+                                <option value="pequena" <?php echo e(old('tamaño_adulto', $perfil->tamaño_adulto ?? '') == 'pequena' ? 'selected' : ''); ?>>Pequeña (Estante/Mesa)</option>
+                                <option value="mediana" <?php echo e(old('tamaño_adulto', $perfil->tamaño_adulto ?? '') == 'mediana' ? 'selected' : ''); ?>>Mediana (Habitación)</option>
+                                <option value="grande" <?php echo e(old('tamaño_adulto', $perfil->tamaño_adulto ?? '') == 'grande' ? 'selected' : ''); ?>>Grande (Jardín/Patio)</option>
                             </select>
-                            <?php $__errorArgs = ['espacio'];
+                            <?php $__errorArgs = ['tamaño_adulto'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -69,11 +69,11 @@ endif;
 unset($__errorArgs, $__bag); ?>
                         </div>
 
-                        <!-- LUZ -->
+                        <!-- LUZ_REQUERIDA -->
                         <div class="flex flex-col gap-2">
-                            <label for="luz" class="text-[#304e42] font-semibold text-[1.1em]">Luz Natural</label>
-                            <select name="luz" id="luz"
-                                    class="p-4 bg-[#f3f5f3] border-2 <?php $__errorArgs = ['luz'];
+                            <label for="luz_requerida" class="text-[#304e42] font-semibold text-[1.1em]">Luz Requerida</label>
+                            <select name="luz_requerida" id="luz_requerida"
+                                    class="p-4 bg-[#f3f5f3] border-2 <?php $__errorArgs = ['luz_requerida'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -81,13 +81,69 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php else: ?> bord
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?> rounded-[10px] outline-none focus:border-[#629f22] transition duration-300" required>
-                                <option value="" disabled <?php echo e(is_null($perfil) || old('luz', $perfil->luz) == '' ? 'selected' : ''); ?>>Seleccione luz...</option>
-                                <option value="baja" <?php echo e(old('luz', $perfil->luz ?? '') == 'baja' ? 'selected' : ''); ?>>Baja (Sombra)</option>
-                                <option value="media" <?php echo e(old('luz', $perfil->luz ?? '') == 'media' ? 'selected' : ''); ?>>Media (Luz indirecta)</option>
-                                <option value="alta" <?php echo e(old('luz', $perfil->luz ?? '') == 'alta' ? 'selected' : ''); ?>>Alta (Mucha luz)</option>
-                                <option value="siempre_en_el_sol" <?php echo e(old('luz', $perfil->luz ?? '') == 'siempre_en_el_sol' ? 'selected' : ''); ?>>Siempre al sol</option>
+                                <option value="" disabled <?php echo e(is_null($perfil) || old('luz_requerida', $perfil->luz_requerida) == '' ? 'selected' : ''); ?>>Seleccione luz requerida...</option>
+                                <option value="baja" <?php echo e(old('luz_requerida', $perfil->luz_requerida ?? '') == 'baja' ? 'selected' : ''); ?>>Baja (Sombra)</option>
+                                <option value="media" <?php echo e(old('luz_requerida', $perfil->luz_requerida ?? '') == 'media' ? 'selected' : ''); ?>>Media (Luz indirecta)</option>
+                                <option value="alta" <?php echo e(old('luz_requerida', $perfil->luz_requerida ?? '') == 'alta' ? 'selected' : ''); ?>>Alta (Mucha luz)</option>
+                                <option value="siempre_en_el_sol" <?php echo e(old('luz_requerida', $perfil->luz_requerida ?? '') == 'siempre_en_el_sol' ? 'selected' : ''); ?>>Siempre al sol</option>
                             </select>
-                            <?php $__errorArgs = ['luz'];
+                            <?php $__errorArgs = ['luz_requerida'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-[0.9em] font-medium"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                        </div>
+
+                        <!-- FRECUENCIA DE RIEGO -->
+                        <div class="flex flex-col gap-2">
+                            <label for="frecuencia_riego" class="text-[#304e42] font-semibold text-[1.1em]">Frecuencia de Riego</label>
+                            <select name="frecuencia_riego" id="frecuencia_riego"
+                                    class="p-4 bg-[#f3f5f3] border-2 <?php $__errorArgs = ['frecuencia_riego'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php else: ?> border-[#ecedea] <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?> rounded-[10px] outline-none focus:border-[#629f22] transition duration-300" required>
+                                <option value="" disabled <?php echo e(is_null($perfil) || old('frecuencia_riego', $perfil->frecuencia_riego) == '' ? 'selected' : ''); ?>>Seleccione frecuencia...</option>
+                                <option value="diario" <?php echo e(old('frecuencia_riego', $perfil->frecuencia_riego ?? '') == 'diario' ? 'selected' : ''); ?>>Diario</option>
+                                <option value="cada_3_dias" <?php echo e(old('frecuencia_riego', $perfil->frecuencia_riego ?? '') == 'cada_3_dias' ? 'selected' : ''); ?>>Cada 3 días</option>
+                                <option value="semanal" <?php echo e(old('frecuencia_riego', $perfil->frecuencia_riego ?? '') == 'semanal' ? 'selected' : ''); ?>>Semanal</option>
+                                <option value="quincenal" <?php echo e(old('frecuencia_riego', $perfil->frecuencia_riego ?? '') == 'quincenal' ? 'selected' : ''); ?>>Quincenal</option>
+                                <option value="mensualmente" <?php echo e(old('frecuencia_riego', $perfil->frecuencia_riego ?? '') == 'mensualmente' ? 'selected' : ''); ?>>Mensualmente</option>
+                            </select>
+                            <?php $__errorArgs = ['frecuencia_riego'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-[0.9em] font-medium"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                        </div>
+
+                        <!-- TIPO DE AMBIENTE -->
+                        <div class="flex flex-col gap-2">
+                            <label for="tipo_ambiente" class="text-[#304e42] font-semibold text-[1.1em]">Tipo de Ambiente</label>
+                            <select name="tipo_ambiente" id="tipo_ambiente"
+                                    class="p-4 bg-[#f3f5f3] border-2 <?php $__errorArgs = ['tipo_ambiente'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php else: ?> border-[#ecedea] <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?> rounded-[10px] outline-none focus:border-[#629f22] transition duration-300" required>
+                                <option value="" disabled <?php echo e(is_null($perfil) || old('tipo_ambiente', $perfil->tipo_ambiente) == '' ? 'selected' : ''); ?>>Seleccione ambiente...</option>
+                                <option value="interiores" <?php echo e(old('tipo_ambiente', $perfil->tipo_ambiente ?? '') == 'interiores' ? 'selected' : ''); ?>>Interiores</option>
+                                <option value="exteriores" <?php echo e(old('tipo_ambiente', $perfil->tipo_ambiente ?? '') == 'exteriores' ? 'selected' : ''); ?>>Exteriores</option>
+                                <option value="ambos" <?php echo e(old('tipo_ambiente', $perfil->tipo_ambiente ?? '') == 'ambos' ? 'selected' : ''); ?>>Ambos</option>
+                            </select>
+                            <?php $__errorArgs = ['tipo_ambiente'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -126,13 +182,41 @@ endif;
 unset($__errorArgs, $__bag); ?>
                         </div>
 
-                        <!-- MASCOTAS Y NIÑOS -->
+                        <!-- TOXICIDAD -->
                         <div class="flex items-center gap-3 py-6">
-                            <input type="checkbox" name="mascotas_ninos" id="mascotas_ninos" value="1"
-                                   class="w-6 h-6 accent-[#629f22] cursor-pointer" <?php echo e(old('mascotas_ninos', $perfil->mascotas_ninos ?? false) ? 'checked' : ''); ?>>
-                            <label for="mascotas_ninos" class="text-[#304e42] font-semibold text-[1.1em] cursor-pointer">
-                                Tengo mascotas o niños pequeños
+                            <input type="checkbox" name="toxicidad" id="toxicidad" value="1"
+                                   class="w-6 h-6 accent-[#629f22] cursor-pointer" <?php echo e(old('toxicidad', $perfil->toxicidad ?? false) ? 'checked' : ''); ?>>
+                            <label for="toxicidad" class="text-[#304e42] font-semibold text-[1.1em] cursor-pointer">
+                                Prefiere evitar plantas tóxicas
                             </label>
+                        </div>
+
+                        <!-- ESTETICA -->
+                        <div class="flex flex-col gap-2">
+                            <label for="estetica" class="text-[#304e42] font-semibold text-[1.1em]">Estética Preferida</label>
+                            <select name="estetica" id="estetica"
+                                    class="p-4 bg-[#f3f5f3] border-2 <?php $__errorArgs = ['estetica'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php else: ?> border-[#ecedea] <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?> rounded-[10px] outline-none focus:border-[#629f22] transition duration-300" required>
+                                <option value="" disabled <?php echo e(is_null($perfil) || old('estetica', $perfil->estetica) == '' ? 'selected' : ''); ?>>Seleccione estética...</option>
+                                <option value="follaje" <?php echo e(old('estetica', $perfil->estetica ?? '') == 'follaje' ? 'selected' : ''); ?>>Follaje</option>
+                                <option value="flor" <?php echo e(old('estetica', $perfil->estetica ?? '') == 'flor' ? 'selected' : ''); ?>>Flor</option>
+                                <option value="colgantes" <?php echo e(old('estetica', $perfil->estetica ?? '') == 'colgantes' ? 'selected' : ''); ?>>Colgantes</option>
+                                <option value="suculenta" <?php echo e(old('estetica', $perfil->estetica ?? '') == 'suculenta' ? 'selected' : ''); ?>>Suculenta</option>
+                            </select>
+                            <?php $__errorArgs = ['estetica'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-[0.9em] font-medium"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
 
