@@ -32,7 +32,7 @@ adelantarlo?") en vez de simplemente ejecutarlo.
 - [x] CRUD `plantas`
 - [x] CRUD `movimientos_inventario` (entradas/salidas de stock)
 - [x] Alerta de stock bajo por especie (RF-12)
-- [ ] CRUD `sensores` (registrar sensores disponibles antes de asignarlos)
+- [x] CRUD `sensores` (registrar sensores disponibles antes de asignarlos)
 
 ### FASE 2 — Cliente
 - [x] Login/registro con rol
