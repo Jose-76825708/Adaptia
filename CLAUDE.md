@@ -36,10 +36,16 @@ adelantarlo?") en vez de simplemente ejecutarlo.
 
 ### FASE 2 — Cliente
 - [x] Login/registro con rol
-- [x] `perfiles_cliente` (edición de perfil)
-- [ ] Integrar `RecomendacionService` en la vista pública (ranking real)
+- [x] `perfiles_cliente` (edición de perfil - base implementada; se mejorará a wizard animado integrado en home)
+- [ ] Integrar `RecomendacionService` en la vista pública (home) para mostrar ranking real de plantas
 - [ ] Vista de historial/alertas del cliente (RF-10) — puede quedar vacía
       hasta que exista Fase 4
+- **Enfoque de experiencia cliente (Fase 2):**
+  - [ ] Home como hub principal del cliente (reemplaza vista de perfil separada)
+  - [ ] Eliminar sidebar administrativo para rol de cliente
+  - [ ] Header con resumen del perfil del cliente
+  - [ ] Wizard tipo cuestionario animado para edición de perfil
+  - [ ] Botones "Empezar" activan el wizard de perfil
 
 ### FASE 3 — Vendedor
 - [ ] Login de vendedor (mismo sistema, distinto rol)
