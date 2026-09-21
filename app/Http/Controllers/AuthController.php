@@ -31,9 +31,16 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Aquí redirigiremos al home por ahora.
-            // Más adelante implementaremos la redirección según el rol.
-            return redirect()->intended('home');
+            // Redirección según el rol del usuario
+            $user = Auth::user();
+            if ($user->rol === 'administrador') {
+                return redirect()->intended(route('sensores.index'));
+            } elseif ($user->rol === 'cliente') {
+                return redirect()->intended(route('perfil.edit'));
+            } else {
+                // Para vendedor u otros roles, redirigir al home por ahora
+                return redirect()->intended(route('home'));
+            }
         }
 
         return back()->withErrors([
@@ -81,7 +88,18 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('home')->with('success', 'Cuenta creada exitosamente. Bienvenido a Adaptia.');
+        // Redirección según el rol del usuario después del registro
+        if ($user->rol === 'administrador') {
+            return redirect()->intended(route('sensores.index'))
+                ->with('success', 'Cuenta creada exitosamente. Bienvenido a Adaptia.');
+        } elseif ($user->rol === 'cliente') {
+            return redirect()->intended(route('perfil.edit'))
+                ->with('success', 'Cuenta creada exitosamente. Bienvenido a Adaptia.');
+        } else {
+            // Para vendedor u otros roles, redirigir al home por ahora
+            return redirect()->intended(route('home'))
+                ->with('success', 'Cuenta creada exitosamente. Bienvenido a Adaptia.');
+        }
     }
 
     /**
