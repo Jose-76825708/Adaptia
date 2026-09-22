@@ -1,0 +1,25 @@
+{
+  "model": "qwen2.5-coder:7b",
+  "max_tokens": 200,
+  "tools": [
+    {
+      "name": "get_weather",
+      "description": "Gets the weather for a city",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string"
+          }
+        },
+        "required": ["city"]
+      }
+    }
+  ],
+  "messages": [
+    {
+      "role": "user",
+      "content": "Usa la herramienta get_weather para consultar el clima de Lima."
+    }
+  ]
+}
