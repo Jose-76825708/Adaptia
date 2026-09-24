@@ -79,10 +79,13 @@ class AuthController extends Controller
         if ($user->rol === 'cliente') {
             PerfilCliente::create([
                 'user_id' => $user->id,
-                'espacio' => null,
-                'luz' => null,
-                'mascotas_ninos' => null,
+                'tamaño_adulto' => null,
+                'luz_requerida' => null,
+                'toxicidad' => false,
                 'nivel_cuidado' => null,
+                'frecuencia_riego' => null,
+                'tipo_ambiente' => null,
+                'estetica' => null,
             ]);
         }
 

@@ -27,14 +27,14 @@ class PerfilController extends Controller
         $user = Auth::user();
 
         $validar_datos = $request->validate([
-            'espacio' => 'required|string|in:pequena,mediana,grande',
-            'luz' => 'required|string|in:baja,media,alta,siempre_en_el_sol',
-            'mascotas_ninos' => 'nullable|boolean',
+            'tamaño_adulto' => 'required|string|in:pequena,mediana,grande',
+            'luz_requerida' => 'required|string|in:baja,media,alta,siempre_en_el_sol',
+            'toxicidad' => 'nullable|boolean',
             'nivel_cuidado' => 'required|string|in:principiante,intermedio,experto',
         ]);
 
-        // Manejo del checkbox mascotas_ninos: si no viene en el request, es false (0)
-        $validar_datos['mascotas_ninos'] = $request->has('mascotas_ninos') ? 1 : 0;
+        // Manejo del checkbox toxicidad: si no viene en el request, es false (0)
+        $validar_datos['toxicidad'] = $request->has('toxicidad') ? 1 : 0;
 
         // Actualizamos o creamos el perfil del usuario autenticado
         PerfilCliente::updateOrCreate(

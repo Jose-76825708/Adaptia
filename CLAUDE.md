@@ -41,11 +41,18 @@ adelantarlo?") en vez de simplemente ejecutarlo.
 - [ ] Vista de historial/alertas del cliente (RF-10) — puede quedar vacía
       hasta que exista Fase 4
 - **Enfoque de experiencia cliente (Fase 2):**
-  - [ ] Home como hub principal del cliente (reemplaza vista de perfil separada)
+  - [x] Home como hub principal del cliente (reemplaza vista de perfil separada)
   - [ ] Eliminar sidebar administrativo para rol de cliente
-  - [ ] Header con resumen del perfil del cliente
-  - [ ] Wizard tipo cuestionario animado para edición de perfil
-  - [ ] Botones "Empezar" activan el wizard de perfil
+  - [x] Header con resumen del perfil del cliente
+  - [x] Wizard tipo cuestionario animado para edición de perfil
+  - [x] Botones "Empezar" activan el wizard de perfil
+
+---
+### Documentación de Implementación Interfaz Cliente
+- **Panel del cliente**: `resources/views/home/client.blade.php`
+- **Layout base**: Reutiliza `resources/views/layouts/app.blade.php` para mantener consistencia de diseño con el resto de la aplicación (incluyendo la landing page)
+- **Modificaciones de header/footer**: Cualquier cambio en el header o footer debe realizarse en el layout compartido (`resources/views/layouts/app.blade.php`) para que se refleje automáticamente en todas las vistas
+- **Animaciones y diseño**: Implementado siguiendo el estilo de la landing page con clases "reveal" para animaciones de scroll, efectos hover (`hover:scale-110`) y transiciones suaves (`transition duration-300`)
 
 ### FASE 3 — Vendedor
 - [ ] Login de vendedor (mismo sistema, distinto rol)

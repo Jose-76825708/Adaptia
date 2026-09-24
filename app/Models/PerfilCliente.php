@@ -14,10 +14,13 @@ class PerfilCliente extends Model
 
     protected $fillable = [
         'user_id',
-        'espacio',
-        'luz',
-        'mascotas_ninos',
+        'tamaño_adulto',
+        'luz_requerida',
+        'toxicidad',
         'nivel_cuidado',
+        'frecuencia_riego',
+        'tipo_ambiente',
+        'estetica',
     ];
 
     public function user(): BelongsTo
