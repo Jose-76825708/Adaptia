@@ -29,14 +29,8 @@ class HomeController extends Controller
             // Obtener o crear el perfil del cliente
             $perfil = $user->perfilCliente;
 
-            // Si no tiene perfil, redirigir a crear uno
-            if (!$perfil) {
-                return redirect()->route('perfil.edit')
-                    ->with('info', 'Por favor complete su perfil para recibir recomendaciones personalizadas');
-            }
-
-            // Generar recomendaciones usando el servicio
-            $recomendaciones = $this->recomendacionService->generarRecomendaciones($perfil->toArray());
+            // Generar recomendaciones usando el servicio (si tiene perfil) o array vacío (si no tiene)
+            $recomendaciones = $perfil ? $this->recomendacionService->generarRecomendaciones($perfil->toArray()) : [];
 
             return view('home.client', compact('perfil', 'recomendaciones'));
         }

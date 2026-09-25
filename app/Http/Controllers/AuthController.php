@@ -36,7 +36,7 @@ class AuthController extends Controller
             if ($user->rol === 'administrador') {
                 return redirect()->intended(route('sensores.index'));
             } elseif ($user->rol === 'cliente') {
-                return redirect()->intended(route('perfil.edit'));
+                return redirect()->intended(route('home'));
             } else {
                 // Para vendedor u otros roles, redirigir al home por ahora
                 return redirect()->intended(route('home'));
@@ -96,7 +96,7 @@ class AuthController extends Controller
             return redirect()->intended(route('sensores.index'))
                 ->with('success', 'Cuenta creada exitosamente. Bienvenido a Adaptia.');
         } elseif ($user->rol === 'cliente') {
-            return redirect()->intended(route('perfil.edit'))
+            return redirect()->intended(route('home'))
                 ->with('success', 'Cuenta creada exitosamente. Bienvenido a Adaptia.');
         } else {
             // Para vendedor u otros roles, redirigir al home por ahora
