@@ -39,4 +39,12 @@ class HomeController extends Controller
         // Esto cambiará cuando se implementen sus respectivas fases
         return view('home');
     }
+
+    /**
+     * Mostrar la vista de historial y alertas del cliente
+     */
+    public function historialAlertas()
+    {
+        return view('home.historial-alertas');
+    }
 }

@@ -378,6 +378,16 @@
                 <span class="font-semibold text-[#0f3c2b] mt-2">Mis sensores</span>
                 <span class="text-sm text-gray-500 mt-1">Monitorea tus sensores</span>
             </a>
+
+            <!-- Historial y Alertas -->
+            <a href="{{ route('historial-alertas') }}"
+               class="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300 border-2 border-[#7cb22b] hover:border-[#6eab26]">
+                <div class="w-12 h-12 bg-[#f0f9ff] rounded-full flex items-center justify-center mb-3">
+                    <img class="w-6 h-6" src="{{ asset('images/historial.png') }}" alt="Historial">
+                </div>
+                <span class="font-semibold text-[#0f3c2b] mt-2">Historial y Alertas</span>
+                <span class="text-sm text-gray-500 mt-1">Ver lecturas y notificaciones</span>
+            </a>
         </div>
     </section>
 </main>

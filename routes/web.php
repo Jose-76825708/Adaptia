@@ -30,4 +30,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('sensores', SensorController::class);
     Route::get('/perfil/edit', [PerfilController::class, 'edit'])->name('perfil.edit');
     Route::post('/perfil/update', [PerfilController::class, 'update'])->name('perfil.update');
+    Route::get('/historial-alertas', [HomeController::class, 'historialAlertas'])
+        ->name('historial-alertas');
 });
