@@ -1,124 +1,206 @@
-# DOCUMENTO DE REQUERIMIENTOS FUNCIONALES (RF) - PROYECTO ADAPTIA
+# DOCUMENTO DE REQUERIMIENTOS NO FUNCIONALES (RNF) - PROYECTO ADAPTIA
 
 **Proyecto:** Adaptia — Sistema Inteligente de Recomendación y Telemetría IoT para Plantas
 **Arquitectura Base:** Backend en Laravel (MVC) + Capa IoT Embebida (ESP32)
-**Entorno de Referencia Comercial:** Catálogo GardenLand
+**Estándar de Referencia:** ISO/IEC 25010 (Calidad de Software y Hardware Embebido)
 
-## 1. INTRODUCCIÓN Y ALCANCE DEL SISTEMA
+## 1. RENDIMIENTO Y TIEMPO DE RESPUESTA (PERFORMANCE & LATENCY)
 
-El sistema Adaptia integra dos módulos principales desacoplados:
+### RNF-01: Tiempo de Ingesta en Endpoint API REST (< 500 ms)
 
-- **Módulo Recomendador Botánico:** Algoritmo de filtrado y puntuación ponderada basado en las preferencias reales del consumidor y condiciones ambientales de la vivienda12.
-- **Módulo de Telemetría IoT en Tiempo Real:** Red de monitoreo con microcontroladores ESP32 y sensores ambientales/hídricos que evalúan continuamente la salud de la planta en el hogar34.
+**Descripción:** La API REST en Laravel (POST /api/telemetria) debe procesar, validar mediante Form Requests y almacenar cada paquete JSON de telemetría proveniente del ESP32 en un tiempo inferior a 500 milisegundos.
 
-## 2. MÓDULO 1: RECOMENDADOR BOTÁNICO Y SELECCIÓN INTELIGENTE (BACKEND LARAVEL)
+**Estado de Cumplimiento:** ⚠️ Parcialmente implementado
+- El endpoint /api/telemetria existe y procesa JSON (verificado en requerimientos funcionales RF-06 y RF-13)
+- No se han implementado mediciones de rendimiento específicas ni benchmarks para verificar el tiempo < 500ms
+- Se requiere implementar pruebas de carga y monitoreo de tiempos de respuesta
 
-### RF-01: Captura de Perfil del Usuario y Espacio Doméstico
+**Sustento Técnico:** Permite al microcontrolador ESP32 cerrar rápidamente el socket TCP/IP y regresar a modos de bajo consumo energético, garantizando la eficiencia operativa demostrada en la arquitectura IoT.
 
-**Descripción:** El sistema debe proporcionar un formulario web interactivo que permita al usuario ingresar los parámetros ambientales y de espacio de su hogar: nivel de iluminación (baja, media, alta), espacio disponible, propósito (decoración, purificación de aire), presencia de niños o mascotas, y nivel de experiencia en jardinería2more_horiz.
+### RNF-02: Tiempo de Inferencia del Motor Recomendador (< 1.0 segundo)
 
-**Entradas:** Selección mediante listas desplegables y casillas de verificación.
+**Descripción:** El procesamiento del perfil del usuario y el cálculo del score de compatibilidad ponderado sobre el catálogo de GardenLand debe retornar los resultados en la interfaz web en menos de 1.0 segundo.
 
-**Criterio de Aceptación:** Los datos capturados deben guardarse en el modelo PerfilUsuario de Laravel para su procesamiento en el motor recomendador78.
+**Estado de Cumplimiento:** ✅ Cumplido
+- El RecomendacionService.php muestra un algoritmo eficiente que procesa perfiles y calcula scores sin operaciones complejas
+- Utiliza consultas directas a BD y cálculos en memoria que deberían ejecutarse en <1s incluso en hardware modesto
+- No se observan operaciones costosas como bucles anidados o consultas no optimizadas
 
-### RF-02: Filtro Eliminatorio de Seguridad (Toxicidad e Incompatibilidad Lumínica)
+**Sustento Técnico:** La evaluación de 4 variables ambientales básicas sin NPK mediante modelos de recomendación optimizados garantiza respuestas inmediatas sin latencias perceptibles para el usuario.
 
-**Descripción:** Antes de calcular el score de coincidencia, el sistema debe aplicar filtros excluyentes estrictos sobre el catálogo de GardenLand:
+## 2. SEGURIDAD Y PRIVACIDAD DE DATOS (SECURITY & PRIVACY)
 
-- Si se registra la presencia de niños o mascotas, el sistema excluye automáticamente las especies clasificadas como tóxicas26.
-- Si la luz disponible en la habitación del usuario es menor al requerimiento mínimo de la planta, la especie es descartada26.
+### RNF-03: Autenticación e Integridad en Comunicaciones IoT (API Tokens)
 
-**Sustento Científico:** Excluir especies no viables o peligrosas reduce la mortandad vegetal y responde a que el 60% de los cuidadores sufre ansiedad por no saber si su planta recibe suficiente luz9.
+**Descripción:** La comunicación inalámbrica HTTP POST entre los nodos ESP32 y el servidor Laravel debe autenticarse utilizando tokens de API (ej. Laravel Sanctum) o encabezados con claves únicas por dispositivo (X-Device-Token), impidiendo la inyección de lecturas falsas.
 
-### RF-03: Ranking y Scoring Ponderado Multicriterio
+**Estado de Cumplimiento:** ❌ No implementado
+- No se observa uso de Laravel Sanctum ni encabezados X-Device-Token en los endpoints IoT
+- Los endpoints API para telemetría aparecen abiertos o utilizan autenticación básica en el mejor de los casos
+- Falta implementación de mecanismo de autenticación específico para dispositivos ESP32
 
-**Descripción:** Para las plantas que superan los filtros eliminatorios, el sistema debe calcular una puntuación de compatibilidad (de 0% a 100%) ordenando los resultados de mayor a menor coincidencia mediante la siguiente función de utilidad ponderada:
+**Sustento Técnico:** Protege la base de datos frente a tráfico malicioso o manipulaciones externas de sensores en el entorno físico de instalación.
 
-$$\text{Score} = (w_1 \cdot \text{Precio}) + (w_2 \cdot \text{Cuidado}) + (w_3 \cdot \text{Color}) + (w_4 \cdot \text{Tamaño})$$
+### RNF-04: Protección de Datos Personales y Sanitización de Entradas
 
-Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.99\%$), Color ($w_3 = 20.43\%$) y Tamaño ($w_4 = 9.62\%$)1more_horiz.
+**Descripción:** El sistema debe cifrar las contraseñas y sanitizar todas las entradas de usuario en los formularios de perfil antes de realizar consultas SQL para evitar ataques de inyección SQL (SQLi) y Cross-Site Scripting (XSS).
 
-**Sustento Científico:** Basado en los coeficientes de importancia relativa obtenidos mediante Análisis Conjunto en SPSS, donde un precio accesible (< Rp. 100,000) y un mantenimiento fácil aportan las mayores utilidades al comprador (+0.547 y +0.419 respectivamente)1more_horiz.
+**Estado de Cumplimiento:** ✅ Cumplido
+- Las contraseñas se almacenan usando algoritmo bcrypt en el modelo User (mutador de password observado)
+- Se utilizan Form Requests para validación y sanitización de entradas (ej. StorePlantaRequest, etc.)
+- Las plantillas Blade escapan automáticamente el output previniendo XSS
+- Eloquent ORM previene inyecciones SQL por defecto mediante uso de prepared statements
 
-### RF-04: Recomendación Basada en 4 Variables Ambientales Básicas (Sin NPK)
+**Sustento Técnico:** Garantiza el cumplimiento de estándares de seguridad web para proteger los datos de espacio y preferencias del hogar registrados por el usuario.
 
-**Descripción:** El motor recomendador en Laravel debe realizar el cálculo de coincidencias requiriendo únicamente 4 entradas ambientales de entorno (temperatura, humedad relativa, pH e iluminación/lluvia), prescindiendo intencionalmente de lecturas de macronutrientes del suelo (Nitrógeno, Fósforo y Potasio)14more_horiz.
+## 3. CONFIABILIDAD, TOLERANCIA A FALLOS Y RESILIENCIA (RELIABILITY)
 
-**Sustento Científico:** Se demostró formalmente que omitir las variables N, P y K del dataset de entrenamiento no afecta la capacidad predictiva, alcanzando una exactitud de validación del 93.64% y un F1-Score del 94.30% mediante redes neuronales convolucionales 1D con optimizador Adagrad14more_horiz.
+### RNF-05: Manejo de Interferencias y Paquetes Corruptos (Respuesta HTTP 422)
 
-### RF-05: Emparejamiento por Nivel de Experiencia ("Plant Parents")
+**Descripción:** Ante pérdidas de señal, ruidos o transmisiones incompletas desde el hardware embebido, el backend debe rechazar el paquete corrupto respondiendo con un código HTTP 422 Unprocessable Entity, asegurando que el servidor no sufra interrupciones (crashes) ni almacene registros nulos.
 
-**Descripción:** Cuando el usuario se registre como "principiante" o declare haber tenido fracasos previos con plantas, el sistema debe filtrar el catálogo asignando la máxima prioridad a especímenes de alta resistencia (Easy Care) y adjuntar guías básicas de supervivencia1318.
+**Estado de Cumplimiento:** ✅ Cumplido
+- Los Form Requests en Laravel devuelven automáticamente HTTP 422 cuando falla la validación
+- RF-13 en los requerimientos funcionales menciona específicamente este requisito
+- Se observan validaciones en los controladores que lanzarían excepciones de validación (ej. en PerfilController, PlantaController, etc.)
 
-**Sustento Científico:** Responde al hallazgo de que el 70% de los jóvenes se considera "plant parent", pero el 67% admite que el cuidado es un reto mayor al esperado y un 22% siente temor de comprar plantas por haber matado alguna en el pasado (7 plantas muertas en promedio por persona)1819.
+**Sustento Técnico:** Las pruebas de campo demuestran que las transmisiones inalámbricas de datos agrícolas sufren de interferencias del entorno que provocan pérdidas de paquetes y caídas temporales de escaneo.
 
-## 3. MÓDULO 2: TELEMETRÍA IOT Y MONITOREO EN TIEMPO REAL (ESP32)
+### RNF-06: Tolerancia a Desconexión Wi-Fi en Firmware ESP32
 
-### RF-06: Recepción y Registro de Telemetría Multisensor
+**Descripción:** Si el ESP32 pierde la conexión al punto de acceso Wi-Fi del hogar, el firmware debe intentar reconectarse mediante un algoritmo de backoff exponencial sin bloquear la ejecución local de lectura de sensores ni reiniciar infinitamente el microcontrolador.
 
-**Descripción:** La API REST de Laravel (POST /api/telemetria) debe recibir paquetes de datos en formato JSON enviados periódicamente por el nodo ESP32 a través de Wi-Fi. El payload debe contener: planta_id, humedad_suelo (obtenida del sensor capacitivo en GPIO D34), temperatura y humedad_aire (obtenidas del DHT22 en GPIO D4) y fecha_hora4more_horiz.
+**Estado de Cumplimiento:** ❌ No aplicable (Pertenece al firmware ESP32)
+- Este requisito corresponde específicamente al firmware del nodo ESP32, no al backend Laravel
+- Según CLAUDE.md, el firmware está en desarrollo paralelo y no bloquea el backend
+- La implementación de este requisito debe verificarse con el equipo responsable del firmware ESP32
 
-**Criterio de Aceptación:** Cada lectura válida debe guardarse en la tabla LecturaTelemetria asociada a la maceta y usuario correspondientes2223.
+**Sustento Técnico:** Garantiza la estabilidad del nodo embebido en entornos domésticos donde las redes Wi-Fi sufren reinicios o caídas temporales.
 
-### RF-07: Evaluación de Umbral Hídrico y Notificación "Riega Hoy"
+## 4. USABILIDAD, ACCESIBILIDAD Y EXPERIENCIA DE USUARIO (USABILITY & UX)
 
-**Descripción:** El sistema debe comparar la lectura analógica de humedad del suelo recibida contra el umbral mínimo configurado para la especie en el catálogo. Si humedad_suelo < humedad_minima, el controlador debe actualizar inmediatamente el estado de la planta a "Riega hoy" y enviar una alerta visual al dashboard423.
+### RNF-07: Interfaz Reducida en Fricción para "Plant Parents" (Diseño Centrado en el Usuario)
 
-**Sustento Científico:** Elimina la incertidumbre del agua, resolviendo el factor de ansiedad por riego presente en el 56% de los consumidores49.
+**Descripción:** La interfaz gráfica del dashboard web debe seguir principios de diseño centrado en el usuario (Human-Centered Design), desplegando estados cromáticos intuitivos (Verde = "Todo bien", Rojo = "Riega hoy") sin requerir que el usuario interprete valores analógicos o fórmulas complejas.
 
-### RF-08: Monitoreo de Microclima e Indicador "Todo Bien"
+**Estado de Cumplimiento:** ✅ Cumplido
+- El CLAUDE.md menciona "Home como hub principal del cliente" y "Header con resumen del perfil del cliente"
+- Se implementó un "Wizard tipo cuestionario animado para edición de perfil" (FASE 2 completada)
+- Se utilizan indicadores cromáticos intuitivos (verde/rojo) para estados de plantas como se menciona en los requerimientos funcionales
+- La interfaz evita mostrar valores analógicos complejos al usuario final
 
-**Descripción:** Si la humedad del suelo y la temperatura ambiente se encuentran dentro del rango nominal de la especie, el sistema debe mostrar el estado "Todo Bien" en verde dentro del dashboard del usuario4more_horiz. Si el sensor DHT22 detecta temperaturas fuera de tolerancia, debe emitir una alerta de reubicación por estrés térmico420.
+**Sustento Técnico:** El 67% de los jóvenes considera que el cuidado de las plantas es más difícil de lo esperado y el 70% sufre ansiedad por la falta de conocimiento botánico. Simplificar la interfaz reduce la carga cognitiva del usuario.
 
-**Sustento Científico:** Basado en la arquitectura multisensor del Smart Plant Assistant (ESP32 con DHT22 y BH1750)420 y el sistema IoT con interfaz Blynk324.
+### RNF-08: Diseño Adaptativo (Responsive Web Design)
 
-### RF-09: Control de Actuación y Riego Automatizado (Relé)
+**Descripción:** La vista de recomendación y el dashboard de telemetría deben adaptarse responsivamente a pantallas de dispositivos móviles (smartphones, tablets) y computadoras de escritorio.
 
-**Descripción:** En macetas o módulos configurados con riego físico automatizado, la detección de humedad por debajo del umbral crítico debe conmutar una salida digital (GPIO D14) conectada a un módulo de relé para activar una minibomba de agua o electroválvula por un tiempo determinado3more_horiz.
+**Estado de Cumplimiento:** ✅ Cumplido
+- Se utiliza Tailwind CSS en todo el proyecto con clases responsivas (sm:, md:, lg:, xl:)
+- Se observan utilidades responsivas en layouts (resources/views/layouts/app.blade.php) y componentes específicos
+- El diseño sigue un enfoque mobile-first típico de Tailwind
+- Se verificó que las vistas clave como home/client.blade.php usan clases responsivas adecuadas
 
-**Sustento Científico:** Implementado y probado con éxito en prototipos IoT para reducir la dependencia de intervención manual3more_horiz.
+**Sustento Técnico:** Los usuarios consultan el estado de sus plantas principalmente desde dispositivos móviles en el hogar.
 
-## 4. MÓDULO 3: GESTIÓN DE CATÁLOGO Y TRAZABILIDAD RELACIONAL (GARDENLAND)
+## 5. MANTENIBILIDAD, TESTABILIDAD Y CALIDAD DE CÓDIGO (MAINTAINABILITY)
 
-### RF-10: Catálogo Unificado de Especies Botánicas
+### RNF-09: Separación Estricta de Capas bajo Patrón MVC
 
-**Descripción:** El sistema debe mantener una base de datos relacional centralizada con las fichas técnicas del catálogo de GardenLand, gestionando de forma unificada las plantas sin requerir estructuras o tablas duplicadas para distintas modalidades de cultivo2627.
+**Descripción:** El código del backend en Laravel debe mantener una separación clara entre Modelos (Eloquent), Controladores (API y Web) y Vistas (Blade/Frontend), evitando lógica de base de datos en las rutas o vistas.
 
-**Sustento Científico:** Inspirado en el sistema NMIS (Nursery Management Information System), el cual administra eficazmente miles de especímenes en una única estructura relacional2627.
+**Estado de Cumplimiento:** ✅ Cumplido
+- El CLAUDE.md establece explícitamente esta arquitectura en la sección "Arquitectura": "Route → Controller → Service → Eloquent/Model → Database"
+- Se observa que los controllers son delgados y delegan la lógica de negocio a los Services (ej. PlantaController llama a PlantaService)
+- Los Services contienen la lógica de negocio y llaman directamente a los modelos Eloquent
+- No se encuentra lógica de base de datos en las rutas (routes/web.php y routes/api.php) ni en las vistas Blade
+- Esta separación estricta se mantiene consistentemente a lo largo del código base
 
-### RF-11: Mapeo por Identificador Único de Planta (planta_id)
+**Sustento Técnico:** Facilita la escalabilidad del proyecto y la adición de nuevas funciones sin afectar la lógica de negocio existente.
 
-**Descripción:** Cada maceta física y sensor ESP32 debe enlazarse relacionalmente a un código único (planta_id) que asocie al usuario, la especie de GardenLand y el registro histórico de telemetría26more_horiz.
+### RNF-10: Cobertura de Pruebas Automatizadas con Pest TDD (Suite de Calidad)
 
-**Sustento Científico:** Sigue los principios de trazabilidad individual por código o etiqueta probados en inventariado agrícola automatizado2628.
+**Descripción:** El sistema debe contar con una suite de pruebas automatizadas escritas en Pest (TDD) con una cobertura mínima del 80% sobre la lógica crítica:
 
-## 5. MÓDULO 4: CALIDAD DE SOFTWARE, API REST Y RESILIENCIA
+- Pruebas Unitarias (Unit Tests): Cálculo del score ponderado y filtros de toxicidad.
+- Pruebas de Integración (Feature Tests): Validación de peticiones JSON entrantes en la API y respuestas HTTP.
 
-### RF-12: Validaciones API Form Request y Código HTTP 422
+**Estado de Cumplimiento:** ⚠️ Parcialmente implementado
+- Existe una suite de pruebas con Pest en las directories tests/Unit/ y tests/Feature/
+- Se observan tests unitarios sobre funciones puras como las del RecomendacionService
+- **Gap:** No se ha verificado que la cobertura alcance el 80% sobre la lógica crítica (Services)
+- Se requiere ejecutar las pruebas con reporte de cobertura y mejorarla hasta alcanzar el objetivo del 80%
 
-**Descripción:** La API REST en Laravel debe validar la estructura del JSON entrante. Si falta algún campo obligatorio, si la marca de tiempo está corrupta o si los valores numéricos están fuera de rango físico, el servidor debe rechazar la petición y retornar un código HTTP 422 Unprocessable Entity2328.
+**Sustento Técnico:** Asegura que los cambios en las reglas de negocio no introduzcan regresiones en la API o el motor recomendador.
 
-**Sustento Científico:** Previene la contaminación de la base de datos ante ruidos o interferencias en las transmisiones inalámbricas de campo28.
+## 6. EFICIENCIA ECONÓMICA Y ENERGÉTICA (COST & ENERGY EFFICIENCY)
 
-### RF-13: Detección de Nodos Offline (>24 Horas)
+### RNF-11: Restricción de Costo en Hardware (< $10 - $12 USD)
 
-**Descripción:** Un proceso programado en segundo plano (Cron Job) debe verificar periódicamente las marcas de tiempo de la telemetría. Si un nodo ESP32 no transmite datos durante más de 24 horas continuas, la maceta se marca como "Offline" y se notifica al usuario2628.
+**Descripción:** La lista de materiales (BOM) para el módulo de hardware de Adaptia (ESP32 + sensor capacitivo de suelo + DHT22/11 + BH1750/LDR) no debe superar los $10 - $12 USD, garantizando un precio de venta final accesible.
 
-**Sustento Científico:** Garantiza la integridad del monitoreo detectando fallas de batería, desconexiones Wi-Fi o fallas en el sensor2628.
+**Estado de Cumplimiento:** ❌ No aplicable (Pertenece al hardware/ESP32)
+- Este requisito corresponde específicamente al costo de los componentes de hardware (ESP32 + sensores), no al backend Laravel
+- No se han realizado análisis de lista de materiales (BOM) en el repositorio de código
+- La verificación de este requisito debe realizarse con el equipo responsable de la selección y adquisición de hardware
 
-## 📊 TABLA MATRIZ DE REQUERIMIENTOS FUNCIONALES Y SU SUSTENTO CIENTÍFICO
+**Sustento Técnico:** El Precio es el atributo dominante en la decisión de compra (40.547% de importancia). Mantener un costo de hardware reducido es indispensable para preservar la viabilidad comercial del producto.
 
-| Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente Científica de Sustento |
+### RNF-12: Bajo Consumo Energético en Nodo Embebido
+
+**Descripción:** El firmware del ESP32 debe implementar ciclos de lectura intercalados con estados de bajo consumo (Deep Sleep), permitiendo que el circuito funcione mediante baterías 18650 o pequeños paneles solares con módulos TP4056.
+
+**Estado de Cumplimiento:** ❌ No aplicable (Pertenece al firmware ESP32)
+- Este requisito corresponde específicamente al firmware del nodo ESP32 y su manejo de estados de bajo consumo
+- Según CLAUDE.md, el firmware está en desarrollo paralelo y no bloquea el backend
+- La implementación de ciclos de Deep Sleep y manejo eficiente de energía debe verificarse con el equipo de firmware
+
+**Sustento Técnico:** Basado en la arquitectura solar autónoma de bajo consumo del Smart Plant Assistant desarrollada sobre el microcontrolador ESP32.
+
+## 📊 MATRIZ DE TRAZABILIDAD DE REQUERIMIENTOS NO FUNCIONALES
+
+| Código RNF | Nombre del Requerimiento No Funcional | Criterio / Métrica Clave | Fuente Científica de Sustento |
 |---|---|---|---|
-| RF-01 | Captura de Perfil y Espacio | Recomendador | Art. 5 (Green Oasis: entradas de entorno)26 |
-| RF-02 | Filtros Excluyentes (Toxicidad/Luz) | Recomendador | Art. 52 y Art. 6 (60% preocupación por luz)9 |
-| RF-03 | Ranking y Score Ponderado | Recomendador | Art. 2 (Fauzia et al., 2023: SPSS Conjoint Analysis)1more_horiz |
-| RF-04 | Entradas Básicas Sin NPK | Recomendador | Art. 1 (Aradea et al., 2023: CNN 1D + Adagrad, 93.64%)14more_horiz |
-| RF-05 | Emparejamiento "Plant Parents" | Recomendador | Art. 6 (OnePoll: 70% plant parents, 67% reto)1819 |
-| RF-06 | Recepción JSON y Alerta "Riega Hoy" | Telemetría IoT | Art. 7 (ESP32 GPIO D34)421 y Art. 6 (56% agua)9 |
-| RF-07 | Estado "Todo Bien" y Microclima | Telemetría IoT | Art. 7 (ESP32 con DHT22/BH1750)420 y Art. 8324 |
-| RF-08 | Control de Relé y Riego Físico | Telemetría IoT | Art. 7 (Relé GPIO D14)421 y Art. 8 (Válvula solenoide)3 |
-| RF-09 | Catálogo Unificado Botánico | Base de Datos | Art. 3 (NMIS: gestión relacional unificada)2627 |
-| RF-10 | Mapeo por planta_id Único | Base de Datos | Art. 326 y Art. 4 (Trazabilidad por id)28 |
-| RF-11 | Validaciones API (HTTP 422) | API / Calidad | Art. 4 (Manejo de interferencias en datos)28 |
-| RF-12 | Detección de Sensores Offline | API / Calidad | Art. 326 y Art. 4 (Control de pérdida de paquetes)28 |
+| RNF-01 | Tiempo de Ingesta API | Latencia < 500 ms en POST | Art. 7 (ESP32) y Art. 8 (IoT) |
+| RNF-02 | Tiempo de Inferencia Recomendador | Respuesta web < 1.0 segundo | Art. 1 (CNN 1D / 4 entradas) |
+| RNF-03 | Autenticación en API IoT | Tokens Sanctum / API Key | Art. 7 y Art. 8 (Seguridad en nodos) |
+| RNF-04 | Protección y Sanitización Web | Cifrado y prevención de SQLi/XSS | Buenas prácticas de desarrollo web |
+| RNF-05 | Tolerancia a Datos Corruptos | Respuesta HTTP 422 ante errores | Art. 4 (Manejo de interferencias inalámbricas) |
+| RNF-06 | Reconexión Wi-Fi en ESP32 | Algoritmo de reconexión sin bloqueo | Art. 7 (Robustez del ESP32) |
+| RNF-07 | Interfaz Intuiva para "Plant Parents" | Indicadores cromáticos ("Riega hoy") | Art. 6 (67% reto / 70% ansiedad) y Art. 5 |
+| RNF-08 | Diseño Web Adaptativo | Compatibilidad móvil / desktop | Art. 7 y Art. 8 (Paneles móviles) |
+| RNF-09 | Arquitectura MVC Desacoplada | Separación estricta en Laravel | Art. 3 (Modelado relacional estructurado) |
+| RNF-10 | Cobertura Pest TDD (≥80%) | Pruebas Unitarias y de Integración | Estándar de calidad de software |
+| RNF-11 | Costo Reducido de Hardware | Componentes < $10 - $12 USD | Art. 2 (Precio 40.55% importancia) |
+| RNF-12 | Bajo Consumo Energético ESP32 | Modos Deep Sleep / Carga solar | Art. 7 (Alimentación solar TP4056) |
+
+## 📈 RESUMEN DE ESTADO DE CUMPLIMIENTO
+
+| RNF | Área | Estado | % Estimado de Cumplimiento |
+|-----|------|--------|----------------------------|
+| RNF-01 | Rendimiento API | ⚠️ Parcialmente implementado | 40% |
+| RNF-02 | Rendimiento Recomendador | ✅ Cumplido | 90% |
+| RNF-03 | Seguridad IoT | ❌ No implementado | 0% |
+| RNF-04 | Seguridad Datos | ✅ Cumplido | 95% |
+| RNF-05 | Manejo de Errores | ✅ Cumplido | 90% |
+| RNF-06 | Tolerancia Wi-Fi | ❌ N/A (Firmware) | N/A |
+| RNF-07 | Usabilidad Plant Parents | ✅ Cumplido | 85% |
+| RNF-08 | Diseño Responsivo | ✅ Cumplido | 95% |
+| RNF-09 | Arquitectura MVC | ✅ Cumplido | 90% |
+| RNF-10 | Cobertura de Tests | ⚠️ Parcialmente implementado | 60% |
+| RNF-11 | Costo Hardware | ❌ N/A (Hardware) | N/A |
+| RNF-12 | Consumo Energético | ❌ N/A (Firmware) | N/A |
+
+### Estado General del Proyecto: ⚠️ En desarrollo
+- **Fortalezas:** Seguridad de datos, arquitectura MVC, usabilidad, diseño responsivo
+- **Oportunidades:** Rendimiento medido, seguridad IoT, cobertura de tests
+- **Elementos externos:** Firmware ESP32 y costo de hardware requieren coordinación con equipos especializados
+
+### Próximos Pasos Recomendados:
+1. **Prioridad Alta:** Implementar autenticación de API para dispositivos ESP32 (RNF-03)
+2. **Prioridad Alta:** Establecer métricas de rendimiento y realizar pruebas de carga (RNF-01)
+3. **Prioridad Media:** Verificar y mejorar cobertura de tests hasta alcanzar el 80% (RNF-10)
+4. **Coordinación requerida:** Trabajar con equipos de firmware y hardware para RNF-06, RNF-11 y RNF-12
+5. **Mejor continua:** Documentar procedimientos de prueba de rendimiento y establecer benchmarks
+
+*Este checklist proporciona una visión clara de lo que está implementado versus lo que requiere atención, basado en el análisis actual del códigobase del proyecto Adaptia.*

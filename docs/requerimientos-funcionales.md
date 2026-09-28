@@ -1,3 +1,4 @@
+
 # DOCUMENTO DE REQUERIMIENTOS FUNCIONALES (RF) - PROYECTO ADAPTIA
 
 **Proyecto:** Adaptia — Sistema Inteligente de Recomendación y Telemetría IoT para Plantas
@@ -80,11 +81,13 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 ## 4. MÓDULO 3: GESTIÓN DE CATÁLOGO Y TRAZABILIDAD RELACIONAL (GARDENLAND)
 
-### RF-10: Catálogo Unificado de Especies Botánicas
+### RF-10: Vista de historial/alertas del cliente
 
-**Descripción:** El sistema debe mantener una base de datos relacional centralizada con las fichas técnicas del catálogo de GardenLand, gestionando de forma unificada las plantas sin requerir estructuras o tablas duplicadas para distintas modalidades de cultivo2627.
+**Descripción:** El sistema debe proporcionar una vista accesible para el cliente autenticado donde pueda consultar el historial de alertas generadas por el monitoreo IoT de sus plantas. Cada alerta debe incluir el tipo de alerta (riego, abono, stock bajo), fecha y hora, estado (leída/no leída) y detalles relevantes. Esta vista puede quedar vacía hasta que exista la Fase 4 de monitoreo IoT.
 
-**Sustento Científico:** Inspirado en el sistema NMIS (Nursery Management Information System), el cual administra eficazmente miles de especímenes en una única estructura relacional2627.
+**Entradas:** N/A (vista de solo lectura).
+
+**Criterio de Aceptación:** La vista debe cargar correctamente para clientes autenticados y mostrar las alertas asociadas a su usuario mediante el relacionamiento con las tablas de alertas y notificaciones.
 
 ### RF-11: Mapeo por Identificador Único de Planta (planta_id)
 
@@ -92,33 +95,41 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 **Sustento Científico:** Sigue los principios de trazabilidad individual por código o etiqueta probados en inventariado agrícola automatizado2628.
 
-## 5. MÓDULO 4: CALIDAD DE SOFTWARE, API REST Y RESILIENCIA
+### RF-12: Alerta de stock bajo por especie
 
-### RF-12: Validaciones API Form Request y Código HTTP 422
+**Descripción:** El sistema debe generar una alerta cuando el stock actual de una especie en el inventario sea menor al stock mínimo definido para esa especie. La alerta debe ser persistente y notificada al administrador mediante la vista correspondiente, y debe poder marcarse como leída.
+
+**Entradas:** Datos de movimientos de inventario que afecten el stock_actual de una planta.
+
+**Criterio de Aceptación:** El sistema debe verificar automáticamente el stock tras cada movimiento de inventario (entrada/salida) y disparar una alerta visual y/o log cuando stock_actual < stock_minimo.
+
+### RF-13: Validaciones API Form Request y Código HTTP 422
 
 **Descripción:** La API REST en Laravel debe validar la estructura del JSON entrante. Si falta algún campo obligatorio, si la marca de tiempo está corrupta o si los valores numéricos están fuera de rango físico, el servidor debe rechazar la petición y retornar un código HTTP 422 Unprocessable Entity2328.
 
 **Sustento Científico:** Previene la contaminación de la base de datos ante ruidos o interferencias en las transmisiones inalámbricas de campo28.
 
-### RF-13: Detección de Nodos Offline (>24 Horas)
+### RF-14: Detección de Nodos Offline (>24 Horas)
 
 **Descripción:** Un proceso programado en segundo plano (Cron Job) debe verificar periódicamente las marcas de tiempo de la telemetría. Si un nodo ESP32 no transmite datos durante más de 24 horas continuas, la maceta se marca como "Offline" y se notifica al usuario2628.
 
 **Sustento Científico:** Garantiza la integridad del monitoreo detectando fallas de batería, desconexiones Wi-Fi o fallas en el sensor2628.
 
-## 📊 TABLA MATRIZ DE REQUERIMIENTOS FUNCIONALES Y SU SUSTENTO CIENTÍFICO
+## 5. TABLA RESUMEN DE REQUERIMIENTOS FUNCIONALES
 
-| Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente Científica de Sustento |
-|---|---|---|---|
-| RF-01 | Captura de Perfil y Espacio | Recomendador | Art. 5 (Green Oasis: entradas de entorno)26 |
-| RF-02 | Filtros Excluyentes (Toxicidad/Luz) | Recomendador | Art. 52 y Art. 6 (60% preocupación por luz)9 |
-| RF-03 | Ranking y Score Ponderado | Recomendador | Art. 2 (Fauzia et al., 2023: SPSS Conjoint Analysis)1more_horiz |
-| RF-04 | Entradas Básicas Sin NPK | Recomendador | Art. 1 (Aradea et al., 2023: CNN 1D + Adagrad, 93.64%)14more_horiz |
-| RF-05 | Emparejamiento "Plant Parents" | Recomendador | Art. 6 (OnePoll: 70% plant parents, 67% reto)1819 |
-| RF-06 | Recepción JSON y Alerta "Riega Hoy" | Telemetría IoT | Art. 7 (ESP32 GPIO D34)421 y Art. 6 (56% agua)9 |
-| RF-07 | Estado "Todo Bien" y Microclima | Telemetría IoT | Art. 7 (ESP32 con DHT22/BH1750)420 y Art. 8324 |
-| RF-08 | Control de Relé y Riego Físico | Telemetría IoT | Art. 7 (Relé GPIO D14)421 y Art. 8 (Válvula solenoide)3 |
-| RF-09 | Catálogo Unificado Botánico | Base de Datos | Art. 3 (NMIS: gestión relacional unificada)2627 |
-| RF-10 | Mapeo por planta_id Único | Base de Datos | Art. 326 y Art. 4 (Trazabilidad por id)28 |
-| RF-11 | Validaciones API (HTTP 422) | API / Calidad | Art. 4 (Manejo de interferencias en datos)28 |
-| RF-12 | Detección de Sensores Offline | API / Calidad | Art. 326 y Art. 4 (Control de pérdida de paquetes)28 |
+| Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente de Sustento | Estado |
+|---|---|---|---|---|
+| RF-01 | Captura de Perfil y Espacio | Recomendador | Art. 5 (Green Oasis: entradas de entorno)26 | Pendiente (Fase 2) |
+| RF-02 | Filtros Excluyentes (Toxicidad/Luz) | Recomendador | Art. 52 y Art. 6 (60% preocupación por luz)9 | Completo |
+| RF-03 | Ranking y Score Ponderado | Recomendador | Art. 2 (Fauzia et al., 2023: SPSS Conjoint Analysis)1more_horiz | Completo |
+| RF-04 | Entradas Básicas Sin NPK | Recomendador | Art. 1 (Aradea et al., 2023: CNN 1D + Adagrad, 93.64%)14more_horiz | Completo |
+| RF-05 | Emparejamiento "Plant Parents" | Recomendador | Art. 6 (OnePoll: 70% plant parents, 67% reto)1819 | Completo |
+| RF-06 | Recepción JSON y Alerta "Riega Hoy" | Telemetría IoT | Art. 7 (ESP32 GPIO D34)421 y Art. 6 (56% agua)9 | Pendiente (Fase 4) |
+| RF-07 | Estado "Todo Bien" y Microclima | Telemetría IoT | Art. 7 (ESP32 con DHT22/BH1750)420 y Art. 8324 | Pendiente (Fase 4) |
+| RF-08 | Control de Relé y Riego Físico | Telemetría IoT | Art. 7 (Relé GPIO D14)421 y Art. 8 (Válvula solenoide)3 | Pendiente (Fase 4) |
+| RF-09 | Catálogo Unificado Botánico | Base de Datos | Art. 3 (NMIS: gestión relacional unificada)2627 | Pendiente (Fase 4) |
+| RF-10 | Vista de historial/alertas del cliente | Base de Datos / Cliente | Art. 326 y Art. 4 (Trazabilidad por id)28 | Pendiente (Fase 2) |
+| RF-11 | Mapeo por planta_id Único | Base de Datos | Art. 3 (NMIS: gestión relacional unificada)2627 | Pendiente (Fase 4) |
+| RF-12 | Alerta de stock bajo por especie | Inventario | Art. 3 y Art. 4 (Stock mínimo y actual) | Completo |
+| RF-13 | Validaciones API (HTTP 422) | API / Calidad | Art. 4 (Manejo de interferencias en datos)28 | Pendiente (Fase 4) |
+| RF-14 | Detección de Sensores Offline | API / Calidad | Art. 326 y Art. 4 (Control de pérdida de paquetes)28 | Pendiente (Fase 4) |

@@ -37,6 +37,7 @@ Sustento Científico: Los Artículos 5 y 6 demuestran que la luz inadecuada es r
 - Facilidad de Cuidado: 24.99% (Especies de bajo mantenimiento).
 - Color: 20.43% (Preferencia por color verde).
 - Tamaño: 9.62% (Preferencia por tamaño mediano).
+
 - Impacto: Alineación del catálogo con las realidades económicas y preferencias estéticas del mercado actual.
 
 Sustento Científico: Jerarquía de atributos validada por Fauzia et al. (2023) en el Artículo 2, identificando el precio competitivo como el factor dominante.
@@ -105,19 +106,19 @@ Sustento Científico: El Artículo 4 define el formato EPC de 12 bits como el id
 
 ## 5. Cuadro Resumen de Trazabilidad Científica
 
-| ID Regla | Descripción Breve | Sustento Científico (Artículos) |
-|---|---|---|
-| RN-01 | Filtro de toxicidad mandatorio | Artículo 5 |
-| RN-02 | Validación lumínica preventiva | Artículos 5, 6 |
-| RN-03 | Ranking multicriterio (Precio <100k) | Fauzia et al. (2023) / Artículo 2 |
-| RN-04 | CNN 1D (Exclusión NPK por escasez) | Aradea et al. (2023) / Artículo 1 |
-| RN-05 | Filtro por experiencia (Utilidad +0.419) | Artículos 2, 6 |
-| RN-06 | Telemetría de riego (GPIO D34) | Artículos 6, 7 |
-| RN-07 | Procesamiento Cortex-M4 (Confort) | Artículos 4, 7, 8 |
-| RN-08 | Alerta microclima (DHT22/GPIO D4) | Artículos 7, 8 |
-| RN-09 | Actuación por relé (GPIO D14) | Artículos 7, 8 |
-| RN-10 | Sanitización y Log en microSD | Artículos 4, 7 |
-| RN-11 | Protocolo Heartbeat (Latido) | Artículos 3, 4 |
-| RN-12 | Identificación EPC de 12 bits (NMIS) | Artículos 3, 4 |
+| ID Regla | Descripción Breve | Sustento Científico (Artículos) | Estado |
+|---|---|---|---|
+| RN-01 | Filtro de toxicidad mandatorio | Artículo 5 | Completo |
+| RN-02 | Validación lumínica preventiva | Artículos 5, 6 | Completo |
+| RN-03 | Ranking multicriterio (Precio <100k) | Fauzia et al. (2023) / Artículo 2 | Completo |
+| RN-04 | CNN 1D (Exclusión NPK por escasez) | Aradea et al. (2023) / Artículo 1 | Completo |
+| RN-05 | Filtro por experiencia (Utilidad +0.419) | Artículos 2, 6 | Completo |
+| RN-06 | Telemetría de riego (GPIO D34) | Artículos 6, 7 | Pendiente (Fase 4) |
+| RN-07 | Procesamiento Cortex-M4 (Confort) | Artículos 4, 7, 8 | Pendiente (Fase 4) |
+| RN-08 | Alerta microclima (DHT22/GPIO D4) | Artículos 7, 8 | Pendiente (Fase 4) |
+| RN-09 | Actuación por relé (GPIO D14) | Artículos 7, 8 | Pendiente (Fase 4) |
+| RN-10 | Sanitización y Log en microSD | Artículos 4, 7 | Pendiente (Fase 4) |
+| RN-11 | Protocolo Heartbeat (Latido) | Artículos 3, 4 | Pendiente (Fase 4) |
+| RN-12 | Identificación EPC de 12 bits (NMIS) | Artículos 3, 4 | Completo |
 
 **Conclusión** La arquitectura de reglas de negocio de ADAPTIA garantiza un sistema donde cada decisión técnica, desde el descarte de variables NPK por escasez de datos hasta la implementación de registros en microSD, está fundamentada en evidencia científica. Esta rigurosidad asegura la viabilidad técnica y comercial, posicionando a ADAPTIA como el estándar líder en sistemas de agricultura de precisión doméstica.
