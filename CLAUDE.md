@@ -42,7 +42,7 @@ adelantarlo?") en vez de simplemente ejecutarlo.
       hasta que exista Fase 4
 - **Enfoque de experiencia cliente (Fase 2):**
   - [x] Home como hub principal del cliente (reemplaza vista de perfil separada)
-  - [ ] Eliminar sidebar administrativo para rol de cliente
+  - [X] Eliminar sidebar administrativo para rol de cliente
   - [x] Header con resumen del perfil del cliente
   - [x] Wizard tipo cuestionario animado para edición de perfil
   - [x] Botones "Empezar" activan el wizard de perfil
