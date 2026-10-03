@@ -85,6 +85,7 @@
 
         <p>© 2026 Adaptia. Todos los derechos reservados</p>
     </footer>
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 
 </html><?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/layouts/app.blade.php ENDPATH**/ ?>

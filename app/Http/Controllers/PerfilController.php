@@ -29,12 +29,15 @@ class PerfilController extends Controller
         $validar_datos = $request->validate([
             'tamaño_adulto' => 'required|string|in:pequena,mediana,grande',
             'luz_requerida' => 'required|string|in:baja,media,alta,siempre_en_el_sol',
-            'toxicidad' => 'nullable|boolean',
+            'frecuencia_riego' => 'required|string|in:diario,cada_3_dias,semanal,quincenal,mensualmente',
+            'tipo_ambiente' => 'required|string|in:interiores,exteriores,ambos',
             'nivel_cuidado' => 'required|string|in:principiante,intermedio,experto',
+            'estetica' => 'required|string|in:follaje,flor,colgantes,suculenta',
+            'toxicidad' => 'nullable|boolean',
         ]);
 
-        // Manejo del checkbox toxicidad: si no viene en el request, es false (0)
-        $validar_datos['toxicidad'] = $request->has('toxicidad') ? 1 : 0;
+        // Manejo del checkbox toxicidad: boolean() evalúa correctamente 0/1/"0"/"1"/true/false
+        $validar_datos['toxicidad'] = (int) $request->boolean('toxicidad');
 
         // Actualizamos o creamos el perfil del usuario autenticado
         PerfilCliente::updateOrCreate(
@@ -42,6 +45,6 @@ class PerfilController extends Controller
             $validar_datos
         );
 
-        return redirect()->back()->with('success', 'Tu perfil ha sido actualizado correctamente.');
+        return response()->json(['success' => true, 'message' => 'Tu perfil ha sido actualizado correctamente.']);
     }
 }

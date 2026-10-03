@@ -1,4 +1,5 @@
 import './bootstrap';
+import './wizard-perfil';
 
 
 document.addEventListener('DOMContentLoaded', () => {

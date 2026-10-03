@@ -85,6 +85,7 @@
 
         <p>© 2026 Adaptia. Todos los derechos reservados</p>
     </footer>
+    @stack('scripts')
 </body>
 
 </html>
