@@ -77,7 +77,7 @@
 </style>
 <main>
     <!-- Encabezado -->
-    <section class="reveal w-full bg-gradient-to-br from-[#f3f8ee] via-white to-[#f1f6eb] px-4 py-10 sm:px-8 sm:py-14 lg:px-12">
+    <section class="reveal w-full bg-linear-to-br from-[#f3f8ee] via-white to-[#f1f6eb] px-4 py-10 sm:px-8 sm:py-14 lg:px-12">
         <div class="mx-auto w-full text-center">
             <span class="mb-3 inline-flex items-center gap-2 rounded-full border border-[#dce9d0] bg-white/80 px-4 py-2 text-sm font-semibold text-[#52752d] shadow-sm">
                 <span class="h-2 w-2 rounded-full bg-[#7cb22b]"></span>
@@ -112,7 +112,7 @@
                  aria-valuemin="0"
                  aria-valuemax="100"
                  aria-valuenow="25">
-                <div class="h-full rounded-full bg-gradient-to-r from-[#7cb22b] to-[#a4cc5e] transition-[width] duration-500 ease-out" style="width: 25%"></div>
+                <div class="h-full rounded-full bg-linear-to-r from-[#7cb22b] to-[#a4cc5e] transition-[width] duration-500 ease-out" style="width: 25%"></div>
             </div>
         </div>
 

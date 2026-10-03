@@ -3,26 +3,29 @@
 @section('title', 'Panel de Cliente - Adaptia')
 
 @section('content')
-<main>
+<main class="w-full space-y-16 bg-[#f8faf6] px-4 py-8 sm:space-y-20 sm:px-8 sm:py-10 lg:px-12">
     <!-- Encabezado de bienvenida animado -->
-    <section class="mb-12 reveal">
-        <div class="flex flex-col items-center p-8 bg-[#f0f9ff] rounded-2xl">
-            <div class="w-24 h-24 bg-[#7cb22b] rounded-full flex items-center justify-center mb-4">
-                <img class="w-12 h-12" src="{{ asset('images/logo.png') }}" alt="Logo Adaptia">
+    <section class="reveal overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#0f3c2b] via-[#18543a] to-[#2d7141] shadow-xl shadow-[#0f3c2b]/10">
+        <div class="relative flex flex-col items-center px-6 py-10 text-center sm:px-10 sm:py-14">
+            <div class="absolute -right-12 -top-16 h-56 w-56 rounded-full border-[32px] border-white/5"></div>
+            <div class="absolute -bottom-24 -left-12 h-64 w-64 rounded-full border-[36px] border-white/5"></div>
+            <div class="relative mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-white/15 shadow-inner ring-1 ring-white/20 backdrop-blur sm:h-24 sm:w-24">
+                <img class="h-12 w-12 sm:h-14 sm:w-14" src="{{ asset('images/logo.png') }}" alt="Logo Adaptia">
             </div>
-            <h1 class="text-3xl font-bold text-[#0f3c2b] mb-2">
+            <p class="relative mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-[#d4e8ba]">Tu espacio verde empieza aquí</p>
+            <h1 class="relative text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
                 ¡Hola, {{ Auth::user()->name }}!
             </h1>
-            <p class="text-lg text-[#5f6b54] mb-4">
-                Bienvenido a tu panel personal de Adaptia
+            <p class="relative mt-3 max-w-xl text-base leading-7 text-white/80 sm:text-lg">
+                Bienvenido a tu espacio personal. Encuentra recomendaciones y consulta tus plantas.
             </p>
-            <div class="flex items-center space-x-4 text-sm text-gray-500">
-                <div class="flex items-center">
-                    <img class="w-4 h-4 mr-1" src="{{ asset('images/user.png') }}" alt="">
+            <div class="relative mt-6 flex flex-wrap items-center justify-center gap-3 text-sm text-white/85">
+                <div class="flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 backdrop-blur">
+                    <img class="h-4 w-4 brightness-0 invert" src="{{ asset('images/user.png') }}" alt="">
                     <span class="font-semibold">{{ ucfirst(Auth::user()->rol) }}</span>
                 </div>
-                <div class="flex items-center">
-                    <img class="w-4 h-4 mr-1" src="{{ asset('images/reloj.png') }}" alt="">
+                <div class="flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 backdrop-blur">
+                    <img class="h-4 w-4 brightness-0 invert" src="{{ asset('images/reloj.png') }}" alt="">
                     <span>{{ Auth::user()->updated_at->diffForHumans() }}</span>
                 </div>
             </div>
@@ -31,11 +34,14 @@
 
     <!-- Resumen del perfil como tarjetas destacadas -->
     @if (Auth::user()->perfilCliente)
-        <section class="mb-12 reveal">
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-[#0f3c2b]">
+        <section class="reveal">
+            <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#7a965f]">Tus preferencias</p>
+                    <h2 class="text-2xl font-bold tracking-tight text-[#0f3c2b] sm:text-3xl">
                     Tu Perfil de Cliente
-                </h2>
+                    </h2>
+                </div>
                 @php
                     $perfil = Auth::user()->perfilCliente;
                     $completion = 0;
@@ -54,94 +60,110 @@
                         $completion = floor((count($filled) / count($fields)) * 100);
                     }
                 @endphp
-                <p class="text-xl text-[#5f6b54]">
-                    Completo en {{ $completion }}%
-                </p>
+                <div class="w-full rounded-2xl border border-[#e5ebdf] bg-white p-4 shadow-sm sm:max-w-xs">
+                    <div class="mb-2 flex items-center justify-between text-sm">
+                        <span class="font-medium text-[#667466]">Perfil completado</span>
+                        <span class="font-bold text-[#52752d]">{{ $completion }}%</span>
+                    </div>
+                    <div class="h-2 overflow-hidden rounded-full bg-[#e9eee4]">
+                        <div class="h-full rounded-full bg-gradient-to-r from-[#7cb22b] to-[#a4cc5e]" style="width: {{ $completion }}%"></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <!-- Tamaño adulto -->
-                <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-10 h-10 bg-[#f0f9ff] rounded-full flex items-center justify-center mb-3">
-                        <div class="text-xs font-medium text-[#0f3c2b]">T</div>
+                <div class="group flex items-center gap-4 rounded-2xl border border-[#e8ede4] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8] text-lg font-bold text-[#52752d] transition group-hover:bg-[#e4f0d8]">T</div>
+                    <div class="min-w-0">
+                        <h4 class="text-sm font-medium text-[#718071]">Tamaño adulto</h4>
+                        <p class="mt-1 break-words text-lg font-bold text-[#0f3c2b]">
+                            {{ ucfirst(Auth::user()->perfilCliente->tamaño_adulto ?? 'No especificado') }}
+                        </p>
                     </div>
-                    <h4 class="font-semibold text-[#0f3c2b] mb-2">Tamaño adulto</h4>
-                    <p class="text-lg font-bold text-[#7cb22b]">
-                        {{ ucfirst(Auth::user()->perfilCliente->tamaño_adulto ?? 'No especificado') }}
-                    </p>
                 </div>
 
                 <!-- Luz requerida -->
-                <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-10 h-10 bg-[#f0f9ff] rounded-full flex items-center justify-center mb-3">
-                        <img class="w-5 h-5" src="{{ asset('images/sun.png') }}" alt="">
+                <div class="group flex items-center gap-4 rounded-2xl border border-[#e8ede4] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
+                        <img class="h-6 w-6" src="{{ asset('images/sun.png') }}" alt="">
                     </div>
-                    <h4 class="font-semibold text-[#0f3c2b] mb-2">Luz requerida</h4>
-                    <p class="text-lg font-bold text-[#7cb22b]">
-                        {{ ucfirst(Auth::user()->perfilCliente->luz_requerida ?? 'No especificado') }}
-                    </p>
+                    <div class="min-w-0">
+                        <h4 class="text-sm font-medium text-[#718071]">Luz requerida</h4>
+                        <p class="mt-1 break-words text-lg font-bold text-[#0f3c2b]">
+                            {{ ucfirst(Auth::user()->perfilCliente->luz_requerida ?? 'No especificado') }}
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Frecuencia de riego -->
-                <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-10 h-10 bg-[#f0f9ff] rounded-full flex items-center justify-center mb-3">
-                        <img class="w-5 h-5" src="{{ asset('images/water.png') }}" alt="">
+                <div class="group flex items-center gap-4 rounded-2xl border border-[#e8ede4] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
+                        <img class="h-6 w-6" src="{{ asset('images/water.png') }}" alt="">
                     </div>
-                    <h4 class="font-semibold text-[#0f3c2b] mb-2">Frecuencia de riego</h4>
-                    <p class="text-lg font-bold text-[#7cb22b]">
-                        {{ ucfirst(Auth::user()->perfilCliente->frecuencia_riego ?? 'No especificado') }}
-                    </p>
+                    <div class="min-w-0">
+                        <h4 class="text-sm font-medium text-[#718071]">Frecuencia de riego</h4>
+                        <p class="mt-1 break-words text-lg font-bold text-[#0f3c2b]">
+                            {{ ucfirst(Auth::user()->perfilCliente->frecuencia_riego ?? 'No especificado') }}
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Tipo de ambiente -->
-                <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-10 h-10 bg-[#f0f9ff] rounded-full flex items-center justify-center mb-3">
-                        <img class="w-5 h-5" src="{{ asset('images/environment.png') }}" alt="">
+                <div class="group flex items-center gap-4 rounded-2xl border border-[#e8ede4] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
+                        <img class="h-6 w-6" src="{{ asset('images/environment.png') }}" alt="">
                     </div>
-                    <h4 class="font-semibold text-[#0f3c2b] mb-2">Tipo de ambiente</h4>
-                    <p class="text-lg font-bold text-[#7cb22b]">
-                        {{ ucfirst(Auth::user()->perfilCliente->tipo_ambiente ?? 'No especificado') }}
-                    </p>
+                    <div class="min-w-0">
+                        <h4 class="text-sm font-medium text-[#718071]">Tipo de ambiente</h4>
+                        <p class="mt-1 break-words text-lg font-bold text-[#0f3c2b]">
+                            {{ ucfirst(Auth::user()->perfilCliente->tipo_ambiente ?? 'No especificado') }}
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Estética preferida -->
-                <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-10 h-10 bg-[#f0f9ff] rounded-full flex items-center justify-center mb-3">
-                        <img class="w-5 h-5" src="{{ asset('images/style.png') }}" alt="">
+                <div class="group flex items-center gap-4 rounded-2xl border border-[#e8ede4] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
+                        <img class="h-6 w-6" src="{{ asset('images/style.png') }}" alt="">
                     </div>
-                    <h4 class="font-semibold text-[#0f3c2b] mb-2">Estética preferida</h4>
-                    <p class="text-lg font-bold text-[#7cb22b]">
-                        {{ ucfirst(Auth::user()->perfilCliente->estetica ?? 'No especificado') }}
-                    </p>
+                    <div class="min-w-0">
+                        <h4 class="text-sm font-medium text-[#718071]">Estética preferida</h4>
+                        <p class="mt-1 break-words text-lg font-bold text-[#0f3c2b]">
+                            {{ ucfirst(Auth::user()->perfilCliente->estetica ?? 'No especificado') }}
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Evita plantas tóxicas -->
-                <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="w-10 h-10 bg-[#f0f9ff] rounded-full flex items-center justify-center mb-3">
-                        <img class="w-5 h-5" src="{{ asset('images/toxicity.png') }}" alt="">
+                <div class="group flex items-center gap-4 rounded-2xl border border-[#e8ede4] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
+                        <img class="h-6 w-6" src="{{ asset('images/toxicity.png') }}" alt="">
                     </div>
-                    <h4 class="font-semibold text-[#0f3c2b] mb-2">Evita plantas tóxicas</h4>
-                    <p class="text-lg font-bold text-[#7cb22b]">
-                        {{ Auth::user()->perfilCliente->toxicidad ? 'Sí' : 'No' }}
-                    </p>
+                    <div class="min-w-0">
+                        <h4 class="text-sm font-medium text-[#718071]">Evita plantas tóxicas</h4>
+                        <p class="mt-1 break-words text-lg font-bold text-[#0f3c2b]">
+                            {{ Auth::user()->perfilCliente->toxicidad ? 'Sí' : 'No' }}
+                        </p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Botón para actualizar perfil -->
-        <section class="mb-12 reveal text-center">
+        <section class="reveal flex flex-col items-center justify-between gap-5 rounded-3xl border border-[#dce9d0] bg-[#eff6e8] p-6 text-center sm:flex-row sm:p-8 sm:text-left">
+            <div>
+                <h2 class="text-xl font-bold text-[#0f3c2b]">¿Quieres ajustar tus preferencias?</h2>
+                <p class="mt-1 text-sm leading-6 text-[#63745f]">Actualiza tu perfil para afinar tus recomendaciones de plantas.</p>
+            </div>
             <a href="{{ Auth::check() ? route('perfil.edit') : route('login') }}"
-               id="wizard-trigger"
-               class="inline-block bg-[#7cb22b] text-white px-8 py-4 rounded-xl font-bold text-lg hover:scale-105 transition-transform duration-300 shadow-lg hover:shadow-xl">
-                Actualizar mi perfil <img class="w-4 h-4 ml-2" src="{{ asset('images/refresh.png') }}" alt="">
+               class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#7cb22b] px-6 py-3 font-bold text-white shadow-md shadow-[#7cb22b]/20 transition duration-200 hover:-translate-y-0.5 hover:bg-[#6eab26] hover:shadow-lg">
+                Actualizar mi perfil <img class="h-4 w-4 brightness-0 invert" src="{{ asset('images/refresh.png') }}" alt="">
             </a>
-            <p class="mt-3 text-sm text-gray-500">
-                Haz clic para revisar y actualizar tus preferencias de plantas
-            </p>
         </section>
 
         <!-- Sección de Sensores -->
-        <section class="mb-12 reveal">
+        <section class="reveal">
             <?php
                 // Intentamos obtener los sensores del usuario con sus lecturas más recientes
                 $sensoresConLecturas = collect();
@@ -181,12 +203,13 @@
             ?>
 
             @if ($sensoresConLecturas->isNotEmpty())
-                <div class="text-center mb-4">
-                    <h3 class="text-xl font-bold text-[#0f3c2b]">Tus Sensores Activos</h3>
-                    <p class="text-lg text-[#5f6b54]">Monitoreo en tiempo real de tus plantas</p>
+                <div class="mb-6">
+                    <p class="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#7a965f]">Monitoreo</p>
+                    <h2 class="text-2xl font-bold tracking-tight text-[#0f3c2b] sm:text-3xl">Tus sensores activos</h2>
+                    <p class="mt-2 text-base text-[#718071]">Consulta las condiciones recientes de tus plantas.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
                     @foreach ($sensoresConLecturas as $item)
                         <?php
                             $sensor = $item['sensor'];
@@ -211,182 +234,175 @@
                                 $estadoClase = 'bg-[#ef4444] text-white'; // rojo
                             }
                         ?>
-                        <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300 border border-[#e5e7eb]">
-                            <div class="flex items-center mb-4">
-                                <div class="w-10 h-10 bg-[#f0f9ff] rounded-full flex items-center justify-center mr-3">
-                                    <img class="w-6 h-6" src="{{ asset('images/sensor.png') }}" alt="Sensor">
+                        <div class="rounded-3xl border border-[#e5ebdf] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-7">
+                            <div class="mb-5 flex items-center justify-between gap-4">
+                                <div class="flex min-w-0 items-center gap-3">
+                                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8]">
+                                        <img class="h-6 w-6" src="{{ asset('images/sensor.png') }}" alt="">
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-bold uppercase tracking-wider text-[#82907e]">Sensor conectado</p>
+                                        <h3 class="truncate font-bold text-[#0f3c2b]">
+                                            #{{ $sensor->identificador_fisico ?? 'N/A' }}
+                                        </h3>
+                                    </div>
                                 </div>
-                                <h4 class="font-semibold text-[#0f3c2b]">
-                                    Sensor #{{ $sensor->identificador_fisico ?? 'N/A' }}
-                                </h4>
+                                <span class="shrink-0 rounded-full px-3 py-1.5 text-xs font-bold {{ $estadoClase }}">
+                                    {{ $estadoTexto }}
+                                </span>
                             </div>
 
-                            <div class="space-y-3">
-                                <div class="flex justify-between">
-                                    <span class="text-sm font-medium text-gray-600">Planta asociada:</span>
-                                    <span class="text-sm font-medium">{{ $plantaVendida->planta->nombre ?? 'Planta desconocida' }}</span>
+                            <div class="mb-5 flex flex-col gap-2 rounded-2xl bg-[#f7f9f5] px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+                                <span class="font-medium text-[#718071]">Planta asociada</span>
+                                <span class="font-semibold text-[#34533b]">{{ $plantaVendida->planta->nombre ?? 'Planta desconocida' }}</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="rounded-2xl border border-[#e8ede4] bg-white p-4">
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-[#82907e]">Humedad</p>
+                                    <p class="mt-2 text-3xl font-bold tracking-tight text-[#0f3c2b]">{{ number_format($humedad, 1) }}<span class="text-lg text-[#7a965f]">%</span></p>
                                 </div>
-
-                                <div class="flex justify-between">
-                                    <span class="text-sm font-medium text-gray-600">Última lectura:</span>
-                                    <span class="text-sm font-medium">{{ $lectura->fecha_hora ? $lectura->fecha_hora->format('d/m H:i') : 'Reciente' }}</span>
+                                <div class="rounded-2xl border border-[#e8ede4] bg-white p-4">
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-[#82907e]">Temperatura</p>
+                                    <p class="mt-2 text-3xl font-bold tracking-tight text-[#0f3c2b]">{{ number_format($temperatura, 1) }}<span class="text-lg text-[#7a965f]">°C</span></p>
                                 </div>
-
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="text-center">
-                                        <div class="text-xs text-gray-500">Humedad</div>
-                                        <div class="text-2xl font-bold text-[#0f3c2b]">{{ number_format($humedad, 1) }}%</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="text-xs text-gray-500">Temperatura</div>
-                                        <div class="text-2xl font-bold text-[#0f3c2b]">{{ number_format($temperatura, 1) }}°C</div>
-                                    </div>
-                                </div>
-
-                                <div class="mt-4 p-3 rounded-lg {{ $estadoClase }} text-center text-sm font-medium">
-                                    Estado: {{ $estadoTexto }}
-                                </div>
-
-                                <div class="mt-4 text-center">
-                                    <a href="{{ route('sensores.index') }}"
-                                       class="text-[#7cb22b] font-semibold hover:text-[#6eab26] transition-colors duration-200">
-                                        Ver todos mis sensores →
-                                    </a>
-                                </div>
+                            </div>
+                            <div class="mt-5 flex flex-col gap-3 border-t border-[#edf1e9] pt-4 sm:flex-row sm:items-center sm:justify-between">
+                                <p class="text-xs text-[#82907e]">Última lectura: {{ $lectura->fecha_hora ? $lectura->fecha_hora->format('d/m H:i') : 'Reciente' }}</p>
+                                <a href="{{ route('sensores.index') }}"
+                                   class="font-semibold text-[#608d2e] transition hover:text-[#416d1e]">
+                                    Ver todos mis sensores <span aria-hidden="true">→</span>
+                                </a>
                             </div>
                         </div>
                     @endforeach
                 </div>
 
             @else
-                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-8 text-center">
-                    <h3 class="text-lg font-bold text-yellow-800 mb-4">Sensores no asignados</h3>
-                    <p class="text-sm text-yellow-700 mb-6">
-                        Asigna sensores a tus plantas para comenzar a monitorear su entorno en tiempo real.
-                    </p>
-                    <div class="space-y-3">
-                        <div class="text-center">
-                            <img class="w-16 h-16 mx-auto mb-3" src="{{ asset('images/plantas.png') }}" alt="Plantas">
-                        </div>
-                        <p class="text-sm text-yellow-600">
-                            1. Compra o registra tus plantas en el catálogo<br>
-                            2. Asigna sensores a esas plantas<br>
-                            3. ¡Monitorea su entorno en tiempo real!
-                        </p>
-                        <a href="{{ route('plantas.index') }}"
-                           class="inline-block mt-4 bg-[#7cb22b] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#6eab26] transition-transform duration-300">
-                            Explorar plantas disponibles
-                        </a>
+                <div class="flex flex-col items-center gap-5 rounded-3xl border border-[#e4ebdb] bg-white p-7 text-center shadow-sm sm:p-10">
+                    <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#eff6e8]">
+                        <img class="h-9 w-9" src="{{ asset('images/plantas.png') }}" alt="">
                     </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-[#0f3c2b]">Aún no tienes sensores asignados</h3>
+                        <p class="mx-auto mt-2 max-w-xl text-sm leading-6 text-[#718071]">
+                            Cuando tengas sensores vinculados a tus plantas, podrás consultar aquí sus lecturas y condiciones.
+                        </p>
+                    </div>
+                    <a href="{{ route('plantas.index') }}"
+                       class="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#7cb22b] px-6 py-3 font-bold text-white shadow-md shadow-[#7cb22b]/20 transition hover:-translate-y-0.5 hover:bg-[#6eab26]">
+                        Explorar plantas disponibles
+                    </a>
                 </div>
             @endif
     @endif
 
     <!-- Recomendaciones personalizadas -->
-    <section class="mb-12 reveal">
-        <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold text-[#0f3c2b]">
+    <section class="reveal">
+        <div class="mb-7">
+            <p class="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#7a965f]">Selección personalizada</p>
+            <h2 class="text-2xl font-bold tracking-tight text-[#0f3c2b] sm:text-3xl">
                 Recomendaciones para ti
             </h2>
-            <p class="text-lg text-[#5f6b54]">
-                Seleccionadas según las condiciones de tu perfil
+            <p class="mt-2 text-base text-[#718071]">
+                Plantas que pueden encajar con las condiciones de tu perfil.
             </p>
         </div>
 
         @if(count($recomendaciones) > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 @foreach($recomendaciones as $planta)
-                    <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
-                        <div class="h-48 bg-gray-50 flex items-center justify-center">
+                    <article class="group overflow-hidden rounded-3xl border border-[#e8ede4] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+                        <div class="relative flex h-56 items-center justify-center overflow-hidden bg-gradient-to-br from-[#f3f8ee] to-[#eaf2e3] p-6">
+                            <span class="absolute left-4 top-4 rounded-full border border-white/80 bg-white/85 px-3 py-1 text-xs font-bold text-[#52752d] shadow-sm">Recomendada</span>
                             <img src="{{ asset('images/' . strtolower(str_replace(' ', '_', $planta->nombre)) . '.png') }}"
                                  alt="{{ $planta->nombre }}"
-                                 class="max-w-full max-h-full object-contain w-3/4">
+                                 class="h-full max-h-44 w-3/4 object-contain transition duration-500 group-hover:scale-105">
                         </div>
-                        <div class="p-6">
-                            <h4 class="font-bold text-[#0f3c2b] mb-2">{{ $planta->nombre }}</h4>
-                            <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                        <div class="p-5 sm:p-6">
+                            <h3 class="mb-2 text-xl font-bold text-[#0f3c2b]">{{ $planta->nombre }}</h3>
+                            <p class="mb-5 line-clamp-2 min-h-10 text-sm leading-5 text-[#718071]">
                                 {{ $planta->descripcion ?? 'Descripción no disponible' }}
                             </p>
-                            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-                                <div class="flex items-center space-x-2">
-                                    <span class="bg-[#f0f9ff] text-[#0f3c2b] px-3 py-1 rounded-full text-sm font-medium">
-                                        Compatibilidad: {{ number_format($planta->pivot->score ?? 0, 1) }}%
-                                    </span>
-                                </div>
+                            <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#edf1e9] pt-4">
+                                <span class="rounded-full bg-[#eff6e8] px-3 py-1.5 text-xs font-bold text-[#52752d]">
+                                    Compatibilidad {{ number_format($planta->pivot->score ?? 0, 1) }}%
+                                </span>
                                 <a href="{{ route('plantas.show', $planta->id) }}"
-                                   class="text-[#7cb22b] font-semibold hover:text-[#6eab26] transition-colors duration-200">
-                                    Ver detalle
+                                   class="font-semibold text-[#608d2e] transition hover:text-[#416d1e]">
+                                    Ver detalle <span aria-hidden="true">→</span>
                                 </a>
                             </div>
                         </div>
-                    </div>
+                    </article>
                 @endforeach
             </div>
         @else
-            <p class="text-gray-500 text-center py-8">
-                No se encontraron recomendaciones basadas en tu perfil.
-                <br>
-                <a href="#"
-                   id="wizard-trigger"
-                   class="inline-block mt-4 bg-[#7cb22b] text-white px-6 py-2 rounded hover:bg-[#6eab26] transition">
-                    Completa tu perfil para ver recomendaciones
+            <div class="rounded-3xl border border-dashed border-[#ccd9c1] bg-white px-6 py-10 text-center">
+                <p class="text-base font-semibold text-[#34533b]">Todavía no hay recomendaciones disponibles.</p>
+                <p class="mt-2 text-sm text-[#718071]">Completa tus preferencias para descubrir plantas adecuadas para ti.</p>
+                <a href="{{ route('perfil.edit') }}"
+                   class="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-[#7cb22b] px-5 py-2.5 font-bold text-white transition hover:bg-[#6eab26]">
+                    Completar mi perfil
                 </a>
-            </p>
+            </div>
         @endif
     </section>
 
     <!-- Acciones rápidas -->
-    <section>
-        <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold text-[#0f3c2b]">
+    <section class="reveal pt-12 sm:pt-16">
+        <div class="mb-7">
+            <p class="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#7a965f]">Tu cuenta</p>
+            <h2 class="text-2xl font-bold tracking-tight text-[#0f3c2b] sm:text-3xl">
                 Accesos rápidos
             </h2>
-            <p class="text-lg text-[#5f6b54]">
-                Funciones principales de tu cuenta
+            <p class="mt-2 text-base text-[#718071]">
+                Accede directamente a las funciones principales.
             </p>
-        </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <!-- Editar perfil -->
-            <a href="#"
-               id="wizard-trigger"
-               class="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300 border-2 border-[#7cb22b] hover:border-[#6eab26]">
-                <div class="w-12 h-12 bg-[#f0f9ff] rounded-full flex items-center justify-center mb-3">
-                    <img class="w-6 h-6" src="{{ asset('images/editar.png') }}" alt="Editar">
+            <a href="{{ route('perfil.edit') }}"
+               class="group flex min-h-48 flex-col rounded-2xl border border-[#e5ebdf] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
+                <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
+                    <img class="h-6 w-6" src="{{ asset('images/editar.png') }}" alt="">
                 </div>
-                <span class="font-semibold text-[#0f3c2b] mt-2">Editar perfil</span>
-                <span class="text-sm text-gray-500 mt-1">Actualizar tus preferencias</span>
+                <span class="font-bold text-[#0f3c2b]">Editar perfil</span>
+                <span class="mt-1 text-sm leading-5 text-[#718071]">Actualizar tus preferencias</span>
+                <span class="mt-auto pt-4 text-sm font-semibold text-[#608d2e]">Abrir perfil <span aria-hidden="true">→</span></span>
             </a>
 
             <!-- Ver catálogo -->
             <a href="{{ route('plantas.index') }}"
-               class="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300 border-2 border-[#7cb22b] hover:border-[#6eab26]">
-                <div class="w-12 h-12 bg-[#f0f9ff] rounded-full flex items-center justify-center mb-3">
-                    <img class="w-6 h-6" src="{{ asset('images/plantas.png') }}" alt="Plantas">
+               class="group flex min-h-48 flex-col rounded-2xl border border-[#e5ebdf] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
+                <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
+                    <img class="h-6 w-6" src="{{ asset('images/plantas.png') }}" alt="">
                 </div>
-                <span class="font-semibold text-[#0f3c2b] mt-2">Ver catálogo</span>
-                <span class="text-sm text-gray-500 mt-1">Explora nuestras plantas</span>
+                <span class="font-bold text-[#0f3c2b]">Ver catálogo</span>
+                <span class="mt-1 text-sm leading-5 text-[#718071]">Explora nuestras plantas</span>
+                <span class="mt-auto pt-4 text-sm font-semibold text-[#608d2e]">Explorar <span aria-hidden="true">→</span></span>
             </a>
 
             <!-- Mis sensores -->
             <a href="{{ route('sensores.index') }}"
-               class="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300 border-2 border-[#7cb22b] hover:border-[#6eab26]">
-                <div class="w-12 h-12 bg-[#f0f9ff] rounded-full flex items-center justify-center mb-3">
-                    <img class="w-6 h-6" src="{{ asset('images/sensores.png') }}" alt="Sensores">
+               class="group flex min-h-48 flex-col rounded-2xl border border-[#e5ebdf] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
+                <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
+                    <img class="h-6 w-6" src="{{ asset('images/sensores.png') }}" alt="">
                 </div>
-                <span class="font-semibold text-[#0f3c2b] mt-2">Mis sensores</span>
-                <span class="text-sm text-gray-500 mt-1">Monitorea tus sensores</span>
+                <span class="font-bold text-[#0f3c2b]">Mis sensores</span>
+                <span class="mt-1 text-sm leading-5 text-[#718071]">Monitorea tus sensores</span>
+                <span class="mt-auto pt-4 text-sm font-semibold text-[#608d2e]">Ver sensores <span aria-hidden="true">→</span></span>
             </a>
 
             <!-- Historial y Alertas -->
             <a href="{{ route('historial-alertas') }}"
-               class="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300 border-2 border-[#7cb22b] hover:border-[#6eab26]">
-                <div class="w-12 h-12 bg-[#f0f9ff] rounded-full flex items-center justify-center mb-3">
-                    <img class="w-6 h-6" src="{{ asset('images/historial.png') }}" alt="Historial">
+               class="group flex min-h-48 flex-col rounded-2xl border border-[#e5ebdf] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
+                <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
+                    <img class="h-6 w-6" src="{{ asset('images/historial.png') }}" alt="">
                 </div>
-                <span class="font-semibold text-[#0f3c2b] mt-2">Historial y Alertas</span>
-                <span class="text-sm text-gray-500 mt-1">Ver lecturas y notificaciones</span>
+                <span class="font-bold text-[#0f3c2b]">Historial y alertas</span>
+                <span class="mt-1 text-sm leading-5 text-[#718071]">Consulta lecturas y notificaciones</span>
+                <span class="mt-auto pt-4 text-sm font-semibold text-[#608d2e]">Ver historial <span aria-hidden="true">→</span></span>
             </a>
         </div>
     </section>
