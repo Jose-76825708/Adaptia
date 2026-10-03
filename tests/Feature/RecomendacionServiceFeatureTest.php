@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\Planta;
+use App\Models\PerfilCliente;
 use App\Models\TipoPlanta;
+use App\Models\User;
 use App\Services\RecomendacionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -77,4 +79,65 @@ test('la funcion de generar recomendación nos dara una lista en base a 3 planta
 
     expect($ordenObtenido)->toBe($ordenEsperado);
 
+});
+
+test('generar recomendaciones incluye el porcentaje de compatibilidad para mostrarlo en la vista', function () {
+    $planta = Planta::factory()->create([
+        'luz_requerida' => 'alta',
+        'frecuencia_riego' => 'quincenal',
+        'nivel_cuidado' => 'principiante',
+        'tamaño_adulto' => 'mediana',
+        'tipo_ambiente' => 'ambos',
+        'estetica' => 'suculentas',
+        'toxicidad' => true,
+    ]);
+
+    $perfil = [
+        'luz_requerida' => 'alta',
+        'frecuencia_riego' => 'quincenal',
+        'nivel_cuidado' => 'principiante',
+        'tamaño_adulto' => 'mediana',
+        'tipo_ambiente' => 'ambos',
+        'estetica' => 'suculenta',
+        'toxicidad' => false,
+    ];
+
+    $recomendacion = (new RecomendacionService())
+        ->generarRecomendaciones($perfil)
+        ->firstWhere('id', $planta->id);
+
+    expect($recomendacion)->not->toBeNull()
+        ->and(round($recomendacion->compatibilidad_porcentaje, 1))->toBe(100.0);
+});
+
+test('el panel del cliente muestra el porcentaje calculado de compatibilidad', function () {
+    $cliente = User::factory()->create(['rol' => 'cliente']);
+
+    PerfilCliente::create([
+        'user_id' => $cliente->id,
+        'luz_requerida' => 'alta',
+        'frecuencia_riego' => 'quincenal',
+        'nivel_cuidado' => 'principiante',
+        'tamaño_adulto' => 'mediana',
+        'tipo_ambiente' => 'ambos',
+        'estetica' => 'suculenta',
+        'toxicidad' => false,
+    ]);
+
+    Planta::factory()->create([
+        'nombre' => 'Aloe Vera',
+        'luz_requerida' => 'alta',
+        'frecuencia_riego' => 'quincenal',
+        'nivel_cuidado' => 'principiante',
+        'tamaño_adulto' => 'mediana',
+        'tipo_ambiente' => 'ambos',
+        'estetica' => 'suculentas',
+        'toxicidad' => true,
+    ]);
+
+    $this->actingAs($cliente)
+        ->get(route('home'))
+        ->assertOk()
+        ->assertSee('Aloe Vera')
+        ->assertSee('Compatibilidad 100.0%');
 });

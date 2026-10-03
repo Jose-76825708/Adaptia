@@ -36,6 +36,14 @@ class RecomendacionService
 
     public function compatibilidadCategoria (string $atributo,array $categoria, string $valorPLanta, string $valorUsuario)
     {
+        if (
+            $atributo === 'estetica' &&
+            in_array($valorPLanta, ['suculenta', 'suculentas'], true) &&
+            in_array($valorUsuario, ['suculenta', 'suculentas'], true)
+        ) {
+            return 1;
+        }
+
         $posicion_usuario = array_search($valorUsuario,$categoria);
         $posicion_planta = array_search($valorPLanta,$categoria);
 
@@ -143,9 +151,15 @@ class RecomendacionService
 
         }
 
-        $plantas_ordenadas = $plantas->sortByDesc(function (Planta $planta) use ($perfil_usuario){
-            return $this->calculaScore($planta,$perfil_usuario);
+        $plantas_ordenadas = $plantas->map(function (Planta $planta) use ($perfil_usuario) {
+            $planta->setAttribute(
+                'compatibilidad_porcentaje',
+                $this->calculaScore($planta, $perfil_usuario) * 100
+            );
+
+            return $planta;
         })
+        ->sortByDesc('compatibilidad_porcentaje')
         ->take(10)
         ->values();
 

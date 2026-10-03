@@ -110,6 +110,23 @@ test('el atributo es tipo de ambiente y el caso sea ambos siempre debe retornar 
 
 });
 
+test('la estetica suculenta coincide si el perfil y la planta difieren en numero', function () {
+    $service = new RecomendacionService();
+
+    expect($service->compatibilidadCategoria(
+        'estetica',
+        ['follaje', 'flor', 'colgantes', 'suculenta'],
+        'suculentas',
+        'suculenta'
+    ))->toBe(1)
+        ->and($service->compatibilidadCategoria(
+            'estetica',
+            ['follaje', 'flor', 'colgantes', 'suculenta'],
+            'suculenta',
+            'suculentas'
+        ))->toBe(1);
+});
+
 
 // TEST DE LA FUNCIÓN PARA CALCULAR EL SCORE
 
@@ -201,4 +218,3 @@ test('cuando una planta cumple la mitad del perfil del usuario' , function () {
     expect(round($resultado, 2))->toEqual(0.5);
 
 });
-

@@ -10,6 +10,7 @@ use App\Http\Controllers\MovimientoInventarioController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\SensorController;
+use App\Http\Controllers\CatalogoClienteController;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
@@ -22,12 +23,22 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/register', 'register');
 });
 
-// Rutas Protegidas (Requieren estar autenticado)
-Route::middleware(['auth'])->group(function () {
+// CRUDs disponibles para administración y vendedores.
+Route::middleware(['auth', 'role:administrador,vendedor'])->group(function () {
     Route::resource('plantas', PlantaController::class);
     Route::resource('tipoPlantas', TipoPlantaController::class)->except(['show']);
     Route::resource('movimientos-inventario', MovimientoInventarioController::class);
     Route::resource('sensores', SensorController::class);
+});
+
+// Catálogo de solo lectura para clientes.
+Route::middleware(['auth', 'role:cliente'])->group(function () {
+    Route::get('/catalogo-plantas', [CatalogoClienteController::class, 'index'])
+        ->name('catalogo.plantas.index');
+});
+
+// Funciones de cuenta disponibles para cualquier usuario autenticado.
+Route::middleware(['auth'])->group(function () {
     Route::get('/perfil/edit', [PerfilController::class, 'edit'])->name('perfil.edit');
     Route::post('/perfil/update', [PerfilController::class, 'update'])->name('perfil.update');
     Route::get('/historial-alertas', [HomeController::class, 'historialAlertas'])

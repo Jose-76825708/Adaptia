@@ -27,10 +27,18 @@
 
         </div>
         <div class="flex-1 flex justify-end">
-
-            <a class="bg-[#7cb22b] text-white px-7 py-3 rounded-[20px] text-[19px] font-bold hover:scale-110 transition duration-300"
-                href="{{ Auth::check() ? route('perfil.edit') : route('login') }}">Empezar</a>
-
+            @if (Auth::check() && Auth::user()->rol === 'cliente')
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                            class="bg-[#7cb22b] text-white px-7 py-3 rounded-[20px] text-[19px] font-bold hover:scale-110 transition duration-300">
+                        Cerrar sesión
+                    </button>
+                </form>
+            @else
+                <a class="bg-[#7cb22b] text-white px-7 py-3 rounded-[20px] text-[19px] font-bold hover:scale-110 transition duration-300"
+                   href="{{ Auth::check() ? route('perfil.edit') : route('login') }}">Empezar</a>
+            @endif
         </div>
 
     </header>

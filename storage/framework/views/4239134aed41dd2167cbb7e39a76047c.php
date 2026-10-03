@@ -294,7 +294,7 @@
                             Cuando tengas sensores vinculados a tus plantas, podrás consultar aquí sus lecturas y condiciones.
                         </p>
                     </div>
-                    <a href="<?php echo e(route('plantas.index')); ?>"
+                    <a href="<?php echo e(route('catalogo.plantas.index')); ?>"
                        class="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#7cb22b] px-6 py-3 font-bold text-white shadow-md shadow-[#7cb22b]/20 transition hover:-translate-y-0.5 hover:bg-[#6eab26]">
                         Explorar plantas disponibles
                     </a>
@@ -320,9 +320,15 @@
                     <article class="group overflow-hidden rounded-3xl border border-[#e8ede4] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
                         <div class="relative flex h-56 items-center justify-center overflow-hidden bg-gradient-to-br from-[#f3f8ee] to-[#eaf2e3] p-6">
                             <span class="absolute left-4 top-4 rounded-full border border-white/80 bg-white/85 px-3 py-1 text-xs font-bold text-[#52752d] shadow-sm">Recomendada</span>
-                            <img src="<?php echo e(asset('images/' . strtolower(str_replace(' ', '_', $planta->nombre)) . '.png')); ?>"
-                                 alt="<?php echo e($planta->nombre); ?>"
-                                 class="h-full max-h-44 w-3/4 object-contain transition duration-500 group-hover:scale-105">
+                            <?php if($planta->imagen): ?>
+                                <img src="<?php echo e(asset('storage/' . $planta->imagen)); ?>"
+                                     alt="<?php echo e($planta->nombre); ?>"
+                                     class="h-full max-h-44 w-3/4 object-contain transition duration-500 group-hover:scale-105">
+                            <?php else: ?>
+                                <img src="<?php echo e(asset('images/hoja_verde.png')); ?>"
+                                     alt=""
+                                     class="h-28 w-28 object-contain opacity-70">
+                            <?php endif; ?>
                         </div>
                         <div class="p-5 sm:p-6">
                             <h3 class="mb-2 text-xl font-bold text-[#0f3c2b]"><?php echo e($planta->nombre); ?></h3>
@@ -332,11 +338,11 @@
                             </p>
                             <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#edf1e9] pt-4">
                                 <span class="rounded-full bg-[#eff6e8] px-3 py-1.5 text-xs font-bold text-[#52752d]">
-                                    Compatibilidad <?php echo e(number_format($planta->pivot->score ?? 0, 1)); ?>%
+                                    Compatibilidad <?php echo e(number_format($planta->compatibilidad_porcentaje, 1)); ?>%
                                 </span>
-                                <a href="<?php echo e(route('plantas.show', $planta->id)); ?>"
+                                <a href="<?php echo e(route('catalogo.plantas.index')); ?>"
                                    class="font-semibold text-[#608d2e] transition hover:text-[#416d1e]">
-                                    Ver detalle <span aria-hidden="true">→</span>
+                                    Explorar catálogo <span aria-hidden="true">→</span>
                                 </a>
                             </div>
                         </div>
@@ -380,7 +386,7 @@
             </a>
 
             <!-- Ver catálogo -->
-            <a href="<?php echo e(route('plantas.index')); ?>"
+            <a href="<?php echo e(route('catalogo.plantas.index')); ?>"
                class="group flex min-h-48 flex-col rounded-2xl border border-[#e5ebdf] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
                 <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
                     <img class="h-6 w-6" src="<?php echo e(asset('images/plantas.png')); ?>" alt="">
