@@ -25,7 +25,7 @@ por José. Si te pido algo que pertenece a una fase posterior a la actual,
 avísame antes de hacerlo ("esto es de una fase posterior, ¿seguro quieres
 adelantarlo?") en vez de simplemente ejecutarlo.
 
-**Fase actual: FASE 1 (Administrador) — pendiente cerrar antes de seguir.**
+**Fase actual: FASE 1 (Administrador) (CERRADO)**
 
 ### FASE 1 — Administrador
 - [x] CRUD `tipos_planta`
