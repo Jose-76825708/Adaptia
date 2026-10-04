@@ -13,6 +13,7 @@ use App\Http\Controllers\SensorController;
 use App\Http\Controllers\CatalogoClienteController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\PlantaVendidaController;
+use App\Http\Controllers\PersonalController;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
@@ -31,6 +32,14 @@ Route::middleware(['auth', 'role:administrador,vendedor'])->group(function () {
     Route::resource('tipoPlantas', TipoPlantaController::class)->except(['show']);
     Route::resource('movimientos-inventario', MovimientoInventarioController::class);
     Route::resource('sensores', SensorController::class)->except(['show']);
+});
+
+// Creación de cuentas de personal exclusiva para administradores.
+Route::middleware(['auth', 'role:administrador'])->group(function () {
+    Route::get('/personal/create', [PersonalController::class, 'create'])
+        ->name('personal.create');
+    Route::post('/personal', [PersonalController::class, 'store'])
+        ->name('personal.store');
 });
 
 // Consulta y registro de ventas exclusivos para vendedores.

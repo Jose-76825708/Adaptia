@@ -27,8 +27,8 @@
             <div class="flex flex-col p-12 bg-[#fefdfe] rounded-[30px] shadow-2xl w-full max-w-2xl gap-10 border border-[#ecedea]">
 
                 <div class="flex flex-col items-start text-left gap-3">
-                    <h1 class="text-[#103928] font-bold text-[2.5em]">Unirse a Adaptia</h1>
-                    <p class="text-[#8b8d8f] text-[1.1em]">Crea tu cuenta para empezar a gestionar tu catálogo de plantas y recibir recomendaciones personalizadas.</p>
+                    <h1 class="text-[#103928] font-bold text-[2.5em]">Crear cuenta de cliente</h1>
+                    <p class="text-[#8b8d8f] text-[1.1em]">Regístrate para recibir recomendaciones personalizadas y gestionar tu colección de plantas.</p>
                 </div>
 
                 <form action="<?php echo e(route('register')); ?>" method="POST" class="flex flex-col gap-8">
@@ -113,34 +113,6 @@ $message = $__bag->first($__errorArgs[0]); ?>
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-
-                    <div class="flex flex-col gap-3">
-                        <label for="rol" class="text-[#304e42] font-semibold text-[1.2em]">Tipo de Usuario (Rol)</label>
-                        <select name="rol" id="rol"
-                                class="p-4 bg-[#f3f5f3] border-2 <?php $__errorArgs = ['rol'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php else: ?> border-[#ecedea] <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?> rounded-[12px] outline-none focus:border-[#629f22] transition duration-300 text-[1.1em]" required>
-                            <option value="" disabled selected>Seleccione su rol...</option>
-                            <option value="cliente" <?php echo e(old('rol') == 'cliente' ? 'selected' : ''); ?>>Cliente</option>
-                            <option value="vendedor" <?php echo e(old('rol') == 'vendedor' ? 'selected' : ''); ?>>Vendedor</option>
-                            <option value="administrador" <?php echo e(old('rol') == 'administrador' ? 'selected' : ''); ?>>Administrador</option>
-                        </select>
-                        <?php $__errorArgs = ['rol'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                            <span class="text-red-500 text-[1em] font-medium"><?php echo e($message); ?></span>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                    </div>
 
                     <div class="flex justify-center mt-4">
                         <button type="submit"

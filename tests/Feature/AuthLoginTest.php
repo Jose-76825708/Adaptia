@@ -27,18 +27,33 @@ test('vendedor inicia sesión y llega al CRUD compartido con el administrador', 
         ->assertViewIs('sensores.index');
 });
 
-test('vendedor recién registrado llega al CRUD compartido', function () {
-    $response = $this->withSession(['url.intended' => route('home')])
-        ->post(route('register'), [
-            'name' => 'Vendedor',
-            'email' => 'nuevo-vendedor@example.com',
+test('registro público asigna rol cliente e ignora intentos de solicitar roles privilegiados', function () {
+    foreach (['vendedor', 'administrador'] as $rolSolicitado) {
+        $email = "registro-{$rolSolicitado}@example.com";
+
+        $response = $this->post(route('register'), [
+            'name' => 'Cuenta de prueba',
+            'email' => $email,
             'password' => 'password',
             'password_confirmation' => 'password',
-            'rol' => 'vendedor',
+            'rol' => $rolSolicitado,
         ]);
 
-    $response->assertRedirect(route('sensores.index'));
-    $this->assertAuthenticated();
+        $response->assertRedirect(route('home'));
+        $user = User::where('email', $email)->firstOrFail();
+        expect($user->rol)->toBe('cliente')
+            ->and($user->perfilCliente)->not->toBeNull();
+        $this->assertAuthenticatedAs($user);
+        $this->post(route('logout'));
+    }
+});
+
+test('formulario público de registro no ofrece selector de rol', function () {
+    $this->get(route('register'))
+        ->assertOk()
+        ->assertSee('Crear cuenta de cliente')
+        ->assertDontSee('name="rol"', false)
+        ->assertDontSee('Administrador');
 });
 
 test('administrador conserva su redirección al CRUD después del login', function () {

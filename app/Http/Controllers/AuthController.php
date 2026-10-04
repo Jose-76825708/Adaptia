@@ -66,45 +66,29 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'rol' => ['required', 'string', 'in:cliente,vendedor,administrador'],
         ]);
 
         $user = User::create([
             'name' => $validar_datos['name'],
             'email' => $validar_datos['email'],
             'password' => Hash::make($validar_datos['password']),
-            'rol' => $validar_datos['rol'],
+            'rol' => 'cliente',
         ]);
 
-        // Si el usuario es cliente, crear automáticamente su perfil vacío
-        if ($user->rol === 'cliente') {
-            PerfilCliente::create([
-                'user_id' => $user->id,
-                'tamaño_adulto' => null,
-                'luz_requerida' => null,
-                'toxicidad' => false,
-                'nivel_cuidado' => null,
-                'frecuencia_riego' => null,
-                'tipo_ambiente' => null,
-                'estetica' => null,
-            ]);
-        }
+        PerfilCliente::create([
+            'user_id' => $user->id,
+            'tamaño_adulto' => null,
+            'luz_requerida' => null,
+            'toxicidad' => false,
+            'nivel_cuidado' => null,
+            'frecuencia_riego' => null,
+            'tipo_ambiente' => null,
+            'estetica' => null,
+        ]);
 
         Auth::login($user);
 
-        // Redirección según el rol del usuario después del registro
-        if ($user->rol === 'administrador') {
-            return redirect()->intended(route('sensores.index'))
-                ->with('success', 'Cuenta creada exitosamente. Bienvenido a Adaptia.');
-        } elseif ($user->rol === 'cliente') {
-            return redirect()->intended(route('home'))
-                ->with('success', 'Cuenta creada exitosamente. Bienvenido a Adaptia.');
-        } elseif ($user->rol === 'vendedor') {
-            return redirect()->route('sensores.index')
-                ->with('success', 'Cuenta creada exitosamente. Bienvenido a Adaptia.');
-        }
-
-        return redirect()->route('home')
+        return redirect()->intended(route('home'))
             ->with('success', 'Cuenta creada exitosamente. Bienvenido a Adaptia.');
     }
 

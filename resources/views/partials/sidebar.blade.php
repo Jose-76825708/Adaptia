@@ -7,6 +7,15 @@
 
     <div>
         <ul class="flex flex-col gap-8 p-3 text-[white]">
+            @if (auth()->user()->rol === 'administrador')
+                <li
+                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] hover:bg-[#6eab26] transition duration-300 cursor-pointer">
+                    <a class="flex w-full h-full items-center gap-3" href="{{ route('personal.create') }}">
+                        <img class="w-5 h-auto" src="{{ asset('images/placeholder-user.png') }}" alt="">
+                        Personal
+                    </a>
+                </li>
+            @endif
             <li
                 class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
                 <a class="flex w-full h-full items-center gap-3" href="{{ route('tipoPlantas.index') }}"><img class="w-5 h-auto" src="{{ asset('images/tipo-planta.png') }}" alt="">Tipos de plantas</a>

@@ -27,8 +27,8 @@
             <div class="flex flex-col p-12 bg-[#fefdfe] rounded-[30px] shadow-2xl w-full max-w-2xl gap-10 border border-[#ecedea]">
 
                 <div class="flex flex-col items-start text-left gap-3">
-                    <h1 class="text-[#103928] font-bold text-[2.5em]">Unirse a Adaptia</h1>
-                    <p class="text-[#8b8d8f] text-[1.1em]">Crea tu cuenta para empezar a gestionar tu catálogo de plantas y recibir recomendaciones personalizadas.</p>
+                    <h1 class="text-[#103928] font-bold text-[2.5em]">Crear cuenta de cliente</h1>
+                    <p class="text-[#8b8d8f] text-[1.1em]">Regístrate para recibir recomendaciones personalizadas y gestionar tu colección de plantas.</p>
                 </div>
 
                 <form action="{{ route('register') }}" method="POST" class="flex flex-col gap-8">
@@ -71,20 +71,6 @@
                     @error('password')
                         <span class="text-red-500 text-[1em] font-medium">{{ $message }}</span>
                     @enderror
-
-                    <div class="flex flex-col gap-3">
-                        <label for="rol" class="text-[#304e42] font-semibold text-[1.2em]">Tipo de Usuario (Rol)</label>
-                        <select name="rol" id="rol"
-                                class="p-4 bg-[#f3f5f3] border-2 @error('rol') border-red-500 @else border-[#ecedea] @enderror rounded-[12px] outline-none focus:border-[#629f22] transition duration-300 text-[1.1em]" required>
-                            <option value="" disabled selected>Seleccione su rol...</option>
-                            <option value="cliente" {{ old('rol') == 'cliente' ? 'selected' : '' }}>Cliente</option>
-                            <option value="vendedor" {{ old('rol') == 'vendedor' ? 'selected' : '' }}>Vendedor</option>
-                            <option value="administrador" {{ old('rol') == 'administrador' ? 'selected' : '' }}>Administrador</option>
-                        </select>
-                        @error('rol')
-                            <span class="text-red-500 text-[1em] font-medium">{{ $message }}</span>
-                        @enderror
-                    </div>
 
                     <div class="flex justify-center mt-4">
                         <button type="submit"
