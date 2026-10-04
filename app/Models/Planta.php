@@ -10,7 +10,31 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Planta extends Model
 {
     use HasFactory;
-    protected $fillable = ['tipo_planta_id','nombre','descripcion','imagen','luz_requerida','frecuencia_riego','tamaño_adulto','nivel_cuidado','tipo_ambiente','toxicidad','estetica','precio','stock_actual','stock_minimo'];
+
+    protected $fillable = [
+        'tipo_planta_id',
+        'nombre',
+        'descripcion',
+        'imagen',
+        'luz_requerida',
+        'frecuencia_riego',
+        'tamaño_adulto',
+        'nivel_cuidado',
+        'tipo_ambiente',
+        'toxicidad',
+        'estetica',
+        'precio',
+        'stock_actual',
+        'stock_minimo',
+        'humedad_suelo_min',
+        'humedad_suelo_max',
+        'temperatura_min',
+        'temperatura_max',
+        'humedad_ambiental_min',
+        'humedad_ambiental_max',
+        'luz_min',
+        'luz_max',
+    ];
 
     public function tipoPlanta(): BelongsTo
     {

@@ -170,6 +170,8 @@
                         </div>
                     </div>
 
+                    @include('plantas.partials.parametros-monitoreo')
+
                     <!-- SECCIÓN 3: GESTIÓN DE INVENTARIO -->
                     <div class="flex flex-col gap-6">
                         <div class="flex items-center gap-3 border-b border-[#ecedea] pb-2">

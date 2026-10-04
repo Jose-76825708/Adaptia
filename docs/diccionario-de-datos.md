@@ -12,10 +12,14 @@ Almacena las especificaciones biológicas, ambientales y comerciales de cada esp
 | precio | DECIMAL(8,2) | Sí | - | Precio de venta en moneda local. Categorizado por rangos de accesibilidad (< Rp. 100,000, 100k-500k, >500k). | Art. 2 |
 | dificultad_cuidado | ENUM | Sí | - | Nivel de mantenimiento requerido: 'easy' (Fácil) o 'hard' (Complejo). | Art. 2 y Art. 5 |
 | requerimiento_luz | ENUM | Sí | - | Tolerancia lumínica mínima: 'low' (Baja/Sombra), 'medium' (Media/Indirecta), 'high' (Alta/Sol directo). | Art. 5 y Art. 6 |
-| humedad_suelo_min | FLOAT | Sí | - | Umbral mínimo de humedad del sustrato (%) antes de activar alerta de riego. | Art. 7 y Art. 8 |
-| humedad_suelo_max | FLOAT | Sí | - | Límite superior óptimo de humedad en el sustrato (capacidad de campo). | Art. 7 y Art. 8 |
-| temperatura_min | FLOAT | Sí | - | Temperatura ambiental mínima tolerada (°C) sin presentar estrés térmico. | Art. 1 y Art. 7 |
-| temperatura_max | FLOAT | Sí | - | Temperatura ambiental máxima tolerada (°C). | Art. 1 y Art. 7 |
+| humedad_suelo_min | DECIMAL(8,2) | No | - | Umbral mínimo de humedad del sustrato (%) antes de activar alerta de riego; pendiente de configurar por especie. | Art. 7 y Art. 8 |
+| humedad_suelo_max | DECIMAL(8,2) | No | - | Límite superior de humedad en el sustrato (%); pendiente de configurar por especie. | Art. 7 y Art. 8 |
+| temperatura_min | DECIMAL(8,2) | No | - | Temperatura ambiental mínima tolerada (°C), pendiente de configurar por especie. | Art. 1 y Art. 7 |
+| temperatura_max | DECIMAL(8,2) | No | - | Temperatura ambiental máxima tolerada (°C), pendiente de configurar por especie. | Art. 1 y Art. 7 |
+| humedad_ambiental_min | DECIMAL(8,2) | No | - | Umbral mínimo de humedad relativa ambiental (%), para comparar con las lecturas del DHT22. | Fase 4 IoT |
+| humedad_ambiental_max | DECIMAL(8,2) | No | - | Umbral máximo de humedad relativa ambiental (%), para comparar con las lecturas del DHT22. | Fase 4 IoT |
+| luz_min | DECIMAL(8,2) | No | - | Iluminación mínima de referencia en lux para la especie, medida por el BH1750. | Fase 4 IoT |
+| luz_max | DECIMAL(8,2) | No | - | Iluminación máxima de referencia en lux para la especie, medida por el BH1750. | Fase 4 IoT |
 | es_toxica | BOOLEAN | Sí | - | Indica si la especie es nociva o venenosa para niños o mascotas (true/false). | Art. 5 |
 | beneficio_principal | VARCHAR(100) | No | - | Propósito de la planta: 'purificacion_aire', 'decoracion', 'resistencia'. | Art. 5 |
 | tamano | ENUM | Sí | - | Porte físico del espécimen: 'small' (Pequeña), 'medium' (Mediana), 'big' (Grande). | Art. 2 |

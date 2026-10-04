@@ -52,6 +52,14 @@ entity "plantas" as plantas {
   stock_actual : integer
   stock_minimo : integer
   precio : decimal
+  humedad_suelo_min : decimal (nullable)
+  humedad_suelo_max : decimal (nullable)
+  temperatura_min : decimal (nullable)
+  temperatura_max : decimal (nullable)
+  humedad_ambiental_min : decimal (nullable)
+  humedad_ambiental_max : decimal (nullable)
+  luz_min : decimal (nullable)
+  luz_max : decimal (nullable)
 }
 
 ' ---- Capa 3: Ventas ----
@@ -87,6 +95,7 @@ entity "sensores" as sensores {
   * id : bigint <<PK>>
   --
   identificador_fisico : string
+  token_hash : string (nullable, unique)
   estado : enum(activo, inactivo)
 }
 

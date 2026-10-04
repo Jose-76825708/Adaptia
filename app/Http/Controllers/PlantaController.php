@@ -49,8 +49,8 @@ class PlantaController extends Controller
             'stock_actual' => 'required|integer|min:0',
             'stock_minimo' => 'required|integer|min:0',
             'es_toxica' => 'nullable',
-            'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
+            'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ] + $this->parametrosMonitoreoRules());
 
         // Manejo del checkbox es_toxica -> toxicidad en DB
         $validar_datos['toxicidad'] = $request->has('es_toxica') ? 1 : 0;
@@ -96,8 +96,8 @@ class PlantaController extends Controller
             'stock_actual' => 'required|integer|min:0',
             'stock_minimo' => 'required|integer|min:0',
             'es_toxica' => 'nullable',
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ] + $this->parametrosMonitoreoRules());
 
         // Manejo del checkbox es_toxica -> toxicidad en DB
         $validar_datos['toxicidad'] = $request->has('es_toxica') ? 1 : 0;
@@ -124,5 +124,19 @@ class PlantaController extends Controller
         $this->plantaService->deletePlanta($id);
 
         return redirect()->route('plantas.index');
+    }
+
+    private function parametrosMonitoreoRules(): array
+    {
+        return [
+            'humedad_suelo_min' => 'nullable|required_with:humedad_suelo_max|numeric|between:0,100|lte:humedad_suelo_max',
+            'humedad_suelo_max' => 'nullable|required_with:humedad_suelo_min|numeric|between:0,100|gte:humedad_suelo_min',
+            'temperatura_min' => 'nullable|required_with:temperatura_max|numeric|between:-40,80|lte:temperatura_max',
+            'temperatura_max' => 'nullable|required_with:temperatura_min|numeric|between:-40,80|gte:temperatura_min',
+            'humedad_ambiental_min' => 'nullable|required_with:humedad_ambiental_max|numeric|between:0,100|lte:humedad_ambiental_max',
+            'humedad_ambiental_max' => 'nullable|required_with:humedad_ambiental_min|numeric|between:0,100|gte:humedad_ambiental_min',
+            'luz_min' => 'nullable|required_with:luz_max|numeric|between:0,65535|lte:luz_max',
+            'luz_max' => 'nullable|required_with:luz_min|numeric|between:0,65535|gte:luz_min',
+        ];
     }
 }

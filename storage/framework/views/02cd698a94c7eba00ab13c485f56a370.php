@@ -310,6 +310,8 @@ unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
 
+                    <?php echo $__env->make('plantas.partials.parametros-monitoreo', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
                     <!-- SECCIÓN 3: GESTIÓN DE INVENTARIO -->
                     <div class="flex flex-col gap-6">
                         <div class="flex items-center gap-3 border-b border-[#ecedea] pb-2">
