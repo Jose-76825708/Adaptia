@@ -165,79 +165,19 @@
                 Actualizar mi perfil <img class="h-4 w-4 brightness-0 invert" src="<?php echo e(asset('images/refresh.png')); ?>" alt="">
             </a>
         </section>
+    <?php endif; ?>
 
         <!-- Sección de Sensores -->
-        <section class="reveal">
-            <?php
-                // Intentamos obtener los sensores del usuario con sus lecturas más recientes
-                $sensoresConLecturas = collect();
-                try {
-                    // Obtener ventas del usuario
-                    $ventas = Auth::user()->ventas ?? collect();
-
-                    // Obtener plantas vendidas de esas ventas
-                    $plantasVendidas = $ventas->flatMap(function($venta) {
-                        return $venta->plantas_vendidas ?? collect();
-                    }) ?? collect();
-
-                    // Filtrar solo aquellas plantas vendidas que tienen sensor asignado
-                    $plantasConSensor = $plantasVendidas->filter(function($plantaVendida) {
-                        return !is_null($plantaVendida->sensor_id);
-                    });
-
-                    // Para cada planta con sensor, obtener el sensor y su última lectura
-                    foreach ($plantasConSensor as $plantaVendida) {
-                        $sensor = $plantaVendida->sensor ?? null;
-                        $ultimaLectura = $plantaVendida->lecturas_sensores
-                                                ->sortByDesc('fecha_hora')
-                                                ->first() ?? null;
-
-                        if ($sensor && $ultimaLectura) {
-                            $sensoresConLecturas->push([
-                                'sensor' => $sensor,
-                                'lectura' => $ultimaLectura,
-                                'planta_vendida' => $plantaVendida
-                            ]);
-                        }
-                    }
-                } catch (\Exception $e) {
-                    // Si hay algún error en las relaciones, continuar con colección vacía
-                    $sensoresConLecturas = collect();
-                }
-            ?>
-
-            <?php if($sensoresConLecturas->isNotEmpty()): ?>
+        <section id="mis-sensores" class="reveal">
+            <?php if($sensoresAsignados->isNotEmpty()): ?>
                 <div class="mb-6">
-                    <p class="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#7a965f]">Monitoreo</p>
-                    <h2 class="text-2xl font-bold tracking-tight text-[#0f3c2b] sm:text-3xl">Tus sensores activos</h2>
-                    <p class="mt-2 text-base text-[#718071]">Consulta las condiciones recientes de tus plantas.</p>
+                    <p class="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-[#7a965f]">Dispositivos</p>
+                    <h2 class="text-2xl font-bold tracking-tight text-[#0f3c2b] sm:text-3xl">Tus sensores asignados</h2>
+                    <p class="mt-2 text-base text-[#718071]">Aquí aparecerán las lecturas cuando los sensores comiencen a reportarlas.</p>
                 </div>
 
                 <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
-                    <?php $__currentLoopData = $sensoresConLecturas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <?php
-                            $sensor = $item['sensor'];
-                            $lectura = $item['lectura'];
-                            $plantaVendida = $item['planta_vendida'];
-
-                            // Determinar estado basado en los valores (valores de ejemplo, ajustar según rangos reales)
-                            $humedad = $lectura->humedad ?? 0;
-                            $temperatura = $lectura->temperatura ?? 0;
-
-                            // Lógica simple de estado (en producción esto sería más sofisticado)
-                            $estadoTexto = 'Normal';
-                            $estadoClase = 'bg-[#10b981] text-white'; // verde
-
-                            if ($humedad < 30 || $humedad > 80) {
-                                $estadoTexto = 'Humedad fuera de rango';
-                                $estadoClase = 'bg-[#f97316] text-white'; // naranja
-                            }
-
-                            if ($temperatura < 10 || $temperatura > 30) {
-                                $estadoTexto = 'Temperatura fuera de rango';
-                                $estadoClase = 'bg-[#ef4444] text-white'; // rojo
-                            }
-                        ?>
+                    <?php $__currentLoopData = $sensoresAsignados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $plantaVendida): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="rounded-3xl border border-[#e5ebdf] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-7">
                             <div class="mb-5 flex items-center justify-between gap-4">
                                 <div class="flex min-w-0 items-center gap-3">
@@ -245,39 +185,24 @@
                                         <img class="h-6 w-6" src="<?php echo e(asset('images/sensor.png')); ?>" alt="">
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="text-xs font-bold uppercase tracking-wider text-[#82907e]">Sensor conectado</p>
+                                        <p class="text-xs font-bold uppercase tracking-wider text-[#82907e]">Sensor asignado</p>
                                         <h3 class="truncate font-bold text-[#0f3c2b]">
-                                            #<?php echo e($sensor->identificador_fisico ?? 'N/A'); ?>
+                                            #<?php echo e($plantaVendida->sensor->identificador_fisico); ?>
 
                                         </h3>
                                     </div>
                                 </div>
-                                <span class="shrink-0 rounded-full px-3 py-1.5 text-xs font-bold <?php echo e($estadoClase); ?>">
-                                    <?php echo e($estadoTexto); ?>
-
+                                <span class="shrink-0 rounded-full bg-[#eff6e8] px-3 py-1.5 text-xs font-bold text-[#52752d]">
+                                    Lecturas pendientes
                                 </span>
                             </div>
 
                             <div class="mb-5 flex flex-col gap-2 rounded-2xl bg-[#f7f9f5] px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
                                 <span class="font-medium text-[#718071]">Planta asociada</span>
-                                <span class="font-semibold text-[#34533b]"><?php echo e($plantaVendida->planta->nombre ?? 'Planta desconocida'); ?></span>
+                                <span class="font-semibold text-[#34533b]"><?php echo e($plantaVendida->venta->planta->nombre ?? 'Planta no disponible'); ?></span>
                             </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="rounded-2xl border border-[#e8ede4] bg-white p-4">
-                                    <p class="text-xs font-semibold uppercase tracking-wider text-[#82907e]">Humedad</p>
-                                    <p class="mt-2 text-3xl font-bold tracking-tight text-[#0f3c2b]"><?php echo e(number_format($humedad, 1)); ?><span class="text-lg text-[#7a965f]">%</span></p>
-                                </div>
-                                <div class="rounded-2xl border border-[#e8ede4] bg-white p-4">
-                                    <p class="text-xs font-semibold uppercase tracking-wider text-[#82907e]">Temperatura</p>
-                                    <p class="mt-2 text-3xl font-bold tracking-tight text-[#0f3c2b]"><?php echo e(number_format($temperatura, 1)); ?><span class="text-lg text-[#7a965f]">°C</span></p>
-                                </div>
-                            </div>
-                            <div class="mt-5 flex flex-col gap-3 border-t border-[#edf1e9] pt-4 sm:flex-row sm:items-center sm:justify-between">
-                                <p class="text-xs text-[#82907e]">Última lectura: <?php echo e($lectura->fecha_hora ? $lectura->fecha_hora->format('d/m H:i') : 'Reciente'); ?></p>
-                                <a href="<?php echo e(route('sensores.index')); ?>"
-                                   class="font-semibold text-[#608d2e] transition hover:text-[#416d1e]">
-                                    Ver todos mis sensores <span aria-hidden="true">→</span>
-                                </a>
+                            <div class="rounded-2xl border border-dashed border-[#dce9d0] bg-[#f7f9f5] p-4 text-sm text-[#718071]">
+                                Aún no hay lecturas disponibles para este sensor.
                             </div>
                         </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -291,7 +216,7 @@
                     <div>
                         <h3 class="text-xl font-bold text-[#0f3c2b]">Aún no tienes sensores asignados</h3>
                         <p class="mx-auto mt-2 max-w-xl text-sm leading-6 text-[#718071]">
-                            Cuando tengas sensores vinculados a tus plantas, podrás consultar aquí sus lecturas y condiciones.
+                            Cuando se asigne un sensor a una de tus plantas, aparecerá aquí junto con sus lecturas disponibles.
                         </p>
                     </div>
                     <a href="<?php echo e(route('catalogo.plantas.index')); ?>"
@@ -300,7 +225,7 @@
                     </a>
                 </div>
             <?php endif; ?>
-    <?php endif; ?>
+        </section>
 
     <!-- Recomendaciones personalizadas -->
     <section class="reveal">
@@ -397,13 +322,13 @@
             </a>
 
             <!-- Mis sensores -->
-            <a href="<?php echo e(route('sensores.index')); ?>"
+            <a href="#mis-sensores"
                class="group flex min-h-48 flex-col rounded-2xl border border-[#e5ebdf] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
                 <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
                     <img class="h-6 w-6" src="<?php echo e(asset('images/sensores.png')); ?>" alt="">
                 </div>
                 <span class="font-bold text-[#0f3c2b]">Mis sensores</span>
-                <span class="mt-1 text-sm leading-5 text-[#718071]">Monitorea tus sensores</span>
+                <span class="mt-1 text-sm leading-5 text-[#718071]">Consulta los sensores asignados a tus plantas</span>
                 <span class="mt-auto pt-4 text-sm font-semibold text-[#608d2e]">Ver sensores <span aria-hidden="true">→</span></span>
             </a>
 

@@ -35,8 +35,12 @@ class HomeController extends Controller
 
             // Generar recomendaciones usando el servicio (si tiene perfil) o array vacío (si no tiene)
             $recomendaciones = $perfil ? $this->recomendacionService->generarRecomendaciones($perfil->toArray()) : [];
+            $sensoresAsignados = $user->plantasVendidas()
+                ->with(['sensor', 'venta.planta'])
+                ->whereNotNull('sensor_id')
+                ->get();
 
-            return view('home.client', compact('perfil', 'recomendaciones'));
+            return view('home.client', compact('perfil', 'recomendaciones', 'sensoresAsignados'));
         }
 
         // Para otros roles mostrar la landing page pública.
