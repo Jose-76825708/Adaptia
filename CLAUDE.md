@@ -27,14 +27,14 @@ adelantarlo?") en vez de simplemente ejecutarlo.
 
 **Fase actual: FASE 1 (Administrador) (CERRADO)**
 
-### FASE 1 — Administrador
+### FASE 1 — Administrador (FINALIZADO)
 - [x] CRUD `tipos_planta`
 - [x] CRUD `plantas`
 - [x] CRUD `movimientos_inventario` (entradas/salidas de stock)
 - [x] Alerta de stock bajo por especie (RF-12)
 - [x] CRUD `sensores` (registrar sensores disponibles antes de asignarlos)
 
-### FASE 2 — Cliente
+### FASE 2 — Cliente  (FINALIZADO)
 - [x] Login/registro con rol
 - [x] `perfiles_cliente` (edición de perfil - base implementada; se mejorará a wizard animado integrado en home)
 - [X] Integrar `RecomendacionService` en la vista pública (home) para mostrar ranking real de plantas
