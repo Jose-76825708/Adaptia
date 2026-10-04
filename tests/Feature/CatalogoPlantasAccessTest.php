@@ -54,3 +54,30 @@ test('solo el cliente puede acceder a la ruta de catálogo de cliente', function
             ->assertForbidden();
     }
 });
+
+test('vendedor no puede acceder a vistas o acciones exclusivas del cliente', function () {
+    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+
+    $this->actingAs($vendedor);
+
+    foreach (['perfil.edit', 'historial-alertas'] as $routeName) {
+        $this->get(route($routeName))->assertForbidden();
+    }
+
+    $this->post(route('perfil.update'), [
+        'tamaño_adulto' => 'mediana',
+        'luz_requerida' => 'media',
+        'frecuencia_riego' => 'semanal',
+        'tipo_ambiente' => 'interiores',
+        'nivel_cuidado' => 'principiante',
+        'estetica' => 'follaje',
+    ])->assertForbidden();
+});
+
+test('vendedor que visita home vuelve al punto de entrada administrativo', function () {
+    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+
+    $this->actingAs($vendedor)
+        ->get(route('home'))
+        ->assertRedirect(route('sensores.index'));
+});

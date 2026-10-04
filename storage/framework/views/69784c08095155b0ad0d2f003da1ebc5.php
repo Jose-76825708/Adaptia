@@ -28,46 +28,75 @@
             </div>
         </section>
 
-        <section class="flex p-8 bg-[#fefdfe] text-[#304e42] rounded-[10px] shadow-xl">
-            <table class="w-full">
-                <thead class="bg-[#f3f5f3] text-left">
-                    <th class="text-center rounded-tl-[20px] w-20 p-4">Id</th>
-                    <th class="p-4 w-190">Identificador Físico</th>
-                    <th class="p-4">Estado</th>
-                    <th class="rounded-tr-[20px] w-100 p-4">Acciones</th>
-                </thead>
-                <tbody>
-                    <?php $__currentLoopData = $sensores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sensor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <tr class="border-t-2 border-[#c2c4c7]">
-                            <td class="p-4 font-bold text-center"><?php echo e($sensor->id); ?></td>
-                            <td class="p-4"><?php echo e($sensor->identificador_fisico); ?></td>
-                            <td class="p-4">
-                                <?php if($sensor->estado === 'activo'): ?>
-                                    <span class="px-3 py-1 bg-[#d4edda] text-[#155724] rounded-full text-[0.9em]">Activo</span>
-                                <?php else: ?>
-                                    <span class="px-3 py-1 bg-[#f8d7da] text-[#721c24] rounded-full text-[0.9em]">Inactivo</span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="flex gap-6 p-4">
-                                <a class="flex flex-1 items-center justify-center gap-3 bg-[#f5f9f0] py-2 text-[#77a856] font-bold rounded-[10px] hover:scale-110 transition duration-300"
-                                    href="<?php echo e(route('sensores.edit', $sensor->id)); ?>"><img class="w-[10%] h-auto"
-                                        src="<?php echo e(asset('images/editar.png')); ?>" alt=""> Editar</a>
-                                <form action="<?php echo e(route('sensores.destroy', $sensor->id)); ?>" method="POST"
-                                    class="flex flex-1">
-                                    <?php echo csrf_field(); ?>
-                                    <?php echo method_field('DELETE'); ?>
-                                    <button type="submit"
-                                        class="flex flex-1 items-center justify-center gap-3 bg-[#fdebeb] py-2 text-[#f06f73] font-bold rounded-[10px] hover:scale-110 transition duration-300">
-                                        <img class="w-[10%] h-auto" src="<?php echo e(asset('images/eliminar.png')); ?>"
-                                            alt=""> Eliminar
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        <?php if(session('success')): ?>
+            <div class="p-4 bg-[#d4edda] text-[#155724] border border-[#c3e6cb] rounded-[10px]" role="status">
+                <?php echo e(session('success')); ?>
 
-                </tbody>
-            </table>
+            </div>
+        <?php endif; ?>
+
+        <?php if($errors->any()): ?>
+            <div class="p-4 bg-[#f8d7da] text-[#721c24] border border-[#f5c6cb] rounded-[10px]" role="alert">
+                <p class="font-bold">No se pudo completar la operación:</p>
+                <ul class="list-disc pl-6">
+                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <li><?php echo e($error); ?></li>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+
+        <section class="flex p-8 bg-[#fefdfe] text-[#304e42] rounded-[10px] shadow-xl">
+            <div class="w-full overflow-x-auto">
+                <table class="w-full min-w-[640px]">
+                    <thead class="bg-[#f3f5f3] text-left">
+                        <tr>
+                            <th class="text-center rounded-tl-[20px] w-20 p-4">Id</th>
+                            <th class="p-4">Identificador Físico</th>
+                            <th class="p-4">Estado</th>
+                            <th class="rounded-tr-[20px] p-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $__empty_1 = true; $__currentLoopData = $sensores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sensor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <tr class="border-t-2 border-[#c2c4c7]">
+                                <td class="p-4 font-bold text-center"><?php echo e($sensor->id); ?></td>
+                                <td class="p-4"><?php echo e($sensor->identificador_fisico); ?></td>
+                                <td class="p-4">
+                                    <?php if($sensor->estado === 'activo'): ?>
+                                        <span class="px-3 py-1 bg-[#d4edda] text-[#155724] rounded-full text-[0.9em]">Activo</span>
+                                    <?php else: ?>
+                                        <span class="px-3 py-1 bg-[#f8d7da] text-[#721c24] rounded-full text-[0.9em]">Inactivo</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="flex gap-6 p-4">
+                                    <a class="flex flex-1 items-center justify-center gap-3 bg-[#f5f9f0] py-2 text-[#77a856] font-bold rounded-[10px] hover:scale-110 transition duration-300"
+                                       href="<?php echo e(route('sensores.edit', $sensor->id)); ?>">
+                                        <img class="w-[10%] h-auto" src="<?php echo e(asset('images/editar.png')); ?>" alt="">
+                                        Editar
+                                    </a>
+                                    <form action="<?php echo e(route('sensores.destroy', $sensor->id)); ?>" method="POST" class="flex flex-1">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
+                                        <button type="submit"
+                                                onclick="return confirm('¿Estás seguro de eliminar este sensor?');"
+                                                class="flex flex-1 items-center justify-center gap-3 bg-[#fdebeb] py-2 text-[#f06f73] font-bold rounded-[10px] hover:scale-110 transition duration-300">
+                                            <img class="w-[10%] h-auto" src="<?php echo e(asset('images/eliminar.png')); ?>" alt="">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr>
+                                <td colspan="4" class="p-8 text-center text-[#8b8d8f]">
+                                    No hay sensores registrados todavía.
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
     </main>

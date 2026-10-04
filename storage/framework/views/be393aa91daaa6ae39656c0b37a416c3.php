@@ -1,4 +1,4 @@
-<aside class="flex flex-1 flex-col items-left gap-15 p-2 bg-[#013623] h-full">
+<aside class="sticky top-0 flex h-screen min-h-screen flex-1 flex-col items-left gap-15 overflow-y-auto p-2 bg-[#013623]">
     <div class="flex items-center justify-center pt-8">
 
         <img src="<?php echo e(asset('images/logotipo_blanco.png')); ?>" class="w-[80%] h-auto" alt="logotipo de adaptia">
@@ -22,6 +22,22 @@
                     Movimientos de Inventario
                 </a>
             </li>
+            <?php if(auth()->user()->rol === 'vendedor'): ?>
+                <li
+                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] hover:bg-[#6eab26] transition duration-300 cursor-pointer">
+                    <a class="flex w-full h-full items-center gap-3" href="<?php echo e(route('ventas.index')); ?>">
+                        <img class="w-5 h-auto" src="<?php echo e(asset('images/inventario.png')); ?>" alt="">
+                        Ventas
+                    </a>
+                </li>
+                <li
+                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] hover:bg-[#6eab26] transition duration-300 cursor-pointer">
+                    <a class="flex w-full h-full items-center gap-3" href="<?php echo e(route('plantas-vendidas.index')); ?>">
+                        <img class="w-5 h-auto" src="<?php echo e(asset('images/sensores.png')); ?>" alt="">
+                        Asignar sensores
+                    </a>
+                </li>
+            <?php endif; ?>
             <li
                 class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
                 <a class="flex w-full h-full items-center gap-3" href="<?php echo e(route('sensores.index')); ?>">

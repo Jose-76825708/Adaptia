@@ -25,7 +25,7 @@ por José. Si te pido algo que pertenece a una fase posterior a la actual,
 avísame antes de hacerlo ("esto es de una fase posterior, ¿seguro quieres
 adelantarlo?") en vez de simplemente ejecutarlo.
 
-**Fase actual: FASE 1 (Administrador) (CERRADO)**
+**Fase actual: FASE 3 (Vendedor)**
 
 ### FASE 1 — Administrador (FINALIZADO)
 - [x] CRUD `tipos_planta`
@@ -54,10 +54,10 @@ adelantarlo?") en vez de simplemente ejecutarlo.
 - **Modificaciones de header/footer**: Cualquier cambio en el header o footer debe realizarse en el layout compartido (`resources/views/layouts/app.blade.php`) para que se refleje automáticamente en todas las vistas
 - **Animaciones y diseño**: Implementado siguiendo el estilo de la landing page con clases "reveal" para animaciones de scroll, efectos hover (`hover:scale-110`) y transiciones suaves (`transition duration-300`)
 
-### FASE 3 — Vendedor
-- [ ] Login de vendedor (mismo sistema, distinto rol)
-- [ ] Registrar venta (`ventas`) → descuenta stock automáticamente
-- [ ] Asignar sensor a `plantas_vendidas`
+### FASE 3 — Vendedor (Finalizado)
+- [X] Login de vendedor (mismo sistema, distinto rol)
+- [X] Registrar venta (`ventas`) → descuenta stock automáticamente
+- [X] Asignar sensor a `plantas_vendidas`
 
 ### FASE 4 — Monitoreo IoT
 - [ ] Endpoint `POST /api/lecturas` (recibe JSON del ESP32, valida, guarda)

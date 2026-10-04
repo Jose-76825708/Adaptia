@@ -24,6 +24,10 @@ class HomeController extends Controller
 
         $user = Auth::user();
 
+        if ($user->rol === 'vendedor') {
+            return redirect()->route('sensores.index');
+        }
+
         // Si es cliente, mostrar dashboard personalizado
         if ($user->rol === 'cliente') {
             // Obtener o crear el perfil del cliente
@@ -35,8 +39,7 @@ class HomeController extends Controller
             return view('home.client', compact('perfil', 'recomendaciones'));
         }
 
-        // Para otros roles (admin, vendedor, etc.) mostrar landing page por ahora
-        // Esto cambiará cuando se implementen sus respectivas fases
+        // Para otros roles mostrar la landing page pública.
         return view('home');
     }
 

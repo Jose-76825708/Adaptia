@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Sensor;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class SensorService
 {
@@ -63,7 +65,18 @@ class SensorService
      */
     public function deleteSensor(string $id): bool
     {
-        $sensor = $this->getSensorById($id);
-        return $sensor->delete();
+        return DB::transaction(function () use ($id) {
+            $sensor = Sensor::query()
+                ->lockForUpdate()
+                ->findOrFail($id);
+
+            if ($sensor->plantaVendida()->exists()) {
+                throw ValidationException::withMessages([
+                    'sensor' => 'No se puede eliminar un sensor asignado a una planta vendida. Puedes desactivarlo para conservar su historial.',
+                ]);
+            }
+
+            return $sensor->delete();
+        });
     }
 }

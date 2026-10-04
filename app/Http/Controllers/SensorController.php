@@ -35,7 +35,8 @@ class SensorController extends Controller
 
         $this->service->createSensor($validar_datos);
 
-        return redirect()->route('sensores.index');
+        return redirect()->route('sensores.index')
+            ->with('success', 'Sensor creado correctamente.');
     }
 
     public function edit(string $id)
@@ -54,13 +55,15 @@ class SensorController extends Controller
 
         $this->service->updateSensor($id, $validar_datos);
 
-        return redirect()->route('sensores.index');
+        return redirect()->route('sensores.index')
+            ->with('success', 'Sensor actualizado correctamente.');
     }
 
     public function destroy(string $id)
     {
         $this->service->deleteSensor($id);
 
-        return redirect()->route('sensores.index');
+        return redirect()->route('sensores.index')
+            ->with('success', 'Sensor eliminado correctamente.');
     }
 }

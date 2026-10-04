@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Planta extends Model
 {
@@ -14,5 +15,10 @@ class Planta extends Model
     public function tipoPlanta(): BelongsTo
     {
         return $this->belongsTo(TipoPlanta::class, 'tipo_planta_id');
+    }
+
+    public function ventas(): HasMany
+    {
+        return $this->hasMany(Venta::class, 'planta_id');
     }
 }
