@@ -73,9 +73,14 @@
                                         <form action="{{ route('plantas-vendidas.asignar-sensor', $unidad) }}"
                                               method="POST" class="flex min-w-[260px] flex-col gap-2">
                                             @csrf
+                                            <label for="sensor-select-{{ $unidad->id }}"
+                                                   class="text-sm font-semibold text-[#34533b]">
+                                                Sensor para la unidad #{{ $unidad->id }}
+                                            </label>
                                             <select name="sensor_id"
+                                                    id="sensor-select-{{ $unidad->id }}"
                                                     class="p-3 bg-[#f3f5f3] border border-[#ecedea] rounded-[10px] outline-none focus:border-[#629f22]"
-                                                    aria-label="Sensor para la unidad {{ $unidad->id }}" required>
+                                                    required>
                                                 <option value="" disabled
                                                     @selected(old('sensor_id') === null)>
                                                     Seleccione un sensor...

@@ -128,7 +128,9 @@ test('sidebar muestra el enlace de ventas solo al vendedor', function () {
 
     $this->actingAs($vendedor)
         ->get(route('ventas.index'))
-        ->assertSee(route('ventas.index'));
+        ->assertSee(route('ventas.index'))
+        ->assertSee('type="submit"', false)
+        ->assertSee('Cerrar sesión');
 
     $this->actingAs($administrador)
         ->get(route('plantas.index'))

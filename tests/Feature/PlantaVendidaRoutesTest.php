@@ -75,6 +75,8 @@ test('vendedor ve unidades pendientes, sensores disponibles y enlace de navegaci
         ->assertSee($planta->nombre)
         ->assertSee($cliente->name)
         ->assertSee($sensor->identificador_fisico)
+        ->assertSee('Sensor para la unidad #' . $unidad->id)
+        ->assertSee('id="sensor-select-' . $unidad->id . '"', false)
         ->assertSee(route('plantas-vendidas.index'));
 });
 

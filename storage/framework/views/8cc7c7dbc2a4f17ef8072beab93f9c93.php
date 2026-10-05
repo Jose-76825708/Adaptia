@@ -74,9 +74,15 @@
                                         <form action="<?php echo e(route('plantas-vendidas.asignar-sensor', $unidad)); ?>"
                                               method="POST" class="flex min-w-[260px] flex-col gap-2">
                                             <?php echo csrf_field(); ?>
+                                            <label for="sensor-select-<?php echo e($unidad->id); ?>"
+                                                   class="text-sm font-semibold text-[#34533b]">
+                                                Sensor para la unidad #<?php echo e($unidad->id); ?>
+
+                                            </label>
                                             <select name="sensor_id"
+                                                    id="sensor-select-<?php echo e($unidad->id); ?>"
                                                     class="p-3 bg-[#f3f5f3] border border-[#ecedea] rounded-[10px] outline-none focus:border-[#629f22]"
-                                                    aria-label="Sensor para la unidad <?php echo e($unidad->id); ?>" required>
+                                                    required>
                                                 <option value="" disabled
                                                     <?php if(old('sensor_id') === null): echo 'selected'; endif; ?>>
                                                     Seleccione un sensor...

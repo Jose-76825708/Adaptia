@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const refreshedFragment = documentFragment.getElementById(fragment.id);
 
             if (!(refreshedFragment instanceof HTMLElement)) {
-                throw new Error('La respuesta no contiene el fragmento de monitoreo esperado.');
+                throw new TypeError('La respuesta no contiene el fragmento de monitoreo esperado.');
             }
 
             if (fragment.classList.contains('show')) {

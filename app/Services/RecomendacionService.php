@@ -95,12 +95,12 @@ class RecomendacionService
         ];
     }
 
-    public function calculaScore(Planta $planta, array $perfil_usuario) 
+    public function calculaScore(Planta $planta, array $perfil_usuario)
     {
 
         $ordenes = $this->ordenesDisponibles();
         $categorias = $this->categoriasDisponibles();
-        $pesos = $this->pesosCategoricos(); 
+        $pesos = $this->pesosCategoricos();
         $score = 0;
 
         foreach ($ordenes as $atributo => $orden){
@@ -134,7 +134,7 @@ class RecomendacionService
     
     } //testeado
 
-    public function plantasNoToxicas () 
+    public function plantasNoToxicas ()
     {
         return Planta::where('toxicidad',false)->get();
     }//testead
@@ -151,7 +151,7 @@ class RecomendacionService
 
         }
 
-        $plantas_ordenadas = $plantas->map(function (Planta $planta) use ($perfil_usuario) {
+        return $plantas->map(function (Planta $planta) use ($perfil_usuario) {
             $planta->setAttribute(
                 'compatibilidad_porcentaje',
                 $this->calculaScore($planta, $perfil_usuario) * 100
@@ -162,7 +162,5 @@ class RecomendacionService
         ->sortByDesc('compatibilidad_porcentaje')
         ->take(10)
         ->values();
-
-        return $plantas_ordenadas;
     }
 }

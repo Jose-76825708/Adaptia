@@ -71,14 +71,15 @@
 
         <!-- Logout Card -->
         <div class="mt-4">
-            <form id="logout-form" action="<?php echo e(route('logout')); ?>" method="POST" class="hidden">
+            <form id="logout-form" action="<?php echo e(route('logout')); ?>" method="POST">
                 <?php echo csrf_field(); ?>
+                <button type="submit"
+                        class="flex w-full items-center justify-between p-4 bg-[#014d33] rounded-lg hover:bg-[#015d3c] transition duration-300 text-left">
+                    <span class="text-white">Cerrar sesión</span>
+                    <img class="w-5 h-auto" src="<?php echo e(asset('images/placeholder-logout.png')); ?>" alt="">
+                </button>
             </form>
-            <div class="flex items-center justify-between p-4 bg-[#014d33] rounded-lg hover:bg-[#015d3c] transition duration-300 cursor-pointer"
-                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <span class="text-white">Cerrar sesión</span>
-                <img class="w-5 h-auto" src="<?php echo e(asset('images/placeholder-logout.png')); ?>" alt="Logout">
-            </div>
         </div>
     </div>
-</aside><?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/partials/sidebar.blade.php ENDPATH**/ ?>
+</aside>
+<?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/partials/sidebar.blade.php ENDPATH**/ ?>
