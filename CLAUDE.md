@@ -60,9 +60,9 @@ adelantarlo?") en vez de simplemente ejecutarlo.
 - [X] Asignar sensor a `plantas_vendidas`
 
 ### FASE 4 — Monitoreo IoT
-- [ ] Endpoint `POST /api/lecturas` (recibe JSON del ESP32, valida, guarda)
-- [ ] Evaluación de umbrales + generación de alerta (RF-08, RF-09)
-- [ ] Conectar la alerta a la vista de historial del cliente (Fase 2)
+- [X] Endpoint `POST /api/lecturas` (recibe JSON del ESP32, valida, guarda)
+- [x] Evaluación de umbrales + generación de alerta (RF-08, RF-09)
+- [x] Conectar la alerta a la vista de historial del cliente (Fase 2)
 - [ ] Firmware del ESP32 (en paralelo, no bloquea el backend)
 
 ### FASE 5 — Notificaciones

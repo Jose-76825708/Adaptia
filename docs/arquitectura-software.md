@@ -88,7 +88,7 @@ En el proyecto Adaptia, el proceso amplía su alcance operativo a un modelo de c
 
 **Topología de red y dispositivos en Adaptia:**
 
-- **Capa de dispositivos (Device Layer):** nodos ESP32 ubicados en los hogares de los clientes, equipados con la sonda capacitiva de humedad (GPIO D34), sensor climático DHT22 (GPIO D4), sensor de luz BH1750 por I2C (GPIO D22/D21) y módulo relé de riego (GPIO D14).
+- **Capa de dispositivos (Device Layer):** nodos ESP32 ubicados en los hogares de los clientes, equipados con la sonda capacitiva de humedad (GPIO D34), sensor climático DHT22 (GPIO D4) y sensor de luz BH1750 por I2C (GPIO D22/D21). El nodo mide y transmite datos; el control de relés, bombas, electroválvulas y riego automático queda fuera del alcance.
 - **Servidor web y backend (Cloud Layer):** contenedor Docker con Laravel (PHP 8.2) expuesto en el puerto HTTP 8000.
 - **Servidor de persistencia:** contenedor Docker con MySQL 8.0 en el puerto 3306 para el entorno de producción.
 - **Canal de interconexión:** peticiones HTTP/REST con transmisión de mensajes codificados en formato JSON.
@@ -100,7 +100,7 @@ En el proyecto Adaptia, el proceso amplía su alcance operativo a un modelo de c
 **Módulos de casos de uso en Adaptia (diagrama UML):**
 
 - **Módulo de Recomendación:** registrar perfil del cliente (RF-01), filtrar plantas tóxicas (RF-02), calcular score de compatibilidad (RF-03) y generar ranking de recomendaciones (RF-04).
-- **Módulo de Monitoreo IoT:** recibir lectura de humedad/temperatura (RF-07), evaluar lectura contra umbrales (RF-08), emitir alerta de riego/abono (RF-09) y consultar historial (RF-10).
+- **Módulo de Monitoreo IoT:** recibir lecturas de los sensores (RF-06), evaluar humedad del suelo y microclima contra los rangos de referencia (RF-07 y RF-08), generar alertas informativas específicas sin actuar sobre hardware (RF-09) y consultar el historial (RF-10).
 - **Módulo de Ventas e Inventario:** autenticación de personal (RF-13), gestionar inventario del vivero (RF-11), registrar venta y descontar stock (RF-05), asignar sensor a la planta (RF-06) y notificar stock bajo (RF-12).
 
 ---

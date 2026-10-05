@@ -33,7 +33,7 @@ El sistema **Adaptia** adopta un modelo arquitectónico distribuido e híbrido q
    │    • Sensor Capacitivo de Suelo (GPIO D34)                      │
    │    • Sensor Climático DHT22 (GPIO D4)                           │
    │    • Sensor de Luz Digital BH1750 (I2C GPIO D22/D21)            │
-   │    • Actuador Módulo Relé (GPIO D14)                            │
+   │    • Sin actuadores de riego (fuera del alcance)                │
    └────────────────────────────────────────────────────────────────┘
 
 ```
@@ -70,7 +70,7 @@ Por su parte, en la **Sección "Software Implementation"** de Soibam & Vignesh (
 * **Sensor Capacitivo de Humedad del Suelo (** **GPIO D34** **):** Mide el porcentaje hídrico del sustrato mediante variación capacitiva, evitando la corrosión galvánica[17].
 * **Sensor de Temperatura y Humedad Ambientales DHT22 (** **GPIO D4** **):** Captura el microclima del aire circundante con alta precisión digital[17].
 * **Sensor de Luz Digital BH1750 (** **GPIO D22/SDA** **y** **GPIO D21/SCL** **):** Mide la intensidad lumínica ambiental en luxes vía bus I2C[17].
-* **Módulo Relé (** **GPIO D14** **):** Actuador de salida digital que conmuta el sistema de riego[17].
+* **Actuación física:** No se incluye módulo relé, bomba, electroválvula ni control de riego automático. El ESP32 solo captura y transmite mediciones para que Adaptia genere alertas informativas.
 
 ### **Estructura del Payload JSON Transmitido vía HTTP POST:**
 
@@ -201,7 +201,7 @@ services:
 
 | Capa Tecnológica     | Componentes y Tecnologías                                                                  | Función Principal en Adaptia                                      | Fuente Científica y Ubicación                                                                |
 | -------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **1\. Device Layer** | ESP32, Sonda Capacitiva (`GPIO D34`), DHT22 (`GPIO D4`), BH1750 (`I2C`), Relé (`GPIO D14`) | Captura de parámetros analógicos/digitales y actuación hídrica.   | Méndez-Guzmán et al. (2022, p. 10)[5][13] / Soibam & Vignesh (2025, p. 2028)[15][17] |
+| **1\. Device Layer** | ESP32, Sonda Capacitiva (`GPIO D34`), DHT22 (`GPIO D4`), BH1750 (`I2C`) | Captura y transmisión de parámetros ambientales; sin actuación hídrica. | Méndez-Guzmán et al. (2022, p. 10)[5][13] / Soibam & Vignesh (2025, p. 2028)[15][17] |
 | **2\. Fog Layer**    | Endpoint API Laravel, `FormRequests`, Evaluador de Umbrales                                | Ingesta, sanitización JSON y respuesta `HTTP 422` ante errores.   | Méndez-Guzmán et al. (2022, p. 10)[5][21] / Ilyas et al. (2022, p. 4)[20][22]        |
 | **3\. Cloud Layer**  | Backend Laravel MVC, MySQL, SQLite, Eloquent ORM, Docker Compose                           | Lógica de negocio, recomendación botánica, ORM y contenedores.    | Ilyas et al. (2022, p. 8)[7] / Univ. Continental (2026, p. 31)[10][11]                 |
 | **4\. App Layer**    | Laravel Blade + Livewire, Dashboards interactivos                                          | Visualización reactiva en tiempo real ("Riega hoy") sin recargar. | Méndez-Guzmán et al. (2022, p. 11)[5][30] / Univ. Continental (2026, p. 27)[8]         |

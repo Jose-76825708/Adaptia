@@ -59,6 +59,15 @@ class SensorController extends Controller
             ->with('success', 'Sensor actualizado correctamente.');
     }
 
+    public function generarCredencial(string $id)
+    {
+        $token = $this->service->generarCredencial($id);
+
+        return redirect()->route('sensores.index')
+            ->with('sensor_credencial', $token)
+            ->with('sensor_credencial_id', $id);
+    }
+
     public function destroy(string $id)
     {
         $this->service->deleteSensor($id);

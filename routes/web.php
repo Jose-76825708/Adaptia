@@ -34,6 +34,12 @@ Route::middleware(['auth', 'role:administrador,vendedor'])->group(function () {
     Route::resource('sensores', SensorController::class)->except(['show']);
 });
 
+// Gestión de credenciales IoT exclusiva para administradores.
+Route::middleware(['auth', 'role:administrador'])->group(function () {
+    Route::post('/sensores/{id}/credencial', [SensorController::class, 'generarCredencial'])
+        ->name('sensores.credencial.generar');
+});
+
 // Creación de cuentas de personal exclusiva para administradores.
 Route::middleware(['auth', 'role:administrador'])->group(function () {
     Route::get('/personal/create', [PersonalController::class, 'create'])

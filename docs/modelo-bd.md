@@ -103,8 +103,10 @@ entity "lecturas_sensores" as lecturas_sensores {
   * id : bigint <<PK>>
   --
   * planta_vendida_id : bigint <<FK>>
-  humedad : decimal
+  humedad_suelo : decimal
   temperatura : decimal
+  humedad_ambiental : decimal
+  luz : decimal
   fecha_hora : timestamp
 }
 
@@ -113,8 +115,16 @@ entity "alertas" as alertas {
   * id : bigint <<PK>>
   --
   planta_vendida_id : bigint <<FK>>
-  tipo : enum(riego, abono, stock_bajo)
+  tipo : enum(riego, abono, stock_bajo, cuidado_planta)
+  variable : string (nullable)
+  valor_medido : decimal (nullable)
+  limite : decimal (nullable)
+  rango_minimo : decimal (nullable)
+  rango_maximo : decimal (nullable)
+  direccion : enum(bajo, alto) (nullable)
+  mensaje : text (nullable)
   leida : boolean
+  resuelta_en : timestamp (nullable)
 }
 
 entity "notificaciones" as notificaciones {

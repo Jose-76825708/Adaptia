@@ -20,7 +20,7 @@ La selección de componentes responde a la necesidad de capturar las dimensiones
 - **Humedad del Suelo**: Sensor capacitivo de alta resistencia a la corrosión, conectado al **GPIO D34**.
 - **Temperatura y Humedad Ambiental**: Sensor DHT22 integrado en el **GPIO D4**, seleccionado por su estabilidad térmica en entornos variables.
 - **Luz Ambiental**: Sensor BH1750 operando bajo el protocolo **I2C (SCL en GPIO D22 y SDA en GPIO D21)** para una medición precisa de luxes.
-- **Actuador**: Relé de estado sólido en el **GPIO D14** para el control del sistema hídrico automatizado.
+- **Alcance de actuación física**: No se incluye un relé ni control automatizado de bombas, válvulas o riego. El ESP32 se limita a medir y transmitir las variables ambientales; Adaptia informa al cliente mediante alertas.
 
 ### 2.2. Mecanismo de Telemetría
 

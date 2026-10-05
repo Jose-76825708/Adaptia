@@ -6,6 +6,7 @@ use App\Models\Sensor;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class SensorService
@@ -55,6 +56,21 @@ class SensorService
         $sensor = $this->getSensorById($id);
         $sensor->update($data);
         return $sensor;
+    }
+
+    public function generarCredencial(string $id): string
+    {
+        return DB::transaction(function () use ($id) {
+            $sensor = Sensor::query()
+                ->lockForUpdate()
+                ->findOrFail($id);
+            $token = Str::random(64);
+
+            $sensor->token_hash = hash('sha256', $token);
+            $sensor->save();
+
+            return $token;
+        });
     }
 
     /**

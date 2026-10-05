@@ -76,11 +76,11 @@ Sustento Científico: Los Artículos 7 y 8 respaldan la robustez del monitoreo c
 
 Sustento Científico: Rangos biológicos de operación definidos en los Artículos 7 y 8 para entornos de agricultura de precisión.
 
-**RN-09: Control de Actuación Automatizada** En modo "Auto", el sistema accionará relés (GPIO D14) para activar bombas de agua o válvulas solenoides sin requerir la latencia de la intervención humana.
+**RN-09: Alertas Informativas por Mediciones Fuera de Rango** Adaptia compara las lecturas recibidas con los rangos de referencia configurados para cada especie. Una humedad del suelo inferior al mínimo genera una alerta de tipo "riego"; las demás desviaciones generan una alerta de tipo "cuidado_planta". La alerta identifica la variable, el valor medido, el rango esperado y si la lectura está por debajo o por encima. El sistema no controla relés, bombas, electroválvulas ni riego automático.
 
-- Impacto: Garantiza la supervivencia de la planta durante ausencias prolongadas del usuario.
+- Impacto: Informa al cliente qué condición de cuidado debe revisar; no ejecuta acciones físicas sobre la planta.
 
-Sustento Científico: Arquitectura de actuación basada en los sistemas de control físico descritos en los Artículos 7 y 8.
+Las alertas se deduplican por unidad y variable durante un episodio: las lecturas que mantengan la desviación no crean alertas repetidas; una lectura dentro del rango resuelve el episodio. Si vuelve a salir del rango, se genera una nueva alerta.
 
 ## 4. Validación y Calidad de Software: Reglas de API e Integridad de Datos
 
@@ -116,7 +116,7 @@ Sustento Científico: El Artículo 4 define el formato EPC de 12 bits como el id
 | RN-06 | Telemetría de riego (GPIO D34) | Artículos 6, 7 | Pendiente (Fase 4) |
 | RN-07 | Procesamiento Cortex-M4 (Confort) | Artículos 4, 7, 8 | Pendiente (Fase 4) |
 | RN-08 | Alerta microclima (DHT22/GPIO D4) | Artículos 7, 8 | Pendiente (Fase 4) |
-| RN-09 | Actuación por relé (GPIO D14) | Artículos 7, 8 | Pendiente (Fase 4) |
+| RN-09 | Alertas informativas por mediciones fuera de rango | Rangos IoT por especie | Pendiente (Fase 4) |
 | RN-10 | Sanitización y Log en microSD | Artículos 4, 7 | Pendiente (Fase 4) |
 | RN-11 | Protocolo Heartbeat (Latido) | Artículos 3, 4 | Pendiente (Fase 4) |
 | RN-12 | Identificación EPC de 12 bits (NMIS) | Artículos 3, 4 | Completo |

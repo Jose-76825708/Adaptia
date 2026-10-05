@@ -2,23 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Services\MonitoreoClienteService;
 use App\Services\RecomendacionService;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
     protected $recomendacionService;
 
-    public function __construct(RecomendacionService $recomendacionService)
-    {
+    public function __construct(
+        RecomendacionService $recomendacionService,
+        private readonly MonitoreoClienteService $monitoreoClienteService,
+    ) {
         $this->recomendacionService = $recomendacionService;
     }
 
     public function index()
     {
         // Si no está autenticado, mostrar landing page
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return view('home');
         }
 
@@ -35,10 +37,7 @@ class HomeController extends Controller
 
             // Generar recomendaciones usando el servicio (si tiene perfil) o array vacío (si no tiene)
             $recomendaciones = $perfil ? $this->recomendacionService->generarRecomendaciones($perfil->toArray()) : [];
-            $sensoresAsignados = $user->plantasVendidas()
-                ->with(['sensor', 'venta.planta'])
-                ->whereNotNull('sensor_id')
-                ->get();
+            $sensoresAsignados = $this->monitoreoClienteService->obtenerSensoresAsignados($user);
 
             return view('home.client', compact('perfil', 'recomendaciones', 'sensoresAsignados'));
         }
@@ -52,6 +51,11 @@ class HomeController extends Controller
      */
     public function historialAlertas()
     {
-        return view('home.historial-alertas');
+        $sensoresAsignados = $this->monitoreoClienteService->obtenerSensoresAsignados(
+            Auth::user(),
+            incluirHistorial: true,
+        );
+
+        return view('home.historial-alertas', compact('sensoresAsignados'));
     }
 }

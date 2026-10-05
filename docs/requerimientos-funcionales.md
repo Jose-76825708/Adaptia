@@ -73,17 +73,19 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 **Sustento Científico:** Basado en la arquitectura multisensor del Smart Plant Assistant (ESP32 con DHT22 y BH1750)420 y el sistema IoT con interfaz Blynk324.
 
-### RF-09: Control de Actuación y Riego Automatizado (Relé)
+### RF-09: Generación de Alertas Informativas de Monitoreo
 
-**Descripción:** En macetas o módulos configurados con riego físico automatizado, la detección de humedad por debajo del umbral crítico debe conmutar una salida digital (GPIO D14) conectada a un módulo de relé para activar una minibomba de agua o electroválvula por un tiempo determinado3more_horiz.
+**Descripción:** Adaptia debe generar alertas informativas cuando una lectura de la planta se encuentre fuera de los rangos de referencia configurados para su especie. Una humedad del suelo por debajo del mínimo genera una alerta de tipo "riego"; las demás condiciones fuera de rango generan una alerta de tipo "cuidado_planta". Cada alerta debe identificar la variable afectada, el valor medido, el rango de referencia y si la medición está por debajo o por encima del rango. No se incluye el control de relés, bombas, electroválvulas ni la ejecución de riego automático.
 
-**Sustento Científico:** Implementado y probado con éxito en prototipos IoT para reducir la dependencia de intervención manual3more_horiz.
+**Criterio de aceptación:** Para cada unidad y variable solo debe existir una alerta abierta por episodio fuera de rango. Las lecturas que mantengan la condición no duplican la alerta; una lectura de recuperación la resuelve y, si la variable vuelve a salir del rango, se genera un nuevo episodio.
+
+**Alcance excluido:** El sistema no activa actuadores ni controla físicamente el riego.
 
 ## 4. MÓDULO 3: GESTIÓN DE CATÁLOGO Y TRAZABILIDAD RELACIONAL (GARDENLAND)
 
 ### RF-10: Vista de historial/alertas del cliente
 
-**Descripción:** El sistema debe proporcionar una vista accesible para el cliente autenticado donde pueda consultar el historial de alertas generadas por el monitoreo IoT de sus plantas. Cada alerta debe incluir el tipo de alerta (riego, abono, stock bajo), fecha y hora, estado (leída/no leída) y detalles relevantes. Esta vista puede quedar vacía hasta que exista la Fase 4 de monitoreo IoT.
+**Descripción:** El sistema debe proporcionar una vista accesible para el cliente autenticado donde pueda consultar el historial de alertas generadas por el monitoreo IoT de sus plantas. Cada alerta debe incluir su categoría (riego, cuidado_planta o stock_bajo), la variable afectada, la medición y el rango de referencia, fecha y hora, y su estado (leída/no leída y activa/resuelta). Las alertas son informativas y no activan actuadores físicos.
 
 **Entradas:** N/A (vista de solo lectura).
 
@@ -124,10 +126,10 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 | RF-03 | Ranking y Score Ponderado | Recomendador | Art. 2 (Fauzia et al., 2023: SPSS Conjoint Analysis)1more_horiz | Completo |
 | RF-04 | Entradas Básicas Sin NPK | Recomendador | Art. 1 (Aradea et al., 2023: CNN 1D + Adagrad, 93.64%)14more_horiz | Completo |
 | RF-05 | Emparejamiento "Plant Parents" | Recomendador | Art. 6 (OnePoll: 70% plant parents, 67% reto)1819 | Completo |
-| RF-06 | Recepción JSON y Alerta "Riega Hoy" | Telemetría IoT | Art. 7 (ESP32 GPIO D34)421 y Art. 6 (56% agua)9 | Pendiente (Fase 4) |
-| RF-07 | Estado "Todo Bien" y Microclima | Telemetría IoT | Art. 7 (ESP32 con DHT22/BH1750)420 y Art. 8324 | Pendiente (Fase 4) |
-| RF-08 | Control de Relé y Riego Físico | Telemetría IoT | Art. 7 (Relé GPIO D14)421 y Art. 8 (Válvula solenoide)3 | Pendiente (Fase 4) |
-| RF-09 | Catálogo Unificado Botánico | Base de Datos | Art. 3 (NMIS: gestión relacional unificada)2627 | Pendiente (Fase 4) |
+| RF-06 | Recepción y registro de lecturas JSON | Telemetría IoT | Art. 7 (ESP32 y sensores multisensor) | En progreso (Fase 4) |
+| RF-07 | Evaluación del umbral hídrico | Telemetría IoT | Art. 7 y Art. 6 (necesidad de riego) | Pendiente (Fase 4) |
+| RF-08 | Monitoreo de microclima y estado de la planta | Telemetría IoT | Art. 7 (DHT22/BH1750) y Art. 8 | Pendiente (Fase 4) |
+| RF-09 | Alertas informativas por mediciones fuera de rango | Telemetría IoT | Rangos de referencia configurados por especie | Pendiente (Fase 4) |
 | RF-10 | Vista de historial/alertas del cliente | Base de Datos / Cliente | Art. 326 y Art. 4 (Trazabilidad por id)28 | Pendiente (Fase 2) |
 | RF-11 | Mapeo por planta_id Único | Base de Datos | Art. 3 (NMIS: gestión relacional unificada)2627 | Pendiente (Fase 4) |
 | RF-12 | Alerta de stock bajo por especie | Inventario | Art. 3 y Art. 4 (Stock mínimo y actual) | Completo |

@@ -206,3 +206,73 @@ test('elimina sensor libre y conserva el asignado con un error visible', functio
         ->assertOk()
         ->assertSee('No se puede eliminar un sensor asignado a una planta vendida.');
 });
+
+test('solo el administrador puede generar credenciales y el vendedor conserva acceso al CRUD sin verlas', function () {
+    $sensor = Sensor::create([
+        'identificador_fisico' => 'ESP32-CREDENCIAL-001',
+        'estado' => 'activo',
+    ]);
+    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = User::factory()->create(['rol' => 'cliente']);
+
+    $this->actingAs($vendedor)
+        ->get(route('sensores.index'))
+        ->assertOk()
+        ->assertDontSee('Generar credencial')
+        ->assertDontSee('Renovar credencial');
+
+    $this->post(route('sensores.credencial.generar', $sensor->id))
+        ->assertForbidden();
+
+    expect($sensor->fresh()->token_hash)->toBeNull();
+
+    $this->get(route('sensores.edit', $sensor->id))->assertOk();
+
+    $this->actingAs($cliente)
+        ->post(route('sensores.credencial.generar', $sensor->id))
+        ->assertForbidden();
+
+    expect($sensor->fresh()->token_hash)->toBeNull();
+});
+
+test('administrador genera y renueva credencial mostrando el token solo una vez y guardando solo el hash', function () {
+    $administrador = User::factory()->create(['rol' => 'administrador']);
+    $sensor = Sensor::create([
+        'identificador_fisico' => 'ESP32-CREDENCIAL-002',
+        'estado' => 'activo',
+    ]);
+
+    $this->actingAs($administrador)
+        ->get(route('sensores.index'))
+        ->assertSee('Generar credencial');
+
+    $response = $this->post(route('sensores.credencial.generar', $sensor->id))
+        ->assertRedirect(route('sensores.index'))
+        ->assertSessionHas('sensor_credencial')
+        ->assertSessionHas('sensor_credencial_id', (string) $sensor->id);
+
+    $token = session('sensor_credencial');
+    expect($token)->toBeString()
+        ->and(strlen($token))->toBe(64)
+        ->and($sensor->fresh()->token_hash)->toBe(hash('sha256', $token))
+        ->and($sensor->fresh()->token_hash)->not->toBe($token);
+
+    $this->get(route('sensores.index'))
+        ->assertOk()
+        ->assertSee($token)
+        ->assertSee('Esta clave solo se muestra una vez.');
+
+    $this->get(route('sensores.index'))
+        ->assertOk()
+        ->assertDontSee($token)
+        ->assertSee('Renovar credencial');
+
+    $oldHash = $sensor->fresh()->token_hash;
+    $this->post(route('sensores.credencial.generar', $sensor->id))
+        ->assertRedirect(route('sensores.index'));
+
+    $newToken = session('sensor_credencial');
+    expect($sensor->fresh()->token_hash)->toBe(hash('sha256', $newToken))
+        ->and($sensor->fresh()->token_hash)->not->toBe($oldHash)
+        ->and($newToken)->not->toBe($token);
+});

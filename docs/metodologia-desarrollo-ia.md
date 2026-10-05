@@ -68,7 +68,7 @@ El contexto proporcionado a **Claude Code** incluye el **catálogo comercial de 
 
 Asimismo, se establece el contexto de arquitectura del software, utilizando **Laravel bajo el patrón MVC** y una separación de responsabilidades mediante la capa de servicios, donde se encuentra, por ejemplo, `RecomendacionService`.
 
-También se proporciona información correspondiente al componente IoT, incluyendo la asignación de pines del **ESP32**, como el sensor capacitivo conectado al `GPIO D34`, el sensor DHT22 al `GPIO D4` y el relé al `GPIO D14`.
+También se proporciona información correspondiente al componente IoT y a los pines de los sensores del **ESP32**: el sensor capacitivo conectado al `GPIO D34`, el sensor DHT22 al `GPIO D4` y el sensor BH1750 mediante I2C. El proyecto contempla monitoreo y alertas informativas; no incluye relé ni control automático de riego.
 
 Finalmente, se considera la configuración de comunicación mediante **HTTPS/REST con JSON** y la utilización de **Docker Compose** para la orquestación de los servicios.
 
