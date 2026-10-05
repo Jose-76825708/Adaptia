@@ -219,3 +219,181 @@ test('cliente sin sensores asignados ve el estado vacío aunque tenga una unidad
         ->assertSee('Aún no tienes sensores asignados')
         ->assertDontSee('Esperando lectura');
 });
+
+test('consultas de actualización devuelven solo el fragmento de monitoreo del cliente autenticado', function () {
+    $cliente = User::factory()->create(['rol' => 'cliente']);
+    $otroCliente = User::factory()->create(['rol' => 'cliente']);
+    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $planta = Planta::factory()->create(['nombre' => 'Aloe Vera']);
+    $otraPlanta = Planta::factory()->create(['nombre' => 'Planta privada']);
+    $venta = Venta::create([
+        'user_id' => $cliente->id,
+        'vendedor_id' => $vendedor->id,
+        'planta_id' => $planta->id,
+        'cantidad' => 1,
+    ]);
+    $otraVenta = Venta::create([
+        'user_id' => $otroCliente->id,
+        'vendedor_id' => $vendedor->id,
+        'planta_id' => $otraPlanta->id,
+        'cantidad' => 1,
+    ]);
+    $sensor = Sensor::create([
+        'identificador_fisico' => 'ESP32-POLLING-CLIENTE',
+        'estado' => 'activo',
+        'token_hash' => hash('sha256', 'secreto-privado'),
+    ]);
+    $otroSensor = Sensor::create([
+        'identificador_fisico' => 'ESP32-POLLING-OTRO',
+        'estado' => 'activo',
+    ]);
+    $unidad = PlantaVendida::create([
+        'venta_id' => $venta->id,
+        'user_id' => $cliente->id,
+        'sensor_id' => $sensor->id,
+    ]);
+    $otraUnidad = PlantaVendida::create([
+        'venta_id' => $otraVenta->id,
+        'user_id' => $otroCliente->id,
+        'sensor_id' => $otroSensor->id,
+    ]);
+    LecturaSensor::create([
+        'planta_vendida_id' => $unidad->id,
+        'humedad_suelo' => 18,
+        'temperatura' => 24,
+        'humedad_ambiental' => 50,
+        'luz' => 4000,
+        'fecha_hora' => now(),
+    ]);
+    Alerta::create([
+        'planta_vendida_id' => $unidad->id,
+        'tipo' => 'riego',
+        'variable' => 'humedad_suelo',
+        'mensaje' => 'Alerta privada del cliente.',
+    ]);
+    LecturaSensor::create([
+        'planta_vendida_id' => $otraUnidad->id,
+        'humedad_suelo' => 10,
+        'temperatura' => 20,
+        'humedad_ambiental' => 40,
+        'luz' => 1000,
+        'fecha_hora' => now(),
+    ]);
+    Alerta::create([
+        'planta_vendida_id' => $otraUnidad->id,
+        'tipo' => 'riego',
+        'variable' => 'humedad_suelo',
+        'mensaje' => 'Alerta de otro cliente.',
+    ]);
+
+    $this->actingAs($cliente)
+        ->get(route('cliente.monitoreo.inicio'))
+        ->assertOk()
+        ->assertSee('id="mis-sensores"', false)
+        ->assertSee('data-monitoring-poll-interval="15000"', false)
+        ->assertSee(route('cliente.monitoreo.inicio'), false)
+        ->assertSee('ESP32-POLLING-CLIENTE')
+        ->assertSeeText('18 %')
+        ->assertSee('Alerta privada del cliente.')
+        ->assertDontSee('Recomendaciones para ti')
+        ->assertDontSee('ESP32-POLLING-OTRO')
+        ->assertDontSee('Planta privada')
+        ->assertDontSee('Alerta de otro cliente.')
+        ->assertDontSee(hash('sha256', 'secreto-privado'));
+
+    $this->assertDatabaseCount('lecturas_sensores', 2);
+    $this->assertDatabaseCount('alertas', 2);
+
+    $this->get(route('cliente.monitoreo.historial'))
+        ->assertOk()
+        ->assertSee('id="historial-monitoreo"', false)
+        ->assertSee('data-monitoring-poll-interval="30000"', false)
+        ->assertSee(route('cliente.monitoreo.historial'), false)
+        ->assertSee('ESP32-POLLING-CLIENTE')
+        ->assertSee('Tendencia histórica de humedad del suelo')
+        ->assertSee('Alerta privada del cliente.')
+        ->assertDontSee('Historial y alertas')
+        ->assertDontSee('ESP32-POLLING-OTRO')
+        ->assertDontSee('Planta privada')
+        ->assertDontSee('Alerta de otro cliente.')
+        ->assertDontSee(hash('sha256', 'secreto-privado'));
+
+    $this->assertDatabaseCount('lecturas_sensores', 2);
+    $this->assertDatabaseCount('alertas', 2);
+});
+
+test('consultas de actualización requieren cliente autenticado', function () {
+    $this->get(route('cliente.monitoreo.inicio'))
+        ->assertRedirect(route('login'));
+
+    $administrador = User::factory()->create(['rol' => 'administrador']);
+
+    $this->actingAs($administrador)
+        ->get(route('cliente.monitoreo.inicio'))
+        ->assertForbidden();
+
+    $this->get(route('cliente.monitoreo.historial'))
+        ->assertForbidden();
+});
+
+test('una nueva lectura recibida por la api aparece en el siguiente fragmento de monitoreo', function () {
+    $cliente = User::factory()->create(['rol' => 'cliente']);
+    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $planta = Planta::factory()->create([
+    'nombre' => 'Aloe Vera',
+    'humedad_suelo_min' => 30,
+    'humedad_suelo_max' => 60,
+    ]);
+    $venta = Venta::create([
+    'user_id' => $cliente->id,
+    'vendedor_id' => $vendedor->id,
+    'planta_id' => $planta->id,
+    'cantidad' => 1,
+    ]);
+    $sensor = Sensor::create([
+    'identificador_fisico' => 'ESP32-POLLING-LECTURA-NUEVA',
+    'estado' => 'activo',
+    ]);
+    $sensor->forceFill(['token_hash' => hash('sha256', 'token-polling-prueba')])->save();
+    $unidad = PlantaVendida::create([
+    'venta_id' => $venta->id,
+    'user_id' => $cliente->id,
+    'sensor_id' => $sensor->id,
+    ]);
+    LecturaSensor::create([
+    'planta_vendida_id' => $unidad->id,
+    'humedad_suelo' => 35,
+    'temperatura' => 24,
+    'humedad_ambiental' => 50,
+    'luz' => 4000,
+    'fecha_hora' => now(),
+    ]);
+
+    $this->actingAs($cliente)
+    ->get(route('cliente.monitoreo.inicio'))
+    ->assertOk()
+    ->assertSeeText('35 %')
+    ->assertDontSee('24 %');
+
+    $this->withHeader('X-Sensor-Token', 'token-polling-prueba')
+    ->postJson('/api/lecturas', [
+        'planta_vendida_id' => $unidad->id,
+        'humedad_suelo' => 24,
+        'temperatura' => 24,
+        'humedad_ambiental' => 50,
+        'luz' => 4000,
+        'fecha_hora' => now()->addMinute()->toIso8601String(),
+    ])
+    ->assertCreated()
+    ->assertJsonPath('data.humedad_suelo', 24)
+    ->assertJsonPath('alertas.0.tipo', 'riego');
+
+    $this->get(route('cliente.monitoreo.inicio'))
+    ->assertOk()
+    ->assertSeeText('24 %')
+    ->assertSee('La humedad del suelo está por debajo del rango recomendado para tu Aloe Vera.')
+    ->assertDontSee('35 %');
+
+    $this->assertDatabaseCount('lecturas_sensores', 2);
+    $this->assertDatabaseCount('alertas', 1);
+});

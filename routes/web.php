@@ -71,4 +71,8 @@ Route::middleware(['auth', 'role:cliente'])->group(function () {
     Route::post('/perfil/update', [PerfilController::class, 'update'])->name('perfil.update');
     Route::get('/historial-alertas', [HomeController::class, 'historialAlertas'])
         ->name('historial-alertas');
+    Route::get('/cliente/monitoreo/inicio', [HomeController::class, 'datosMonitoreoInicio'])
+        ->name('cliente.monitoreo.inicio');
+    Route::get('/cliente/monitoreo/historial', [HomeController::class, 'datosMonitoreoHistorial'])
+        ->name('cliente.monitoreo.historial');
 });

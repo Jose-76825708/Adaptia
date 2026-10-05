@@ -58,4 +58,21 @@ class HomeController extends Controller
 
         return view('home.historial-alertas', compact('sensoresAsignados'));
     }
+
+    public function datosMonitoreoInicio()
+    {
+        $sensoresAsignados = $this->monitoreoClienteService->obtenerSensoresAsignados(Auth::user());
+
+        return response()->view('home.partials.sensores-cliente', compact('sensoresAsignados'));
+    }
+
+    public function datosMonitoreoHistorial()
+    {
+        $sensoresAsignados = $this->monitoreoClienteService->obtenerSensoresAsignados(
+            Auth::user(),
+            incluirHistorial: true,
+        );
+
+        return response()->view('home.partials.historial-monitoreo', compact('sensoresAsignados'));
+    }
 }

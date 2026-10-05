@@ -1,4 +1,5 @@
 import './bootstrap';
+import './monitoreo-polling';
 import './wizard-perfil';
 
 
