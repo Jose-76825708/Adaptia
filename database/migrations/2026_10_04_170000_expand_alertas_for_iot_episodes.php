@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\AlertasCuidadoPlantaExistentesException;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         if (DB::table('alertas')->where('tipo', 'cuidado_planta')->exists()) {
-            throw new RuntimeException(
+            throw new AlertasCuidadoPlantaExistentesException(
                 'No se puede revertir esta migración mientras existan alertas de tipo cuidado_planta.'
             );
         }

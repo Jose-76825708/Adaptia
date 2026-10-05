@@ -22,9 +22,9 @@
         </section>
 
         @if (session('success'))
-            <div class="p-4 bg-[#d4edda] text-[#155724] border border-[#c3e6cb] rounded-[10px]" role="status">
+            <output class="block p-4 bg-[#d4edda] text-[#155724] border border-[#c3e6cb] rounded-[10px]">
                 {{ session('success') }}
-            </div>
+            </output>
         @endif
 
         @if ($errors->any())

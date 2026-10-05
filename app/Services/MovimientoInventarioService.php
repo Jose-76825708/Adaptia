@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\StockInsuficienteException;
 use App\Models\MovimientoInventario;
 use App\Models\Planta;
 use Illuminate\Database\Eloquent\Collection;
@@ -51,7 +52,7 @@ class MovimientoInventarioService
                 $planta->increment('stock_actual', $data['cantidad']);
             } else { // salida
                 if ($planta->stock_actual < $data['cantidad']) {
-                    throw new \Exception("Stock insuficiente para {$planta->nombre}. Disponible: {$planta->stock_actual}, requerido: {$data['cantidad']}");
+                    throw new StockInsuficienteException("Stock insuficiente para {$planta->nombre}. Disponible: {$planta->stock_actual}, requerido: {$data['cantidad']}");
                 }
                 $planta->decrement('stock_actual', $data['cantidad']);
             }
@@ -115,7 +116,7 @@ class MovimientoInventarioService
                 // Necesitamos disminuir el stock
                 $reduccion = abs($diferencia);
                 if ($planta->stock_actual < $reduccion) {
-                    throw new \Exception("Stock insuficiente para actualizar movimiento. Disponible: {$planta->stock_actual}, requerido: {$reduccion}");
+                    throw new StockInsuficienteException("Stock insuficiente para actualizar movimiento. Disponible: {$planta->stock_actual}, requerido: {$reduccion}");
                 }
                 $planta->decrement('stock_actual', $reduccion);
             }
@@ -164,7 +165,7 @@ class MovimientoInventarioService
             if ($movimiento->tipo === 'entrada') {
                 // Era una entrada, ahora la removemos: disminuir stock
                 if ($planta->stock_actual < $movimiento->cantidad) {
-                    throw new \Exception("Stock insuficiente para revertir movimiento. Disponible: {$planta->stock_actual}, requerido: {$movimiento->cantidad}");
+                    throw new StockInsuficienteException("Stock insuficiente para revertir movimiento. Disponible: {$planta->stock_actual}, requerido: {$movimiento->cantidad}");
                 }
                 $planta->decrement('stock_actual', $movimiento->cantidad);
             } else { // salida

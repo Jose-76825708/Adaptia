@@ -35,15 +35,15 @@
         @endif
 
         @if ($clientes->isEmpty())
-            <div class="p-4 bg-[#fff3cd] text-[#856404] border border-[#ffeeba] rounded-[10px]" role="status">
+            <output class="block p-4 bg-[#fff3cd] text-[#856404] border border-[#ffeeba] rounded-[10px]">
                 No hay clientes registrados para asociar a la venta.
-            </div>
+            </output>
         @endif
 
         @if ($plantas->isEmpty())
-            <div class="p-4 bg-[#fff3cd] text-[#856404] border border-[#ffeeba] rounded-[10px]" role="status">
+            <output class="block p-4 bg-[#fff3cd] text-[#856404] border border-[#ffeeba] rounded-[10px]">
                 No hay plantas con stock disponible para vender.
-            </div>
+            </output>
         @endif
 
         <section class="flex justify-center pb-10">
