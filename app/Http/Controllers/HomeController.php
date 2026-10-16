@@ -19,31 +19,21 @@ class HomeController extends Controller
 
     public function index()
     {
-        // Si no está autenticado, mostrar landing page
-        if (! Auth::check()) {
-            return view('home');
-        }
-
         $user = Auth::user();
 
-        if ($user->rol === 'vendedor') {
+        if ($user?->rol === 'vendedor') {
             return redirect()->route('sensores.index');
         }
 
-        // Si es cliente, mostrar dashboard personalizado
-        if ($user->rol === 'cliente') {
-            // Obtener o crear el perfil del cliente
-            $perfil = $user->perfilCliente;
-
-            // Generar recomendaciones usando el servicio (si tiene perfil) o array vacío (si no tiene)
-            $recomendaciones = $perfil ? $this->recomendacionService->generarRecomendaciones($perfil->toArray()) : [];
-            $sensoresAsignados = $this->monitoreoClienteService->obtenerSensoresAsignados($user);
-
-            return view('home.client', compact('perfil', 'recomendaciones', 'sensoresAsignados'));
+        if ($user?->rol !== 'cliente') {
+            return view('home');
         }
 
-        // Para otros roles mostrar la landing page pública.
-        return view('home');
+        $perfil = $user->perfilCliente;
+        $recomendaciones = $perfil ? $this->recomendacionService->generarRecomendaciones($perfil->toArray()) : [];
+        $sensoresAsignados = $this->monitoreoClienteService->obtenerSensoresAsignados($user);
+
+        return view('home.client', compact('perfil', 'recomendaciones', 'sensoresAsignados'));
     }
 
     /**

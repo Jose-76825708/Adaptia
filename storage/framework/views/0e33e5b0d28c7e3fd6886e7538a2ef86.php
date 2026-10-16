@@ -18,6 +18,22 @@
     box-shadow: 0 0 0 4px rgb(124 178 43 / 16%);
   }
 
+  #wizard-progress-bar {
+    appearance: none;
+  }
+
+  #wizard-progress-bar::-webkit-progress-bar {
+    border-radius: 9999px;
+    background-color: #e7ece2;
+  }
+
+  #wizard-progress-bar::-webkit-progress-value,
+  #wizard-progress-bar::-moz-progress-bar {
+    border-radius: 9999px;
+    background: linear-gradient(to right, #7cb22b, #a4cc5e);
+    transition: width 500ms ease-out;
+  }
+
   #wizard-steps {
     display: grid;
     grid-template-areas: "wizard-step";
@@ -105,15 +121,11 @@
                 </div>
                 <span id="wizard-completion" class="rounded-full bg-[#edf5e5] px-3 py-1.5 text-xs font-bold text-[#52752d] sm:text-sm">25% completado</span>
             </div>
-            <div id="wizard-progress-bar"
-                 class="h-2 overflow-hidden rounded-full bg-[#e7ece2]"
-                 role="progressbar"
-                 aria-label="Progreso del perfil"
-                 aria-valuemin="0"
-                 aria-valuemax="100"
-                 aria-valuenow="25">
-                <div class="h-full rounded-full bg-linear-to-r from-[#7cb22b] to-[#a4cc5e] transition-[width] duration-500 ease-out" style="width: 25%"></div>
-            </div>
+            <progress id="wizard-progress-bar"
+                      class="block h-2 w-full overflow-hidden rounded-full bg-[#e7ece2]"
+                      aria-label="Progreso del perfil"
+                      max="100"
+                      value="25">25%</progress>
         </div>
 
         <!-- Pasos del wizard -->

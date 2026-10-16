@@ -136,7 +136,7 @@
                 <div class="flex items-center justify-center bg-[#f1f1ef] h-62.5 w-full">
 
                     <img class="w-[80%] h-full object-contain" src="{{ asset('images/photo.png') }}"
-                        alt="Photo">
+                        alt="Planta de hojas verdes en maceta">
 
                 </div>
                 <div class="flex flex-col w-full pl-6 pt-5 gap-3 border-t-3 border-[#ecedea]">

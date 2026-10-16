@@ -15,7 +15,7 @@
         </div>
         <div class="flex-1 flex items-center justify-center p-4 pr-10">
 
-            <img class="w-170 h-auto" src="<?php echo e(asset('images/hero-image.png')); ?>" alt="imagen de una planta">
+            <img class="w-170 h-auto" src="<?php echo e(asset('images/hero-image.png')); ?>" alt="Planta">
 
         </div>
 
@@ -34,7 +34,7 @@
                 <div class="flex items-center justify-center w-40 h-40 bg-[#eef0e9] rounded-full">
 
                     <img class="w-30 h-30 object-contain" src="<?php echo e(asset('images/paso_1.png')); ?>"
-                        alt="imagen de un tablero verde">
+                        alt="Tablero verde">
 
                 </div>
 
@@ -57,7 +57,7 @@
                 <div class="flex items-center justify-center w-40 h-40 bg-[#eef0e9] rounded-full">
 
                     <img class="w-30 h-30 object-contain" src="<?php echo e(asset('images/paso_2.png')); ?>"
-                        alt="imagen de un tablero verde">
+                        alt="Tablero verde">
 
                 </div>
 
@@ -81,7 +81,7 @@
                 <div class="flex items-center justify-center w-40 h-40 bg-[#eef0e9] rounded-full">
 
                     <img class="w-30 h-30 object-contain" src="<?php echo e(asset('images/paso_3.png')); ?>"
-                        alt="imagen de un tablero verde">
+                        alt="Tablero verde">
 
                 </div>
 
@@ -110,7 +110,7 @@
                 <div class="flex items-center justify-center bg-[#f1f1ef] h-62.5 w-full">
 
                     <img class="w-[80%] h-full object-contain" src="<?php echo e(asset('images/sansevieria.png')); ?>"
-                        alt="imagen de planta sansevieria">
+                        alt="Sansevieria">
 
                 </div>
                 <div class="flex flex-col w-full pl-6 pt-5 gap-3 border-t-3 border-[#ecedea]">
@@ -134,7 +134,7 @@
                 <div class="flex items-center justify-center bg-[#f1f1ef] h-62.5 w-full">
 
                     <img class="w-[80%] h-full object-contain" src="<?php echo e(asset('images/photo.png')); ?>"
-                        alt="imagen de planta photo">
+                        alt="Planta de hojas verdes en maceta">
 
                 </div>
                 <div class="flex flex-col w-full pl-6 pt-5 gap-3 border-t-3 border-[#ecedea]">
@@ -158,7 +158,7 @@
                 <div class="flex items-center justify-center bg-[#f1f1ef] h-62.5 w-full">
 
                     <img class="w-[80%] h-full object-contain" src="<?php echo e(asset('images/lirio_paz.png')); ?>"
-                        alt="imagen de planta lirio de paz">
+                        alt="Lirio de paz">
 
                 </div>
                 <div class="flex flex-col w-full pl-6 pt-5 gap-3 border-t-3 border-[#ecedea]">
@@ -182,7 +182,7 @@
                 <div class="flex items-center justify-center bg-[#f1f1ef] h-62.5 w-full">
 
                     <img class="w-[80%] h-full object-contain" src="<?php echo e(asset('images/zamioculca.png')); ?>"
-                        alt="imagen de planta zamioculca">
+                        alt="Zamioculca">
 
                 </div>
                 <div class="flex flex-col w-full pl-6 pt-5 gap-3 border-t-3 border-[#ecedea]">
@@ -220,7 +220,7 @@
             <div class="flex items-center gap-6">
                 <div class="flex items-center justify-center p-3 bg-[#7aae2a] rounded-[50%]">
 
-                    <img class="size-[2em]" src="<?php echo e(asset('images/hoja.png')); ?>" alt="imagen de una plantita">
+                    <img class="size-[2em]" src="<?php echo e(asset('images/hoja.png')); ?>" alt="">
 
                 </div>
                 <div>
@@ -232,7 +232,7 @@
             <div class="flex items-center gap-6">
                 <div class="flex items-center justify-center p-3 bg-[#7aae2a] rounded-[50%]">
 
-                    <img class="size-[2em]" src="<?php echo e(asset('images/reloj.png')); ?>" alt="imagen de una reloj">
+                    <img class="size-[2em]" src="<?php echo e(asset('images/reloj.png')); ?>" alt="">
 
                 </div>
                 <div>
@@ -244,7 +244,7 @@
             <div class="flex items-center gap-6">
                 <div class="flex items-center justify-center p-3 bg-[#7aae2a] rounded-[50%]">
 
-                    <img class="size-[2em]" src="<?php echo e(asset('images/corazon.png')); ?>" alt="imagen de un corazon">
+                    <img class="size-[2em]" src="<?php echo e(asset('images/corazon.png')); ?>" alt="">
 
                 </div>
                 <div>
@@ -256,7 +256,7 @@
         </div>
         <div class="flex-1 flex items-center justify-center">
 
-            <img class="w-[60%] h-auto" src="<?php echo e(asset('images/logo.png')); ?>" alt="imagen del logo">
+            <img class="w-[60%] h-auto" src="<?php echo e(asset('images/logo.png')); ?>" alt="Logo de Adaptia">
 
         </div>
 
@@ -264,4 +264,5 @@
 
 </main>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/home.blade.php ENDPATH**/ ?>

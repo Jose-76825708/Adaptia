@@ -31,17 +31,13 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Redirección según el rol del usuario
             $user = Auth::user();
-            if ($user->rol === 'vendedor') {
-                return redirect()->route('sensores.index');
-            } elseif ($user->rol === 'administrador') {
-                return redirect()->intended(route('sensores.index'));
-            } elseif ($user->rol === 'cliente') {
-                return redirect()->intended(route('home'));
-            } else {
-                return redirect()->intended(route('home'));
-            }
+
+            return match ($user->rol) {
+                'vendedor' => redirect()->route('sensores.index'),
+                'administrador' => redirect()->intended(route('sensores.index')),
+                default => redirect()->intended(route('home')),
+            };
         }
 
         return back()->withErrors([

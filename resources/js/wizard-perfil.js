@@ -7,7 +7,6 @@ function initializeProfileWizard() {
     const totalStepsSpan = document.getElementById('wizard-total-steps');
     const completionSpan = document.getElementById('wizard-completion');
     const progressBar = document.getElementById('wizard-progress-bar');
-    const progressFill = progressBar?.firstElementChild;
 
     if (
         !stepsContainer ||
@@ -17,8 +16,7 @@ function initializeProfileWizard() {
         !currentStepSpan ||
         !totalStepsSpan ||
         !completionSpan ||
-        !progressBar ||
-        !progressFill
+        !progressBar
     ) {
         return;
     }
@@ -35,8 +33,7 @@ function initializeProfileWizard() {
         currentStepSpan.textContent = String(currentStep + 1);
         totalStepsSpan.textContent = String(steps.length);
         completionSpan.textContent = `${percentage}% completado`;
-        progressBar.setAttribute('aria-valuenow', String(percentage));
-        progressFill.style.width = `${percentage}%`;
+        progressBar.value = percentage;
         prevBtn.disabled = currentStep === 0 || isTransitioning || isSaving;
         nextBtn.disabled = isTransitioning || isSaving;
         nextBtn.textContent = currentStep === steps.length - 1 ? 'Actualizar perfil' : 'Siguiente';
@@ -179,7 +176,7 @@ function initializeProfileWizard() {
         previousStep.classList.remove('active');
         previousStep.classList.add(exitClass);
         nextStep.classList.add(enterClass);
-        void nextStep.offsetWidth;
+        nextStep.getBoundingClientRect();
         nextStep.classList.add('active');
         nextStep.classList.remove(enterClass);
         updateProgress();

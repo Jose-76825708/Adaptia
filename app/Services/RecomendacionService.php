@@ -47,16 +47,11 @@ class RecomendacionService
         $posicion_usuario = array_search($valorUsuario,$categoria);
         $posicion_planta = array_search($valorPLanta,$categoria);
 
-        if($atributo == 'tipo_ambiente' && $posicion_usuario == 2) {
-
+        if (
+            ($atributo == 'tipo_ambiente' && $posicion_usuario == 2) ||
+            $posicion_usuario == $posicion_planta
+        ) {
             return 1;
-
-        }
-
-        if($posicion_usuario == $posicion_planta){
-
-            return 1;
-
         }
 
         return 0;
@@ -141,7 +136,7 @@ class RecomendacionService
 
     public function generarRecomendaciones (array $perfil_usuario)
     {
-        if($perfil_usuario['toxicidad'] == true) {
+        if ($perfil_usuario['toxicidad']) {
 
             $plantas = $this->plantasNoToxicas();
 
