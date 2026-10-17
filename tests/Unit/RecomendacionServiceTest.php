@@ -4,115 +4,41 @@ use App\Models\Planta;
 use App\Services\RecomendacionService;
 use Illuminate\Http\Request;
 
-// TEST DE LA FUNCION COMPTABILIDAD ORDINAL
-
-
-// PRIMER TEST
-
-test('dos valores ordinales iguales tiene compatibilidad total', function () {
-
-    $service = new RecomendacionService();
-
-    $resultado = $service->compatibilidadOrdinal(
+test('calcula compatibilidad ordinal para coincidencias, diferencias parciales y totales', function (
+    string $valorPlanta,
+    string $valorPerfil,
+    float $compatibilidad
+) {
+    expect((new RecomendacionService)->compatibilidadOrdinal(
         ['baja', 'media', 'alta'],
-        'baja',
-        'baja'
-    );
+        $valorPlanta,
+        $valorPerfil
+    ))->toEqual($compatibilidad);
+})->with([
+    'coincidencia total' => ['baja', 'baja', 1.0],
+    'diferencia parcial' => ['media', 'baja', 0.5],
+    'diferencia total' => ['alta', 'baja', 0.0],
+]);
 
-    expect($resultado)->toBe(1);
-
-});
-
-
-// SEGUNDO TEST
-
-test('dos valores ordinales tiene diferencia parcial', function () {
-
-    $service = new RecomendacionService();
-
-    $resultado = $service->compatibilidadOrdinal(
-        ['baja', 'media', 'alta'],
-        'media',
-        'baja'
-    );
-
-    expect($resultado)->toBe(0.5);
-
-});
-
-// TERCER TEST
-
-test('dos valores ordinales tiene diferencias totales', function () {
-
-    $service = new RecomendacionService();
-
-    $resultado = $service->compatibilidadOrdinal(
-        ['baja', 'media', 'alta'],
-        'alta',
-        'baja'
-    );
-
-    expect($resultado)->toBe(0);
-
-});
-
-
-// TEST DE LA FUNCIÓN CATEGÓRICA
-
-// PRIMER TEST
-
-test('dos valores categoricos que son exactamente igual', function () {
-
-    $service = new RecomendacionService();
-
-    $resultado = $service->compatibilidadCategoria(
+test('calcula compatibilidad categórica para coincidencias y excepciones de ambiente', function (
+    string $valorPerfil,
+    string $valorPlanta,
+    float $compatibilidad
+) {
+    expect((new RecomendacionService)->compatibilidadCategoria(
         'tipo_ambiente',
         ['interiores', 'exteriores', 'ambos'],
-        'interiores',
-        'interiores'
-    );
-
-    expect($resultado)->toBe(1);
-
-});
-
-
-// SEGUNDO TEST
-
-test('dos valores categoricos que son totalmente diferentes', function () {
-
-    $service = new RecomendacionService();
-
-    $resultado = $service->compatibilidadCategoria(
-        'tipo_ambiente',
-        ['interiores', 'exteriores', 'ambos'],
-        'interiores',
-        'exteriores'
-    );
-
-    expect($resultado)->toBe(0);
-
-});
-
-// TERCER TEST
-
-test('el atributo es tipo de ambiente y el caso sea ambos siempre debe retornar 1', function () {
-
-    $service = new RecomendacionService();
-
-    $resultado = $service->compatibilidadCategoria(
-        'tipo_ambiente',
-        ['interiores', 'exteriores', 'ambos'],
-        'interiores',
-        'ambos'
-    );
-
-    expect($resultado)->toBe(1);
-
-});
+        $valorPerfil,
+        $valorPlanta
+    ))->toEqual($compatibilidad);
+})->with([
+    'coincidencia exacta' => ['interiores', 'interiores', 1.0],
+    'categorías distintas' => ['interiores', 'exteriores', 0.0],
+    'ambos ambientes son compatibles' => ['interiores', 'ambos', 1.0],
+]);
 
 test('la estetica suculenta coincide si el perfil y la planta difieren en numero', function () {
-    $service = new RecomendacionService();
+    $service = new RecomendacionService;
 
     expect($service->compatibilidadCategoria(
         'estetica',
@@ -129,7 +55,7 @@ test('la estetica suculenta coincide si el perfil y la planta difieren en numero
 });
 
 test('limpia el perfil conservando solo los campos usados para recomendar', function () {
-    $service = new RecomendacionService();
+    $service = new RecomendacionService;
     $request = Request::create('/', 'POST', [
         'luz_requerida' => 'media',
         'frecuencia_riego' => 'semanal',
@@ -152,13 +78,12 @@ test('limpia el perfil conservando solo los campos usados para recomendar', func
     ]);
 });
 
-
 // TEST DE LA FUNCIÓN PARA CALCULAR EL SCORE
 
 // PRIMER TEST
 test('una planta cumple TODO perfectamente debe arrojar el 100% de compatibilidad', function () {
 
-    $service = new RecomendacionService();
+    $service = new RecomendacionService;
 
     $planta = new Planta([
         'luz_requerida' => 'media',
@@ -184,11 +109,10 @@ test('una planta cumple TODO perfectamente debe arrojar el 100% de compatibilida
 
 });
 
-
 // SEGUNDO TEST
 test('una planta no cumple absolutamente nada debe arrojar el 0% de compatibilidad', function () {
 
-    $service = new RecomendacionService();
+    $service = new RecomendacionService;
 
     $planta = new Planta([
         'luz_requerida' => 'baja',
@@ -216,9 +140,9 @@ test('una planta no cumple absolutamente nada debe arrojar el 0% de compatibilid
 
 // TERCER TEST
 
-test('cuando una planta cumple la mitad del perfil del usuario' , function () {
+test('cuando una planta cumple la mitad del perfil del usuario', function () {
 
-    $service = new RecomendacionService();
+    $service = new RecomendacionService;
 
     $planta = new Planta([
         'luz_requerida' => 'baja',

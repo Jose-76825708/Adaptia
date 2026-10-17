@@ -2,7 +2,6 @@
 
 use App\Models\PerfilCliente;
 use App\Models\Planta;
-use App\Models\TipoPlanta;
 use App\Models\User;
 use App\Services\RecomendacionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,7 +14,7 @@ uses(RefreshDatabase::class);
 
 test('la funcion plantasNoToxicas debe devolvernos netamente plantas no toxicas', function () {
 
-    $service = new RecomendacionService();
+    $service = new RecomendacionService;
 
     Planta::factory()->create(['toxicidad' => true]);
     Planta::factory()->create(['toxicidad' => false]);
@@ -30,7 +29,7 @@ test('la funcion plantasNoToxicas debe devolvernos netamente plantas no toxicas'
 // 2DO TEST
 test('la funcion de generar recomendación nos dara una lista en base a 3 plantas de muestra, ninguna es tóxica', function () {
 
-    $service = new RecomendacionService();
+    $service = new RecomendacionService;
 
     // creacion de las plantas de prueba
     $plantaBuena = Planta::factory()->create([
@@ -81,7 +80,10 @@ test('la funcion de generar recomendación nos dara una lista en base a 3 planta
 
 });
 
-test('incluye plantas tóxicas cuando el perfil no solicita excluirlas', function () {
+test('filtra recomendaciones según la preferencia de plantas seguras', function (
+    bool $toxicidadPerfil,
+    bool $incluyePlantaToxica
+) {
     $plantaToxica = Planta::factory()->create([
         'nombre' => 'Planta tóxica',
         'toxicidad' => true,
@@ -103,56 +105,27 @@ test('incluye plantas tóxicas cuando el perfil no solicita excluirlas', functio
         'estetica' => 'follaje',
     ]);
 
-    $recomendaciones = (new RecomendacionService())->generarRecomendaciones([
+    $recomendaciones = (new RecomendacionService)->generarRecomendaciones([
         'luz_requerida' => 'media',
         'frecuencia_riego' => 'semanal',
         'nivel_cuidado' => 'principiante',
         'tamaño_adulto' => 'mediana',
         'tipo_ambiente' => 'interiores',
         'estetica' => 'follaje',
-        'toxicidad' => false,
+        'toxicidad' => $toxicidadPerfil,
     ]);
 
-    expect($recomendaciones->pluck('id')->all())
-        ->toContain($plantaToxica->id, $plantaSegura->id);
-});
+    expect($recomendaciones->pluck('id')->all())->toContain($plantaSegura->id);
 
-test('excluye plantas tóxicas del ranking si el perfil solicita plantas seguras', function () {
-    $plantaToxica = Planta::factory()->create([
-        'nombre' => 'Planta tóxica',
-        'toxicidad' => true,
-        'luz_requerida' => 'media',
-        'frecuencia_riego' => 'semanal',
-        'nivel_cuidado' => 'principiante',
-        'tamaño_adulto' => 'mediana',
-        'tipo_ambiente' => 'interiores',
-        'estetica' => 'follaje',
-    ]);
-    $plantaSegura = Planta::factory()->create([
-        'nombre' => 'Planta segura',
-        'toxicidad' => false,
-        'luz_requerida' => 'media',
-        'frecuencia_riego' => 'semanal',
-        'nivel_cuidado' => 'principiante',
-        'tamaño_adulto' => 'mediana',
-        'tipo_ambiente' => 'interiores',
-        'estetica' => 'follaje',
-    ]);
-
-    $recomendaciones = (new RecomendacionService())->generarRecomendaciones([
-        'luz_requerida' => 'media',
-        'frecuencia_riego' => 'semanal',
-        'nivel_cuidado' => 'principiante',
-        'tamaño_adulto' => 'mediana',
-        'tipo_ambiente' => 'interiores',
-        'estetica' => 'follaje',
-        'toxicidad' => true,
-    ]);
-
-    expect($recomendaciones->pluck('id')->all())
-        ->toContain($plantaSegura->id)
-        ->not->toContain($plantaToxica->id);
-});
+    if ($incluyePlantaToxica) {
+        expect($recomendaciones->pluck('id')->all())->toContain($plantaToxica->id);
+    } else {
+        expect($recomendaciones->pluck('id')->all())->not->toContain($plantaToxica->id);
+    }
+})->with([
+    'perfil permite plantas tóxicas' => [false, true],
+    'perfil excluye plantas tóxicas' => [true, false],
+]);
 
 test('generar recomendaciones incluye el porcentaje de compatibilidad para mostrarlo en la vista', function () {
     $planta = Planta::factory()->create([
@@ -175,7 +148,7 @@ test('generar recomendaciones incluye el porcentaje de compatibilidad para mostr
         'toxicidad' => false,
     ];
 
-    $recomendacion = (new RecomendacionService())
+    $recomendacion = (new RecomendacionService)
         ->generarRecomendaciones($perfil)
         ->firstWhere('id', $planta->id);
 

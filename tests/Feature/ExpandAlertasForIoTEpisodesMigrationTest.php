@@ -1,31 +1,19 @@
 <?php
 
 use App\Exceptions\AlertasCuidadoPlantaExistentesException;
-use App\Models\Alerta;
 use App\Models\Planta;
-use App\Models\PlantaVendida;
-use App\Models\User;
-use App\Models\Venta;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
+use Tests\Support\MonitoreoFixtures;
 
 uses(RefreshDatabase::class);
 
 test('impide revertir la migración mientras existan alertas de cuidado de planta', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
-    $venta = Venta::create([
-        'user_id' => $cliente->id,
-        'vendedor_id' => $vendedor->id,
-        'planta_id' => Planta::factory()->create()->id,
-        'cantidad' => 1,
-    ]);
-    $unidad = PlantaVendida::create([
-        'venta_id' => $venta->id,
-        'user_id' => $cliente->id,
-    ]);
-    Alerta::create([
-        'planta_vendida_id' => $unidad->id,
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
+    $venta = MonitoreoFixtures::venta($cliente, $vendedor, Planta::factory()->create());
+    $unidad = MonitoreoFixtures::unidad($venta, $cliente);
+    MonitoreoFixtures::alerta($unidad, [
         'tipo' => 'cuidado_planta',
     ]);
     $migration = include database_path(

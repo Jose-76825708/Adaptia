@@ -1,52 +1,24 @@
 <?php
 
-use App\Models\Alerta;
-use App\Models\LecturaSensor;
 use App\Models\Planta;
-use App\Models\PlantaVendida;
-use App\Models\Sensor;
 use App\Models\User;
-use App\Models\Venta;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\MonitoreoFixtures;
 
 uses(RefreshDatabase::class);
 
 test('cliente ve sus sensores asignados aunque todavía no tengan lecturas', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $otroCliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $otroCliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create(['nombre' => 'Monstera']);
     $otraPlanta = Planta::factory()->create(['nombre' => 'Helecho']);
-    $venta = Venta::create([
-        'user_id' => $cliente->id,
-        'vendedor_id' => $vendedor->id,
-        'planta_id' => $planta->id,
-        'cantidad' => 1,
-    ]);
-    $otraVenta = Venta::create([
-        'user_id' => $otroCliente->id,
-        'vendedor_id' => $vendedor->id,
-        'planta_id' => $otraPlanta->id,
-        'cantidad' => 1,
-    ]);
-    $sensor = Sensor::create([
-        'identificador_fisico' => 'ESP32-CLIENTE-001',
-        'estado' => 'activo',
-    ]);
-    $otroSensor = Sensor::create([
-        'identificador_fisico' => 'ESP32-OTRO-001',
-        'estado' => 'activo',
-    ]);
-    PlantaVendida::create([
-        'venta_id' => $venta->id,
-        'user_id' => $cliente->id,
-        'sensor_id' => $sensor->id,
-    ]);
-    PlantaVendida::create([
-        'venta_id' => $otraVenta->id,
-        'user_id' => $otroCliente->id,
-        'sensor_id' => $otroSensor->id,
-    ]);
+    $venta = MonitoreoFixtures::venta($cliente, $vendedor, $planta);
+    $otraVenta = MonitoreoFixtures::venta($otroCliente, $vendedor, $otraPlanta);
+    $sensor = MonitoreoFixtures::sensor('ESP32-CLIENTE-001');
+    $otroSensor = MonitoreoFixtures::sensor('ESP32-OTRO-001');
+    MonitoreoFixtures::unidad($venta, $cliente, $sensor);
+    MonitoreoFixtures::unidad($otraVenta, $otroCliente, $otroSensor);
 
     $this->actingAs($cliente)
         ->get(route('home'))
@@ -63,39 +35,23 @@ test('cliente ve sus sensores asignados aunque todavía no tengan lecturas', fun
 });
 
 test('cliente ve las lecturas recientes y alertas activas de sus sensores', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create([
         'nombre' => 'Aloe Vera',
         'humedad_suelo_min' => 20,
         'humedad_suelo_max' => 40,
     ]);
-    $venta = Venta::create([
-        'user_id' => $cliente->id,
-        'vendedor_id' => $vendedor->id,
-        'planta_id' => $planta->id,
-        'cantidad' => 1,
-    ]);
-    $sensor = Sensor::create([
-        'identificador_fisico' => 'ESP32-CLIENTE-LECTURAS',
-        'estado' => 'activo',
-    ]);
-    $unidad = PlantaVendida::create([
-        'venta_id' => $venta->id,
-        'user_id' => $cliente->id,
-        'sensor_id' => $sensor->id,
-    ]);
-    LecturaSensor::create([
-        'planta_vendida_id' => $unidad->id,
+    $venta = MonitoreoFixtures::venta($cliente, $vendedor, $planta);
+    $sensor = MonitoreoFixtures::sensor('ESP32-CLIENTE-LECTURAS');
+    $unidad = MonitoreoFixtures::unidad($venta, $cliente, $sensor);
+    MonitoreoFixtures::lectura($unidad, [
         'humedad_suelo' => 18,
         'temperatura' => 24,
         'humedad_ambiental' => 50,
         'luz' => 4000,
-        'fecha_hora' => now(),
     ]);
-    Alerta::create([
-        'planta_vendida_id' => $unidad->id,
-        'tipo' => 'riego',
+    MonitoreoFixtures::alerta($unidad, [
         'variable' => 'humedad_suelo',
         'valor_medido' => 18,
         'limite' => 20,
@@ -115,45 +71,20 @@ test('cliente ve las lecturas recientes y alertas activas de sus sensores', func
 });
 
 test('historial del cliente muestra tendencias y alertas solo de sus propias plantas', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $otroCliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $otroCliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create(['nombre' => 'Aloe Vera']);
     $otraPlanta = Planta::factory()->create(['nombre' => 'Planta privada']);
-    $venta = Venta::create([
-        'user_id' => $cliente->id,
-        'vendedor_id' => $vendedor->id,
-        'planta_id' => $planta->id,
-        'cantidad' => 1,
-    ]);
-    $otraVenta = Venta::create([
-        'user_id' => $otroCliente->id,
-        'vendedor_id' => $vendedor->id,
-        'planta_id' => $otraPlanta->id,
-        'cantidad' => 1,
-    ]);
-    $sensor = Sensor::create([
-        'identificador_fisico' => 'ESP32-HISTORIAL-CLIENTE',
-        'estado' => 'activo',
-    ]);
-    $otroSensor = Sensor::create([
-        'identificador_fisico' => 'ESP32-HISTORIAL-OTRO',
-        'estado' => 'activo',
-    ]);
-    $unidad = PlantaVendida::create([
-        'venta_id' => $venta->id,
-        'user_id' => $cliente->id,
-        'sensor_id' => $sensor->id,
-    ]);
-    $otraUnidad = PlantaVendida::create([
-        'venta_id' => $otraVenta->id,
-        'user_id' => $otroCliente->id,
-        'sensor_id' => $otroSensor->id,
-    ]);
+    $venta = MonitoreoFixtures::venta($cliente, $vendedor, $planta);
+    $otraVenta = MonitoreoFixtures::venta($otroCliente, $vendedor, $otraPlanta);
+    $sensor = MonitoreoFixtures::sensor('ESP32-HISTORIAL-CLIENTE');
+    $otroSensor = MonitoreoFixtures::sensor('ESP32-HISTORIAL-OTRO');
+    $unidad = MonitoreoFixtures::unidad($venta, $cliente, $sensor);
+    $otraUnidad = MonitoreoFixtures::unidad($otraVenta, $otroCliente, $otroSensor);
 
     foreach ([['humedad_suelo' => 18, 'fecha_hora' => now()->subHour()], ['humedad_suelo' => 25, 'fecha_hora' => now()]] as $lectura) {
-        LecturaSensor::create([
-            'planta_vendida_id' => $unidad->id,
+        MonitoreoFixtures::lectura($unidad, [
             'humedad_suelo' => $lectura['humedad_suelo'],
             'temperatura' => 24,
             'humedad_ambiental' => 50,
@@ -162,21 +93,17 @@ test('historial del cliente muestra tendencias y alertas solo de sus propias pla
         ]);
     }
 
-    Alerta::create([
-        'planta_vendida_id' => $unidad->id,
-        'tipo' => 'riego',
+    MonitoreoFixtures::alerta($unidad, [
         'variable' => 'humedad_suelo',
         'mensaje' => 'Alerta privada del cliente.',
     ]);
-    Alerta::create([
-        'planta_vendida_id' => $unidad->id,
+    MonitoreoFixtures::alerta($unidad, [
         'tipo' => 'cuidado_planta',
         'variable' => 'temperatura',
         'mensaje' => 'Alerta resuelta del cliente.',
         'resuelta_en' => now(),
     ]);
-    Alerta::create([
-        'planta_vendida_id' => $otraUnidad->id,
+    MonitoreoFixtures::alerta($otraUnidad, [
         'tipo' => 'cuidado_planta',
         'variable' => 'temperatura',
         'mensaje' => 'Alerta de otro cliente.',
@@ -198,20 +125,11 @@ test('historial del cliente muestra tendencias y alertas solo de sus propias pla
 });
 
 test('cliente sin sensores asignados ve el estado vacío aunque tenga una unidad pendiente', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create();
-    $venta = Venta::create([
-        'user_id' => $cliente->id,
-        'vendedor_id' => $vendedor->id,
-        'planta_id' => $planta->id,
-        'cantidad' => 1,
-    ]);
-    PlantaVendida::create([
-        'venta_id' => $venta->id,
-        'user_id' => $cliente->id,
-        'sensor_id' => null,
-    ]);
+    $venta = MonitoreoFixtures::venta($cliente, $vendedor, $planta);
+    MonitoreoFixtures::unidad($venta, $cliente);
 
     $this->actingAs($cliente)
         ->get(route('home'))
@@ -221,67 +139,36 @@ test('cliente sin sensores asignados ve el estado vacío aunque tenga una unidad
 });
 
 test('consultas de actualización devuelven solo el fragmento de monitoreo del cliente autenticado', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $otroCliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $otroCliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create(['nombre' => 'Aloe Vera']);
     $otraPlanta = Planta::factory()->create(['nombre' => 'Planta privada']);
-    $venta = Venta::create([
-        'user_id' => $cliente->id,
-        'vendedor_id' => $vendedor->id,
-        'planta_id' => $planta->id,
-        'cantidad' => 1,
-    ]);
-    $otraVenta = Venta::create([
-        'user_id' => $otroCliente->id,
-        'vendedor_id' => $vendedor->id,
-        'planta_id' => $otraPlanta->id,
-        'cantidad' => 1,
-    ]);
-    $sensor = Sensor::create([
-        'identificador_fisico' => 'ESP32-POLLING-CLIENTE',
-        'estado' => 'activo',
+    $venta = MonitoreoFixtures::venta($cliente, $vendedor, $planta);
+    $otraVenta = MonitoreoFixtures::venta($otroCliente, $vendedor, $otraPlanta);
+    $sensor = MonitoreoFixtures::sensor('ESP32-POLLING-CLIENTE', [
         'token_hash' => hash('sha256', 'secreto-privado'),
     ]);
-    $otroSensor = Sensor::create([
-        'identificador_fisico' => 'ESP32-POLLING-OTRO',
-        'estado' => 'activo',
-    ]);
-    $unidad = PlantaVendida::create([
-        'venta_id' => $venta->id,
-        'user_id' => $cliente->id,
-        'sensor_id' => $sensor->id,
-    ]);
-    $otraUnidad = PlantaVendida::create([
-        'venta_id' => $otraVenta->id,
-        'user_id' => $otroCliente->id,
-        'sensor_id' => $otroSensor->id,
-    ]);
-    LecturaSensor::create([
-        'planta_vendida_id' => $unidad->id,
+    $otroSensor = MonitoreoFixtures::sensor('ESP32-POLLING-OTRO');
+    $unidad = MonitoreoFixtures::unidad($venta, $cliente, $sensor);
+    $otraUnidad = MonitoreoFixtures::unidad($otraVenta, $otroCliente, $otroSensor);
+    MonitoreoFixtures::lectura($unidad, [
         'humedad_suelo' => 18,
         'temperatura' => 24,
         'humedad_ambiental' => 50,
         'luz' => 4000,
-        'fecha_hora' => now(),
     ]);
-    Alerta::create([
-        'planta_vendida_id' => $unidad->id,
-        'tipo' => 'riego',
+    MonitoreoFixtures::alerta($unidad, [
         'variable' => 'humedad_suelo',
         'mensaje' => 'Alerta privada del cliente.',
     ]);
-    LecturaSensor::create([
-        'planta_vendida_id' => $otraUnidad->id,
+    MonitoreoFixtures::lectura($otraUnidad, [
         'humedad_suelo' => 10,
         'temperatura' => 20,
         'humedad_ambiental' => 40,
         'luz' => 1000,
-        'fecha_hora' => now(),
     ]);
-    Alerta::create([
-        'planta_vendida_id' => $otraUnidad->id,
-        'tipo' => 'riego',
+    MonitoreoFixtures::alerta($otraUnidad, [
         'variable' => 'humedad_suelo',
         'mensaje' => 'Alerta de otro cliente.',
     ]);
@@ -337,62 +224,48 @@ test('consultas de actualización requieren cliente autenticado', function () {
 });
 
 test('una nueva lectura recibida por la api aparece en el siguiente fragmento de monitoreo', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create([
-    'nombre' => 'Aloe Vera',
-    'humedad_suelo_min' => 30,
-    'humedad_suelo_max' => 60,
+        'nombre' => 'Aloe Vera',
+        'humedad_suelo_min' => 30,
+        'humedad_suelo_max' => 60,
     ]);
-    $venta = Venta::create([
-    'user_id' => $cliente->id,
-    'vendedor_id' => $vendedor->id,
-    'planta_id' => $planta->id,
-    'cantidad' => 1,
-    ]);
-    $sensor = Sensor::create([
-    'identificador_fisico' => 'ESP32-POLLING-LECTURA-NUEVA',
-    'estado' => 'activo',
-    ]);
+    $venta = MonitoreoFixtures::venta($cliente, $vendedor, $planta);
+    $sensor = MonitoreoFixtures::sensor('ESP32-POLLING-LECTURA-NUEVA');
     $sensor->forceFill(['token_hash' => hash('sha256', 'token-polling-prueba')])->save();
-    $unidad = PlantaVendida::create([
-    'venta_id' => $venta->id,
-    'user_id' => $cliente->id,
-    'sensor_id' => $sensor->id,
-    ]);
-    LecturaSensor::create([
-    'planta_vendida_id' => $unidad->id,
-    'humedad_suelo' => 35,
-    'temperatura' => 24,
-    'humedad_ambiental' => 50,
-    'luz' => 4000,
-    'fecha_hora' => now(),
-    ]);
-
-    $this->actingAs($cliente)
-    ->get(route('cliente.monitoreo.inicio'))
-    ->assertOk()
-    ->assertSeeText('35 %')
-    ->assertDontSee('24 %');
-
-    $this->withHeader('X-Sensor-Token', 'token-polling-prueba')
-    ->postJson('/api/lecturas', [
-        'planta_vendida_id' => $unidad->id,
-        'humedad_suelo' => 24,
+    $unidad = MonitoreoFixtures::unidad($venta, $cliente, $sensor);
+    MonitoreoFixtures::lectura($unidad, [
+        'humedad_suelo' => 35,
         'temperatura' => 24,
         'humedad_ambiental' => 50,
         'luz' => 4000,
-        'fecha_hora' => now()->addMinute()->toIso8601String(),
-    ])
-    ->assertCreated()
-    ->assertJsonPath('data.humedad_suelo', 24)
-    ->assertJsonPath('alertas.0.tipo', 'riego');
+    ]);
+
+    $this->actingAs($cliente)
+        ->get(route('cliente.monitoreo.inicio'))
+        ->assertOk()
+        ->assertSeeText('35 %')
+        ->assertDontSee('24 %');
+
+    $this->withHeader('X-Sensor-Token', 'token-polling-prueba')
+        ->postJson('/api/lecturas', [
+            'planta_vendida_id' => $unidad->id,
+            'humedad_suelo' => 24,
+            'temperatura' => 24,
+            'humedad_ambiental' => 50,
+            'luz' => 4000,
+            'fecha_hora' => now()->addMinute()->toIso8601String(),
+        ])
+        ->assertCreated()
+        ->assertJsonPath('data.humedad_suelo', 24)
+        ->assertJsonPath('alertas.0.tipo', 'riego');
 
     $this->get(route('cliente.monitoreo.inicio'))
-    ->assertOk()
-    ->assertSeeText('24 %')
-    ->assertSee('La humedad del suelo está por debajo del rango recomendado para tu Aloe Vera.')
-    ->assertDontSee('35 %');
+        ->assertOk()
+        ->assertSeeText('24 %')
+        ->assertSee('La humedad del suelo está por debajo del rango recomendado para tu Aloe Vera.')
+        ->assertDontSee('35 %');
 
     $this->assertDatabaseCount('lecturas_sensores', 2);
     $this->assertDatabaseCount('alertas', 1);

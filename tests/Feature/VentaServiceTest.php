@@ -11,6 +11,7 @@ use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Tests\Support\MonitoreoFixtures;
 
 uses(RefreshDatabase::class);
 
@@ -24,18 +25,13 @@ function datosVenta(User $cliente, Planta $planta, int $cantidad): array
 }
 
 test('obtiene ventas con sus relaciones y datos de formulario filtrados', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
-    $otroVendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
+    $otroVendedor = MonitoreoFixtures::vendedor();
     $plantaDisponible = Planta::factory()->create(['stock_actual' => 4]);
     $plantaAgotada = Planta::factory()->create(['stock_actual' => 0]);
 
-    Venta::create([
-        'user_id' => $cliente->id,
-        'vendedor_id' => $vendedor->id,
-        'planta_id' => $plantaDisponible->id,
-        'cantidad' => 1,
-    ]);
+    MonitoreoFixtures::venta($cliente, $vendedor, $plantaDisponible);
 
     $service = app(VentaService::class);
     $ventas = $service->getAll();
@@ -52,8 +48,8 @@ test('obtiene ventas con sus relaciones y datos de formulario filtrados', functi
 });
 
 test('registra venta, descuenta stock y crea movimiento de salida con el vendedor', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create([
         'stock_actual' => 8,
         'stock_minimo' => 2,
@@ -87,8 +83,8 @@ test('registra venta, descuenta stock y crea movimiento de salida con el vendedo
 });
 
 test('rechaza registrar la venta para un usuario que no sea cliente', function () {
-    $usuario = User::factory()->create(['rol' => 'vendedor']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $usuario = MonitoreoFixtures::vendedor();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create(['stock_actual' => 8]);
 
     expect(fn () => app(VentaService::class)->registrarVenta(
@@ -102,8 +98,8 @@ test('rechaza registrar la venta para un usuario que no sea cliente', function (
 });
 
 test('rechaza la venta cuando no hay stock suficiente sin modificar datos', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create(['stock_actual' => 1]);
 
     expect(fn () => app(VentaService::class)->registrarVenta(
@@ -117,8 +113,8 @@ test('rechaza la venta cuando no hay stock suficiente sin modificar datos', func
 });
 
 test('revierte venta y stock si falla la creación del movimiento', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create(['stock_actual' => 8]);
 
     DB::listen(function (QueryExecuted $query) {
@@ -139,8 +135,8 @@ test('revierte venta y stock si falla la creación del movimiento', function () 
 });
 
 test('revierte venta, stock y movimiento si falla la creación de una unidad vendida', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create(['stock_actual' => 8]);
 
     DB::listen(function (QueryExecuted $query) {
@@ -161,7 +157,7 @@ test('revierte venta, stock y movimiento si falla la creación de una unidad ven
 });
 
 test('solo un vendedor puede invocar el registro de venta', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
+    $cliente = MonitoreoFixtures::cliente();
     $usuario = User::factory()->create(['rol' => 'administrador']);
     $planta = Planta::factory()->create(['stock_actual' => 8]);
 
@@ -172,8 +168,8 @@ test('solo un vendedor puede invocar el registro de venta', function () {
 });
 
 test('emite advertencia cuando la venta deja el stock bajo el mínimo', function () {
-    $cliente = User::factory()->create(['rol' => 'cliente']);
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create([
         'stock_actual' => 3,
         'stock_minimo' => 2,
