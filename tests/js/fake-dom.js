@@ -117,9 +117,61 @@ export class FakeDocument {
 export class FakeDOMParser {
     parseFromString(html) {
         const tag = html.match(/<([\w-]+)\b([^>]*)>([\s\S]*?)<\/\1>/);
-        const attributes = Object.fromEntries(
-            [...tag[2].matchAll(/([\w-]+)="([^"]*)"/g)].map(([, name, value]) => [name, value])
-        );
+        const attributes = {};
+        let index = 0;
+
+        while (index < tag[2].length) {
+            while (/\s/.test(tag[2][index] ?? '')) {
+                index++;
+            }
+
+            const nameStart = index;
+
+            while (/[\w-]/.test(tag[2][index] ?? '')) {
+                index++;
+            }
+
+            if (index === nameStart) {
+                index++;
+                continue;
+            }
+
+            const name = tag[2].slice(nameStart, index);
+
+            while (/\s/.test(tag[2][index] ?? '')) {
+                index++;
+            }
+
+            if (tag[2][index] !== '=') {
+                continue;
+            }
+
+            index++;
+
+            while (/\s/.test(tag[2][index] ?? '')) {
+                index++;
+            }
+
+            if (tag[2][index] !== '"') {
+                while (index < tag[2].length && !/\s/.test(tag[2][index])) {
+                    index++;
+                }
+
+                continue;
+            }
+
+            index++;
+            const valueStart = index;
+            const valueEnd = tag[2].indexOf('"', index);
+
+            if (valueEnd === -1) {
+                break;
+            }
+
+            attributes[name] = tag[2].slice(valueStart, valueEnd);
+            index = valueEnd + 1;
+        }
+
         const dataset = Object.fromEntries(
             Object.entries(attributes)
                 .filter(([name]) => name.startsWith('data-'))

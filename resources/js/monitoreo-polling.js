@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.setInterval(refreshFragment, interval);
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
-            refreshFragment();
+            void refreshFragment();
         }
     });
 });
