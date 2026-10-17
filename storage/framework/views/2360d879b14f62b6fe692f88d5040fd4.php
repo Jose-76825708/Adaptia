@@ -95,4 +95,5 @@
         </section>
     </main>
 </body>
-</html><?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/movimientos-inventario/index.blade.php ENDPATH**/ ?>
+</html>
+<?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/movimientos-inventario/index.blade.php ENDPATH**/ ?>

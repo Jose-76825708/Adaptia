@@ -192,7 +192,7 @@ function initializeProfileWizard() {
         showStep(currentStep - 1, -1);
     });
 
-    nextBtn.addEventListener('click', () => {
+    nextBtn.addEventListener('click', async () => {
         if (!validateStep(currentStep)) {
             alert('Por favor completa todos los campos de este paso antes de continuar');
             return;
@@ -201,7 +201,7 @@ function initializeProfileWizard() {
         if (currentStep < steps.length - 1) {
             showStep(currentStep + 1, 1);
         } else {
-            handleSubmit();
+            await handleSubmit();
         }
     });
 

@@ -133,4 +133,5 @@ unset($__errorArgs, $__bag); ?>
 
 </body>
 
-</html><?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/movimientos-inventario/create.blade.php ENDPATH**/ ?>
+</html>
+<?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/movimientos-inventario/create.blade.php ENDPATH**/ ?>

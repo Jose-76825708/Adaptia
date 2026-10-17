@@ -100,4 +100,5 @@ unset($__errorArgs, $__bag); ?>
     </main>
 </body>
 
-</html><?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/sensores/edit.blade.php ENDPATH**/ ?>
+</html>
+<?php /**PATH C:\xampp\htdocs\Adaptia\resources\views/sensores/edit.blade.php ENDPATH**/ ?>
