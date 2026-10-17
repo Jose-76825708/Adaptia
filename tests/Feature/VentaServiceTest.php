@@ -82,79 +82,61 @@ test('registra venta, descuenta stock y crea movimiento de salida con el vendedo
         ]);
 });
 
-test('rechaza registrar la venta para un usuario que no sea cliente', function () {
-    $usuario = MonitoreoFixtures::vendedor();
+test('rechaza una venta inválida sin modificar el inventario', function (
+    string $rolCliente,
+    int $stockInicial,
+    int $cantidad
+) {
+    $cliente = User::factory()->create(['rol' => $rolCliente]);
     $vendedor = MonitoreoFixtures::vendedor();
-    $planta = Planta::factory()->create(['stock_actual' => 8]);
+    $planta = Planta::factory()->create(['stock_actual' => $stockInicial]);
 
     expect(fn () => app(VentaService::class)->registrarVenta(
-        datosVenta($usuario, $planta, 2),
+        datosVenta($cliente, $planta, $cantidad),
         $vendedor
     ))->toThrow(ValidationException::class);
 
     expect(Venta::count())->toBe(0)
         ->and(MovimientoInventario::count())->toBe(0)
-        ->and($planta->fresh()->stock_actual)->toBe(8);
-});
+        ->and($planta->fresh()->stock_actual)->toBe($stockInicial);
+})->with([
+    'el cliente de la venta no tiene rol de cliente' => ['vendedor', 8, 2],
+    'la cantidad supera el stock disponible' => ['cliente', 1, 2],
+]);
 
-test('rechaza la venta cuando no hay stock suficiente sin modificar datos', function () {
-    $cliente = MonitoreoFixtures::cliente();
-    $vendedor = MonitoreoFixtures::vendedor();
-    $planta = Planta::factory()->create(['stock_actual' => 1]);
-
-    expect(fn () => app(VentaService::class)->registrarVenta(
-        datosVenta($cliente, $planta, 2),
-        $vendedor
-    ))->toThrow(ValidationException::class);
-
-    expect(Venta::count())->toBe(0)
-        ->and(MovimientoInventario::count())->toBe(0)
-        ->and($planta->fresh()->stock_actual)->toBe(1);
-});
-
-test('revierte venta y stock si falla la creación del movimiento', function () {
+test('revierte todas las escrituras si falla una operación de venta', function (
+    string $tablaFallida,
+    string $mensaje
+) {
     $cliente = MonitoreoFixtures::cliente();
     $vendedor = MonitoreoFixtures::vendedor();
     $planta = Planta::factory()->create(['stock_actual' => 8]);
 
-    DB::listen(function (QueryExecuted $query) {
-        if (str_contains(strtolower($query->sql), 'insert into "movimientos_inventario"')) {
-            throw new RuntimeException('Fallo simulado al crear movimiento.');
+    DB::listen(function (QueryExecuted $query) use ($tablaFallida, $mensaje) {
+        if (str_contains(strtolower($query->sql), "insert into \"$tablaFallida\"")) {
+            throw new RuntimeException($mensaje);
         }
     });
 
     expect(fn () => app(VentaService::class)->registrarVenta(
         datosVenta($cliente, $planta, 3),
         $vendedor
-    ))->toThrow(RuntimeException::class, 'Fallo simulado al crear movimiento.');
+    ))->toThrow(RuntimeException::class, $mensaje);
 
     expect(Venta::count())->toBe(0)
         ->and(MovimientoInventario::count())->toBe(0)
         ->and(PlantaVendida::count())->toBe(0)
         ->and($planta->fresh()->stock_actual)->toBe(8);
-});
-
-test('revierte venta, stock y movimiento si falla la creación de una unidad vendida', function () {
-    $cliente = MonitoreoFixtures::cliente();
-    $vendedor = MonitoreoFixtures::vendedor();
-    $planta = Planta::factory()->create(['stock_actual' => 8]);
-
-    DB::listen(function (QueryExecuted $query) {
-        if (str_contains(strtolower($query->sql), 'insert into "plantas_vendidas"')) {
-            throw new RuntimeException('Fallo simulado al crear planta vendida.');
-        }
-    });
-
-    expect(fn () => app(VentaService::class)->registrarVenta(
-        datosVenta($cliente, $planta, 3),
-        $vendedor
-    ))->toThrow(RuntimeException::class, 'Fallo simulado al crear planta vendida.');
-
-    expect(Venta::count())->toBe(0)
-        ->and(MovimientoInventario::count())->toBe(0)
-        ->and(PlantaVendida::count())->toBe(0)
-        ->and($planta->fresh()->stock_actual)->toBe(8);
-});
+})->with([
+    'falla al crear el movimiento de inventario' => [
+        'movimientos_inventario',
+        'Fallo simulado al crear movimiento.',
+    ],
+    'falla al crear una unidad vendida' => [
+        'plantas_vendidas',
+        'Fallo simulado al crear planta vendida.',
+    ],
+]);
 
 test('solo un vendedor puede invocar el registro de venta', function () {
     $cliente = MonitoreoFixtures::cliente();

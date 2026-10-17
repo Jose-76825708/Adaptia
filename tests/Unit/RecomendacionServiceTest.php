@@ -4,6 +4,35 @@ use App\Models\Planta;
 use App\Services\RecomendacionService;
 use Illuminate\Http\Request;
 
+$perfilIdeal = [
+    'luz_requerida' => 'media',
+    'frecuencia_riego' => 'semanal',
+    'nivel_cuidado' => 'principiante',
+    'tamaño_adulto' => 'pequena',
+    'tipo_ambiente' => 'interiores',
+    'estetica' => 'follaje',
+];
+$plantaIdeal = $perfilIdeal;
+$plantaConLuzBajaYRiegoDiario = array_replace($plantaIdeal, [
+    'luz_requerida' => 'baja',
+    'frecuencia_riego' => 'diario',
+]);
+$perfilDeCompatibilidadNula = array_replace($perfilIdeal, [
+    'luz_requerida' => 'siempre_en_el_sol',
+    'frecuencia_riego' => 'mensualmente',
+    'nivel_cuidado' => 'experto',
+    'tamaño_adulto' => 'grande',
+    'tipo_ambiente' => 'exteriores',
+    'estetica' => 'flor',
+]);
+$perfilDeCompatibilidadParcial = array_replace($perfilIdeal, [
+    'luz_requerida' => 'baja',
+    'frecuencia_riego' => 'diario',
+    'tamaño_adulto' => 'grande',
+    'tipo_ambiente' => 'exteriores',
+    'estetica' => 'flor',
+]);
+
 test('calcula compatibilidad ordinal para coincidencias, diferencias parciales y totales', function (
     string $valorPlanta,
     string $valorPerfil,
@@ -78,92 +107,19 @@ test('limpia el perfil conservando solo los campos usados para recomendar', func
     ]);
 });
 
-// TEST DE LA FUNCIÓN PARA CALCULAR EL SCORE
+test('calcula el score esperado según los criterios del perfil', function (
+    array $atributosPlanta,
+    array $perfilUsuario,
+    float $scoreEsperado
+) {
+    $resultado = (new RecomendacionService)->calculaScore(
+        new Planta($atributosPlanta),
+        $perfilUsuario
+    );
 
-// PRIMER TEST
-test('una planta cumple TODO perfectamente debe arrojar el 100% de compatibilidad', function () {
-
-    $service = new RecomendacionService;
-
-    $planta = new Planta([
-        'luz_requerida' => 'media',
-        'frecuencia_riego' => 'semanal',
-        'nivel_cuidado' => 'principiante',
-        'tamaño_adulto' => 'pequena',
-        'tipo_ambiente' => 'interiores',
-        'estetica' => 'follaje',
-    ]);
-
-    $perfil_usuario = [
-        'luz_requerida' => 'media',
-        'frecuencia_riego' => 'semanal',
-        'nivel_cuidado' => 'principiante',
-        'tamaño_adulto' => 'pequena',
-        'tipo_ambiente' => 'interiores',
-        'estetica' => 'follaje',
-    ];
-
-    $resultado = $service->calculaScore($planta, $perfil_usuario);
-
-    expect(round($resultado, 2))->toEqual(1);
-
-});
-
-// SEGUNDO TEST
-test('una planta no cumple absolutamente nada debe arrojar el 0% de compatibilidad', function () {
-
-    $service = new RecomendacionService;
-
-    $planta = new Planta([
-        'luz_requerida' => 'baja',
-        'frecuencia_riego' => 'diario',
-        'nivel_cuidado' => 'principiante',
-        'tamaño_adulto' => 'pequena',
-        'tipo_ambiente' => 'interiores',
-        'estetica' => 'follaje',
-    ]);
-
-    $perfil_usuario = [
-        'luz_requerida' => 'siempre_en_el_sol',
-        'frecuencia_riego' => 'mensualmente',
-        'nivel_cuidado' => 'experto',
-        'tamaño_adulto' => 'grande',
-        'tipo_ambiente' => 'exteriores',
-        'estetica' => 'flor',
-    ];
-
-    $resultado = $service->calculaScore($planta, $perfil_usuario);
-
-    expect(round($resultado, 2))->toEqual(0);
-
-});
-
-// TERCER TEST
-
-test('cuando una planta cumple la mitad del perfil del usuario', function () {
-
-    $service = new RecomendacionService;
-
-    $planta = new Planta([
-        'luz_requerida' => 'baja',
-        'frecuencia_riego' => 'diario',
-        'nivel_cuidado' => 'principiante',
-        'tamaño_adulto' => 'pequena',
-        'tipo_ambiente' => 'interiores',
-        'estetica' => 'follaje',
-    ]);
-
-    $perfil_usuario = [
-        'luz_requerida' => 'baja',
-        'frecuencia_riego' => 'diario',
-        'nivel_cuidado' => 'principiante',
-        'tamaño_adulto' => 'grande',
-        'tipo_ambiente' => 'exteriores',
-        'estetica' => 'flor',
-    ];
-
-    $resultado = $service->calculaScore($planta, $perfil_usuario);
-
-    expect(round($resultado, 2))->toEqual(0.5);
-
-});
+    expect(round($resultado, 2))->toEqual($scoreEsperado);
+})->with([
+    'compatibilidad total' => [$plantaIdeal, $perfilIdeal, 1.0],
+    'compatibilidad nula' => [$plantaConLuzBajaYRiegoDiario, $perfilDeCompatibilidadNula, 0.0],
+    'compatibilidad parcial' => [$plantaConLuzBajaYRiegoDiario, $perfilDeCompatibilidadParcial, 0.5],
+]);

@@ -11,14 +11,18 @@ test('cliente ve sus sensores asignados aunque todavía no tengan lecturas', fun
     $cliente = MonitoreoFixtures::cliente();
     $otroCliente = MonitoreoFixtures::cliente();
     $vendedor = MonitoreoFixtures::vendedor();
-    $planta = Planta::factory()->create(['nombre' => 'Monstera']);
-    $otraPlanta = Planta::factory()->create(['nombre' => 'Helecho']);
-    $venta = MonitoreoFixtures::venta($cliente, $vendedor, $planta);
-    $otraVenta = MonitoreoFixtures::venta($otroCliente, $vendedor, $otraPlanta);
-    $sensor = MonitoreoFixtures::sensor('ESP32-CLIENTE-001');
-    $otroSensor = MonitoreoFixtures::sensor('ESP32-OTRO-001');
-    MonitoreoFixtures::unidad($venta, $cliente, $sensor);
-    MonitoreoFixtures::unidad($otraVenta, $otroCliente, $otroSensor);
+    MonitoreoFixtures::unidadConSensor(
+        $cliente,
+        $vendedor,
+        'Monstera',
+        'ESP32-CLIENTE-001'
+    );
+    MonitoreoFixtures::unidadConSensor(
+        $otroCliente,
+        $vendedor,
+        'Helecho',
+        'ESP32-OTRO-001'
+    );
 
     $this->actingAs($cliente)
         ->get(route('home'))
@@ -37,14 +41,16 @@ test('cliente ve sus sensores asignados aunque todavía no tengan lecturas', fun
 test('cliente ve las lecturas recientes y alertas activas de sus sensores', function () {
     $cliente = MonitoreoFixtures::cliente();
     $vendedor = MonitoreoFixtures::vendedor();
-    $planta = Planta::factory()->create([
-        'nombre' => 'Aloe Vera',
-        'humedad_suelo_min' => 20,
-        'humedad_suelo_max' => 40,
-    ]);
-    $venta = MonitoreoFixtures::venta($cliente, $vendedor, $planta);
-    $sensor = MonitoreoFixtures::sensor('ESP32-CLIENTE-LECTURAS');
-    $unidad = MonitoreoFixtures::unidad($venta, $cliente, $sensor);
+    $unidad = MonitoreoFixtures::unidadConSensor(
+        $cliente,
+        $vendedor,
+        'Aloe Vera',
+        'ESP32-CLIENTE-LECTURAS',
+        [
+            'humedad_suelo_min' => 20,
+            'humedad_suelo_max' => 40,
+        ]
+    );
     MonitoreoFixtures::lectura($unidad, [
         'humedad_suelo' => 18,
         'temperatura' => 24,
@@ -74,14 +80,18 @@ test('historial del cliente muestra tendencias y alertas solo de sus propias pla
     $cliente = MonitoreoFixtures::cliente();
     $otroCliente = MonitoreoFixtures::cliente();
     $vendedor = MonitoreoFixtures::vendedor();
-    $planta = Planta::factory()->create(['nombre' => 'Aloe Vera']);
-    $otraPlanta = Planta::factory()->create(['nombre' => 'Planta privada']);
-    $venta = MonitoreoFixtures::venta($cliente, $vendedor, $planta);
-    $otraVenta = MonitoreoFixtures::venta($otroCliente, $vendedor, $otraPlanta);
-    $sensor = MonitoreoFixtures::sensor('ESP32-HISTORIAL-CLIENTE');
-    $otroSensor = MonitoreoFixtures::sensor('ESP32-HISTORIAL-OTRO');
-    $unidad = MonitoreoFixtures::unidad($venta, $cliente, $sensor);
-    $otraUnidad = MonitoreoFixtures::unidad($otraVenta, $otroCliente, $otroSensor);
+    $unidad = MonitoreoFixtures::unidadConSensor(
+        $cliente,
+        $vendedor,
+        'Aloe Vera',
+        'ESP32-HISTORIAL-CLIENTE'
+    );
+    $otraUnidad = MonitoreoFixtures::unidadConSensor(
+        $otroCliente,
+        $vendedor,
+        'Planta privada',
+        'ESP32-HISTORIAL-OTRO'
+    );
 
     foreach ([['humedad_suelo' => 18, 'fecha_hora' => now()->subHour()], ['humedad_suelo' => 25, 'fecha_hora' => now()]] as $lectura) {
         MonitoreoFixtures::lectura($unidad, [
@@ -142,16 +152,20 @@ test('consultas de actualización devuelven solo el fragmento de monitoreo del c
     $cliente = MonitoreoFixtures::cliente();
     $otroCliente = MonitoreoFixtures::cliente();
     $vendedor = MonitoreoFixtures::vendedor();
-    $planta = Planta::factory()->create(['nombre' => 'Aloe Vera']);
-    $otraPlanta = Planta::factory()->create(['nombre' => 'Planta privada']);
-    $venta = MonitoreoFixtures::venta($cliente, $vendedor, $planta);
-    $otraVenta = MonitoreoFixtures::venta($otroCliente, $vendedor, $otraPlanta);
-    $sensor = MonitoreoFixtures::sensor('ESP32-POLLING-CLIENTE', [
-        'token_hash' => hash('sha256', 'secreto-privado'),
-    ]);
-    $otroSensor = MonitoreoFixtures::sensor('ESP32-POLLING-OTRO');
-    $unidad = MonitoreoFixtures::unidad($venta, $cliente, $sensor);
-    $otraUnidad = MonitoreoFixtures::unidad($otraVenta, $otroCliente, $otroSensor);
+    $unidad = MonitoreoFixtures::unidadConSensor(
+        $cliente,
+        $vendedor,
+        'Aloe Vera',
+        'ESP32-POLLING-CLIENTE',
+        [],
+        ['token_hash' => hash('sha256', 'secreto-privado')]
+    );
+    $otraUnidad = MonitoreoFixtures::unidadConSensor(
+        $otroCliente,
+        $vendedor,
+        'Planta privada',
+        'ESP32-POLLING-OTRO'
+    );
     MonitoreoFixtures::lectura($unidad, [
         'humedad_suelo' => 18,
         'temperatura' => 24,
@@ -226,15 +240,17 @@ test('consultas de actualización requieren cliente autenticado', function () {
 test('una nueva lectura recibida por la api aparece en el siguiente fragmento de monitoreo', function () {
     $cliente = MonitoreoFixtures::cliente();
     $vendedor = MonitoreoFixtures::vendedor();
-    $planta = Planta::factory()->create([
-        'nombre' => 'Aloe Vera',
-        'humedad_suelo_min' => 30,
-        'humedad_suelo_max' => 60,
-    ]);
-    $venta = MonitoreoFixtures::venta($cliente, $vendedor, $planta);
-    $sensor = MonitoreoFixtures::sensor('ESP32-POLLING-LECTURA-NUEVA');
-    $sensor->forceFill(['token_hash' => hash('sha256', 'token-polling-prueba')])->save();
-    $unidad = MonitoreoFixtures::unidad($venta, $cliente, $sensor);
+    $unidad = MonitoreoFixtures::unidadConSensor(
+        $cliente,
+        $vendedor,
+        'Aloe Vera',
+        'ESP32-POLLING-LECTURA-NUEVA',
+        [
+            'humedad_suelo_min' => 30,
+            'humedad_suelo_max' => 60,
+        ],
+        ['token_hash' => hash('sha256', 'token-polling-prueba')]
+    );
     MonitoreoFixtures::lectura($unidad, [
         'humedad_suelo' => 35,
         'temperatura' => 24,

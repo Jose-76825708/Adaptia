@@ -49,6 +49,29 @@ final class MonitoreoFixtures
         ]);
     }
 
+    public static function unidadConSensor(
+        User $cliente,
+        User $vendedor,
+        string $nombrePlanta,
+        string $identificadorSensor,
+        array $atributosPlanta = [],
+        array $atributosSensor = []
+    ): PlantaVendida {
+        $planta = Planta::factory()->create(array_merge([
+            'nombre' => $nombrePlanta,
+        ], $atributosPlanta));
+        $venta = self::venta($cliente, $vendedor, $planta);
+        $sensor = self::sensor($identificadorSensor, $atributosSensor);
+
+        if (array_key_exists('token_hash', $atributosSensor)) {
+            $sensor->forceFill([
+                'token_hash' => $atributosSensor['token_hash'],
+            ])->save();
+        }
+
+        return self::unidad($venta, $cliente, $sensor);
+    }
+
     public static function lectura(PlantaVendida $unidad, array $attributes = []): LecturaSensor
     {
         return LecturaSensor::create(array_merge([
