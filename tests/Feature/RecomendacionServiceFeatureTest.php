@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Planta;
 use App\Models\PerfilCliente;
+use App\Models\Planta;
 use App\Models\TipoPlanta;
 use App\Models\User;
 use App\Services\RecomendacionService;
@@ -79,6 +79,79 @@ test('la funcion de generar recomendación nos dara una lista en base a 3 planta
 
     expect($ordenObtenido)->toBe($ordenEsperado);
 
+});
+
+test('incluye plantas tóxicas cuando el perfil no solicita excluirlas', function () {
+    $plantaToxica = Planta::factory()->create([
+        'nombre' => 'Planta tóxica',
+        'toxicidad' => true,
+        'luz_requerida' => 'media',
+        'frecuencia_riego' => 'semanal',
+        'nivel_cuidado' => 'principiante',
+        'tamaño_adulto' => 'mediana',
+        'tipo_ambiente' => 'interiores',
+        'estetica' => 'follaje',
+    ]);
+    $plantaSegura = Planta::factory()->create([
+        'nombre' => 'Planta segura',
+        'toxicidad' => false,
+        'luz_requerida' => 'media',
+        'frecuencia_riego' => 'semanal',
+        'nivel_cuidado' => 'principiante',
+        'tamaño_adulto' => 'mediana',
+        'tipo_ambiente' => 'interiores',
+        'estetica' => 'follaje',
+    ]);
+
+    $recomendaciones = (new RecomendacionService())->generarRecomendaciones([
+        'luz_requerida' => 'media',
+        'frecuencia_riego' => 'semanal',
+        'nivel_cuidado' => 'principiante',
+        'tamaño_adulto' => 'mediana',
+        'tipo_ambiente' => 'interiores',
+        'estetica' => 'follaje',
+        'toxicidad' => false,
+    ]);
+
+    expect($recomendaciones->pluck('id')->all())
+        ->toContain($plantaToxica->id, $plantaSegura->id);
+});
+
+test('excluye plantas tóxicas del ranking si el perfil solicita plantas seguras', function () {
+    $plantaToxica = Planta::factory()->create([
+        'nombre' => 'Planta tóxica',
+        'toxicidad' => true,
+        'luz_requerida' => 'media',
+        'frecuencia_riego' => 'semanal',
+        'nivel_cuidado' => 'principiante',
+        'tamaño_adulto' => 'mediana',
+        'tipo_ambiente' => 'interiores',
+        'estetica' => 'follaje',
+    ]);
+    $plantaSegura = Planta::factory()->create([
+        'nombre' => 'Planta segura',
+        'toxicidad' => false,
+        'luz_requerida' => 'media',
+        'frecuencia_riego' => 'semanal',
+        'nivel_cuidado' => 'principiante',
+        'tamaño_adulto' => 'mediana',
+        'tipo_ambiente' => 'interiores',
+        'estetica' => 'follaje',
+    ]);
+
+    $recomendaciones = (new RecomendacionService())->generarRecomendaciones([
+        'luz_requerida' => 'media',
+        'frecuencia_riego' => 'semanal',
+        'nivel_cuidado' => 'principiante',
+        'tamaño_adulto' => 'mediana',
+        'tipo_ambiente' => 'interiores',
+        'estetica' => 'follaje',
+        'toxicidad' => true,
+    ]);
+
+    expect($recomendaciones->pluck('id')->all())
+        ->toContain($plantaSegura->id)
+        ->not->toContain($plantaToxica->id);
 });
 
 test('generar recomendaciones incluye el porcentaje de compatibilidad para mostrarlo en la vista', function () {

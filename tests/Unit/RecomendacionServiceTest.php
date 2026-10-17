@@ -2,7 +2,7 @@
 
 use App\Models\Planta;
 use App\Services\RecomendacionService;
-
+use Illuminate\Http\Request;
 
 // TEST DE LA FUNCION COMPTABILIDAD ORDINAL
 
@@ -76,6 +76,7 @@ test('dos valores categoricos que son exactamente igual', function () {
 
 });
 
+
 // SEGUNDO TEST
 
 test('dos valores categoricos que son totalmente diferentes', function () {
@@ -125,6 +126,30 @@ test('la estetica suculenta coincide si el perfil y la planta difieren en numero
             'suculenta',
             'suculentas'
         ))->toBe(1);
+});
+
+test('limpia el perfil conservando solo los campos usados para recomendar', function () {
+    $service = new RecomendacionService();
+    $request = Request::create('/', 'POST', [
+        'luz_requerida' => 'media',
+        'frecuencia_riego' => 'semanal',
+        'tamaño_adulto' => 'mediana',
+        'nivel_cuidado' => 'principiante',
+        'tipo_ambiente' => 'interiores',
+        'toxicidad' => '1',
+        'estetica' => 'follaje',
+        'rol' => 'administrador',
+    ]);
+
+    expect($service->limpiarPerfil($request))->toBe([
+        'luz_requerida' => 'media',
+        'frecuencia_riego' => 'semanal',
+        'tamaño_adulto' => 'mediana',
+        'nivel_cuidado' => 'principiante',
+        'tipo_ambiente' => 'interiores',
+        'toxicidad' => '1',
+        'estetica' => 'follaje',
+    ]);
 });
 
 
