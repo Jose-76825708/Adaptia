@@ -69,16 +69,10 @@ jobs:
             exit 1
           fi
 
-      - name: Configure SonarQube Cloud organization
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        env:
-          SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
-        run: printf 'sonar.organization=%s\n' "$SONAR_ORGANIZATION" >> sonar-project.properties
-
       - name: Analyze with SonarQube Cloud
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8
         with:
-          args: -Dsonar.qualitygate.wait=true
+          args: -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }} -Dsonar.qualitygate.wait=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
