@@ -57,3 +57,14 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## SonarQube Cloud
+
+The GitHub Actions workflow in `.github/workflows/sonarcloud.yml` runs the PHP and JavaScript tests, generates their coverage reports, and submits the analysis to SonarQube Cloud.
+
+Configure these repository settings in GitHub before enabling the workflow:
+
+- Secret `SONAR_TOKEN`: a SonarQube Cloud token authorized to analyze this project.
+- Variable `SONAR_ORGANIZATION`: the organization key shown in SonarQube Cloud.
+
+In SonarQube Cloud, turn off **Administration > Analysis Method > Automatic Analysis** and use CI-based analysis instead. Automatic Analysis does not import coverage reports and conflicts with CI-based analysis. Pull requests from forks still run the tests, but skip the SonarQube Cloud scan because GitHub does not provide repository secrets to fork workflows.
