@@ -14,6 +14,8 @@ use App\Http\Controllers\CatalogoClienteController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\PlantaVendidaController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\AlmacenController;
+use App\Http\Controllers\RecepcionController;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
@@ -57,6 +59,18 @@ Route::middleware(['auth', 'role:vendedor'])->group(function () {
         ->name('plantas-vendidas.index');
     Route::post('/plantas-vendidas/{unidad}/sensor', [PlantaVendidaController::class, 'asignarSensor'])
         ->name('plantas-vendidas.asignar-sensor');
+});
+
+// Panel base para almacén.
+Route::middleware(['auth', 'role:almacenista,administrador'])->group(function () {
+    Route::get('/almacen', [AlmacenController::class, 'index'])->name('almacen.index');
+    Route::get('/almacen/recepcion', [AlmacenController::class, 'recepcion'])->name('almacen.recepcion');
+    Route::get('/recepciones', [RecepcionController::class, 'index'])->name('recepciones.index');
+    Route::get('/recepciones/create', [RecepcionController::class, 'create'])->name('recepciones.create');
+    Route::get('/recepciones/{recepcion}', [RecepcionController::class, 'show'])->name('recepciones.show');
+    Route::post('/recepciones', [RecepcionController::class, 'store'])->name('recepciones.store');
+    Route::post('/recepciones/{recepcion}/aprobar', [RecepcionController::class, 'aprobar'])->name('recepciones.aprobar');
+    Route::post('/recepciones/{recepcion}/rechazar', [RecepcionController::class, 'rechazar'])->name('recepciones.rechazar');
 });
 
 // Catálogo de solo lectura para clientes.

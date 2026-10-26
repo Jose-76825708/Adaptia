@@ -16,6 +16,15 @@
                     </a>
                 </li>
             @endif
+            @if (in_array(auth()->user()->rol, ['almacenista', 'administrador'], true))
+                <li
+                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] hover:bg-[#6eab26] transition duration-300 cursor-pointer">
+                    <a class="flex w-full h-full items-center gap-3" href="{{ route('almacen.index') }}">
+                        <img class="w-5 h-auto" src="{{ asset('images/inventario.png') }}" alt="">
+                        Almacén
+                    </a>
+                </li>
+            @endif
             <li
                 class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
                 <a class="flex w-full h-full items-center gap-3" href="{{ route('tipoPlantas.index') }}"><img class="w-5 h-auto" src="{{ asset('images/tipo-planta.png') }}" alt="">Tipos de plantas</a>

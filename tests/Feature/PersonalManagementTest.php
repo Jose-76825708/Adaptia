@@ -6,10 +6,10 @@ use Illuminate\Support\Facades\Hash;
 
 uses(RefreshDatabase::class);
 
-test('administrador puede crear cuentas de vendedor y administrador sin perder su sesión', function () {
+test('administrador puede crear cuentas de vendedor, administrador y almacenero sin perder su sesión', function () {
     $administrador = User::factory()->create(['rol' => 'administrador']);
 
-    foreach (['vendedor', 'administrador'] as $rol) {
+    foreach (['vendedor', 'administrador', 'almacenista'] as $rol) {
         $email = "personal-{$rol}@example.com";
 
         $this->actingAs($administrador)

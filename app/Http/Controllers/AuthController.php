@@ -36,6 +36,7 @@ class AuthController extends Controller
             return match ($user->rol) {
                 'vendedor' => redirect()->route('sensores.index'),
                 'administrador' => redirect()->intended(route('sensores.index')),
+                'almacenista' => redirect()->route('almacen.index'),
                 default => redirect()->intended(route('home')),
             };
         }

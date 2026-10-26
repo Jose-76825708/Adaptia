@@ -18,7 +18,7 @@
             <div>
                 <h1 class="text-[#103928] font-bold text-[2.5em]">Crear cuenta de personal</h1>
                 <p class="text-[#8b8d8f] text-[1em]">
-                    Registra una cuenta de vendedor o administrador. Esta opción solo está disponible para administradores.
+                    Registra una cuenta de vendedor, administrador o almacén. Esta opción solo está disponible para administradores.
                 </p>
             </div>
         </section>
@@ -91,6 +91,7 @@
                             <option value="" disabled @selected(old('rol') === null)>Seleccione un rol...</option>
                             <option value="vendedor" @selected(old('rol') === 'vendedor')>Vendedor</option>
                             <option value="administrador" @selected(old('rol') === 'administrador')>Administrador</option>
+                            <option value="almacenista" @selected(old('rol') === 'almacenista')>Almacenista</option>
                         </select>
                         @error('rol')
                             <span class="text-red-500 text-[0.9em] font-medium">{{ $message }}</span>
