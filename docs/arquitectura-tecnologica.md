@@ -1,12 +1,12 @@
 # 📄 METODOLOGÍA Y ESPECIFICACIÓN DE LA ARQUITECTURA TECNOLÓGICA DEL PROYECTO ADAPTIA
 
-**Proyecto:** Adaptia — Sistema Inteligente de Recomendación, Monitoreo IoT y Gestión de Plantas Ornamentales[1][2]. **Organización Cliente:** Garden Land Huancayo[3]. **Marco Teórico de Referencia:** *IoT-Based Monitoring System Applied to Aeroponics Greenhouse* (Méndez-Guzmán et al., 2022)[4][5] y *Software architecture for pervasive critical health monitoring system using fog computing* (Ilyas et al., 2022)[6][7]. **Documento Académico Base:** *Estructura de proyecto final - Adaptia* (Universidad Continental, 2026)[1]. **Stack Tecnológico:** Backend en **Laravel (PHP)** con patrón MVC y capa de Servicios, **Blade + Livewire**, **MySQL / SQLite**, **Docker Compose** y Firmware en **C++ para ESP32**[8].
+**Proyecto:** Adaptia — Sistema Inteligente de Recomendación, Monitoreo IoT y Gestión de Plantas Ornamentales[1][2]. **Organización Cliente:** Garden Land Huancayo[3]. **Marco Teórico de Referencia:** *IoT-Based Monitoring System Applied to Aeroponics Greenhouse* (Méndez-Guzmán et al., 2022)[4][5] y *Software architecture for pervasive critical health monitoring system using fog computing* (Ilyas et al., 2022)[6][7]. **Documento Académico Base:** *Estructura de proyecto final - Adaptia* (Universidad Continental, 2026)[1]. **Stack implementado/verificado:** Backend Laravel (PHP), Blade + Livewire y SQLite para pruebas. **Tecnologías previstas en el diseño, no verificadas en el repositorio actual:** MySQL de producción, Docker Compose y firmware C++ para ESP32[8].
 
 ---
 
 ## 1\. DESCRIPCIÓN GENERAL Y MODELO CONCEPTUAL HÍBRIDO
 
-El sistema **Adaptia** adopta un modelo arquitectónico distribuido e híbrido que articula una red de hardware embebido IoT en el entorno físico con una plataforma de software web distribuida[2][12]. Esta estructura se organiza en **4 capas tecnológicas** (*Device, Fog, Cloud y Application Layer*), fundamentadas en la arquitectura de Méndez-Guzmán et al. (2022)[5][13] y respaldadas por las **4+1 Vistas de Kruchten** adaptadas por Ilyas et al. (2022)[7]:
+El diseño arquitectónico objetivo de **Adaptia** describe un modelo distribuido e híbrido que articula dispositivos IoT con una plataforma web[2][12]. Esta propuesta conceptual se organiza en **4 capas tecnológicas** (*Device, Fog, Cloud y Application Layer*), fundamentadas en la arquitectura de Méndez-Guzmán et al. (2022)[5][13] y respaldadas por las **4+1 Vistas de Kruchten** adaptadas por Ilyas et al. (2022)[7]. No todos sus componentes de hardware y despliegue están implementados o verificados en el repositorio actual:
 
 ```
    ┌────────────────────────────────────────────────────────────────┐
@@ -18,7 +18,7 @@ El sistema **Adaptia** adopta un modelo arquitectónico distribuido e híbrido q
    │ 3. CAPA NUBE Y PERSISTENCIA (Cloud Layer)                      │
    │    • Backend Laravel (Services & ORM Eloquent)                 │
    │    • Base de Datos MySQL (Producción) / SQLite (Pruebas)       │
-   │    • Orquestación de Contenedores Docker Compose              │
+   │    • Docker Compose (previsto, no verificado)                  │
    └───────────────────────────────▲────────────────────────────────┘
                                    │ HTTPS / Validaciones API
    ┌───────────────────────────────┴────────────────────────────────┐
@@ -76,17 +76,17 @@ Por su parte, en la **Sección "Software Implementation"** de Soibam & Vignesh (
 
 ```
 {
-  "planta_id": "84e4b4be-b260-4357-9e36-3c7c0bb0c6e9",
+  "planta_vendida_id": 42,
   "humedad_suelo": 32.5,
   "temperatura": 21.8,
-  "humedad_aire": 55.0,
-  "iluminacion_lux": 420.0,
-  "fecha_hora": "2026-09-29 15:00:00"
+  "humedad_ambiental": 55.0,
+  "luz": 420.0,
+  "fecha_hora": "2026-10-31T15:00:00Z"
 }
 
 ```
 
-*(Transmisión de lecturas telemétricas enviadas desde el ESP32 hacia el endpoint API de Laravel)*[8].
+La petición se envía a `POST /api/lecturas` con `Content-Type: application/json` y el encabezado `X-Sensor-Token`. `planta_vendida_id` debe identificar una unidad asignada al sensor autenticado. La validación del payload y la autenticación están implementadas en el backend; no se encontró firmware ESP32 versionado en el repositorio, por lo que este ejemplo documenta el contrato del servidor y no acredita una integración física probada.
 
 ---
 
@@ -151,9 +151,9 @@ En el **Capítulo 5, Sección 5.2** del documento base de Adaptia (p. 27), se de
 
 ---
 
-## 6\. INFRAESTRUCTURA DE DESPLIEGUE Y CONTENEDORES (DOCKER)
+## 6\. INFRAESTRUCTURA DE DESPLIEGUE (DISEÑO PROPUESTO)
 
-Para garantizar la portabilidad y replicabilidad del entorno entre desarrollo, testing y producción, Adaptia empaqueta todos sus servicios mediante **Docker y Docker Compose**[8].
+El documento académico base propone empaquetar los servicios mediante **Docker y Docker Compose**[8]. En la revisión del repositorio no se encontró `docker-compose.yml` ni un `Dockerfile`; por ello, esta sección representa una propuesta de despliegue y no una infraestructura implementada o verificada.
 
 ### **Cita Textual y Ubicación de Sustento:**
 
@@ -161,7 +161,7 @@ En el **Capítulo 10, Sección 10.4 "Orquestación con Docker Compose"** (p. 35)
 
 > *"Se describe la configuración del archivo docker-compose para ejecutar todos los servicios del sistema: servicio frontend, servicio backend, servicio base de datos."*[11]
 
-### **Especificación de Archivo** **docker-compose.yml** **:**
+### **Ejemplo propuesto de `docker-compose.yml` (no ejecutable desde el repositorio actual):**
 
 ```
 version: '3.8'
@@ -193,7 +193,7 @@ services:
 
 ```
 
-*(Configuración orquestada para desplegar el servidor backend y la base de datos MySQL en contenedores aislados)*[11].
+*(Ejemplo de diseño; no debe interpretarse como configuración actualmente disponible o probada en el repositorio)*[11].
 
 ---
 
@@ -203,7 +203,7 @@ services:
 | -------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | **1\. Device Layer** | ESP32, Sonda Capacitiva (`GPIO D34`), DHT22 (`GPIO D4`), BH1750 (`I2C`) | Captura y transmisión de parámetros ambientales; sin actuación hídrica. | Méndez-Guzmán et al. (2022, p. 10)[5][13] / Soibam & Vignesh (2025, p. 2028)[15][17] |
 | **2\. Fog Layer**    | Endpoint API Laravel, `FormRequests`, Evaluador de Umbrales                                | Ingesta, sanitización JSON y respuesta `HTTP 422` ante errores.   | Méndez-Guzmán et al. (2022, p. 10)[5][21] / Ilyas et al. (2022, p. 4)[20][22]        |
-| **3\. Cloud Layer**  | Backend Laravel MVC, MySQL, SQLite, Eloquent ORM, Docker Compose                           | Lógica de negocio, recomendación botánica, ORM y contenedores.    | Ilyas et al. (2022, p. 8)[7] / Univ. Continental (2026, p. 31)[10][11]                 |
+| **3\. Cloud Layer**  | Backend Laravel MVC, SQLite en pruebas; MySQL y Docker Compose previstos                           | Lógica de negocio, recomendación botánica y persistencia.    | Ilyas et al. (2022, p. 8)[7] / Univ. Continental (2026, p. 31)[10][11]                 |
 | **4\. App Layer**    | Laravel Blade + Livewire, Dashboards interactivos                                          | Visualización reactiva en tiempo real ("Riega hoy") sin recargar. | Méndez-Guzmán et al. (2022, p. 11)[5][30] / Univ. Continental (2026, p. 27)[8]         |
 
 ---

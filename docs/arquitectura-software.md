@@ -36,15 +36,15 @@ En el proyecto Adaptia, el proceso amplía su alcance operativo a un modelo de c
 │    VISTA LÓGICA     │   │ VISTA DE DESARROLLO │   │   VISTA DE PROCESO  │
 │ • Patrón MVC        │   │ • Estructura Laravel│   │ • Ingesta de Datos  │
 │ • Capa de Servicios │   │ • Componentes Blade │   │ • Evaluador Umbrales│
-│ • ORM Eloquent      │   │ • Firmware C++ ESP32│   │ • Tareas Background │
+│ • ORM Eloquent      │   │ • Firmware previsto │   │ • Alertas por evento│
 └──────────┬──────────┘   └──────────┬──────────┘   └──────────┬──────────┘
            │                         │                         │
            └─────────────────────────┼─────────────────────────┘
                                      │
                          ┌───────────▼───────────┐
                          │      VISTA FÍSICA     │
-                         │ • Nodos ESP32         │
-                         │ • Contenedores Docker │
+                         │ • ESP32 (previsto)    │
+                         │ • Docker (propuesto)  │
                          └───────────────────────┘
 ```
 
@@ -54,9 +54,9 @@ En el proyecto Adaptia, el proceso amplía su alcance operativo a un modelo de c
 
 **Estructura en Adaptia:**
 
-- **Capa de Modelo (entidades y persistencia):** mapeo relacional administrado por Eloquent ORM mediante las clases `Planta` (catálogo maestro de Garden Land), `PerfilUsuario` (restricciones de luz, espacio y mascotas/niños), `PlantaMonitoreada` (asociación relacional usuario-maceta-dispositivo) y `LecturaTelemetria` (serie temporal de lecturas).
-- **Capa de Servicio (lógica pura de negocio):** la clase `RecomendacionService` encapsula los filtros eliminatorios de toxicidad (basados en Angel et al., 2025) y el algoritmo de puntuación multicriterio sobre 4 variables ambientales básicas sin NPK (basado en Aradea et al., 2023).
-- **Capa de Controlador (orquestación HTTP):** controladores delgados (`RecomendadorController`, `TelemetriaApiController`, `DashboardMonitoreoController`) encargados de recibir la petición HTTP y retornar respuestas estructuradas.
+- **Capa de Modelo (entidades y persistencia):** mapeo relacional administrado por Eloquent ORM mediante las clases `Planta`, `PerfilCliente`, `PlantaVendida` y `LecturaSensor`, entre otras.
+- **Capa de Servicio (lógica de negocio):** `RecomendacionService` encapsula filtros y ranking de recomendaciones; `LecturaSensorService`, `EvaluadorUmbralesService` y `AlertaMonitoreoService` gestionan lecturas y episodios de alertas.
+- **Capa de Controlador (orquestación HTTP):** `HomeController`, `LecturaSensorController` y los controladores de cada módulo reciben las peticiones y delegan la lógica de negocio en servicios.
 - **Capa de Vista (presentación):** componentes reactivos construidos en Blade con Livewire que actualizan la interfaz web sin recargar la página.
 
 ### 2.2. Vista de Desarrollo (Development View)
@@ -65,12 +65,13 @@ En el proyecto Adaptia, el proceso amplía su alcance operativo a un modelo de c
 
 **Estructura de directorios y firmware en Adaptia:**
 
-- `app/Services/RecomendacionService.php`: contiene la lógica pura de filtrado, scoring y evaluación de umbrales.
+- `app/Services/RecomendacionService.php`: contiene la lógica de filtrado y ranking de recomendaciones.
 - `app/Http/Controllers/`: alberga los controladores que orquestan el tráfico web y los endpoints de la API REST.
-- `app/Http/Requests/TelemetriaFormRequest.php`: clase de validación que sanitiza el payload JSON recibido del sensor IoT antes de procesarlo.
+- `app/Http/Requests/StoreLecturaSensorRequest.php`: valida los campos, formato y rangos de la lectura recibida.
+- `app/Http/Middleware/AuthenticateSensorToken.php`: autentica el token de un sensor activo en `POST /api/lecturas`.
+- `app/Services/LecturaSensorService.php`, `EvaluadorUmbralesService.php` y `AlertaMonitoreoService.php`: persisten lecturas, evalúan rangos y sincronizan episodios de alertas.
 - `app/Models/`: modelos de clases Eloquent para la manipulación relacional de MySQL/SQLite.
-- `firmware/esp32_sensor.ino`: proyecto en C++ (Arduino IDE) para el microcontrolador ESP32 que gestiona la lectura de los sensores (GPIO D34, GPIO D4, BH1750) y la emisión de solicitudes HTTP POST con el payload JSON.
-- `docker-compose.yml`: archivo de orquestación para levantar los contenedores aislados de la aplicación web y la base de datos.
+- El firmware C++ para ESP32 y `docker-compose.yml` no están presentes en el repositorio revisado; se consideran pendientes de integración/entrega y no componentes verificados del código actual.
 
 ### 2.3. Vista de Proceso (Process View)
 
@@ -78,9 +79,9 @@ En el proyecto Adaptia, el proceso amplía su alcance operativo a un modelo de c
 
 **Flujos dinámicos en Adaptia:**
 
-1. **Ingesta y sanitización de telemetría (API REST):** el ESP32 emite un paquete JSON hacia el endpoint `/api/telemetria`. En la capa Fog/Middleware, la petición es filtrada por un `FormRequest`. Si los datos presentan corrupción por ruido inalámbrico (desafío documentado por Quino et al., 2021 y Ferreira et al., 2023), el backend rechaza la transacción retornando un estado `HTTP 422 Unprocessable Entity`.
-2. **Evaluación en tiempo real y diagnóstico:** al recibir lecturas válidas, el backend invoca a `RecomendacionService` para comparar los datos contra los rangos de la especie. Si `humedad_suelo < humedad_minima`, el sistema genera en tiempo real la alerta "Riega hoy"; si se encuentra en rango, asigna "Todo bien".
-3. **Tareas programadas en segundo plano (cron jobs):** un proceso asíncrono escanea periódicamente los registros telemétricos. Si un dispositivo no reporta datos en más de 24 horas, actualiza automáticamente el estado del nodo a "Offline".
+1. **Ingesta y autenticación de telemetría (API REST):** el sensor envía un paquete JSON a `POST /api/lecturas` con el encabezado `X-Sensor-Token`. El middleware autentica un sensor activo y el `StoreLecturaSensorRequest` valida el payload. Una credencial ausente o inválida produce HTTP 401; los datos inválidos producen HTTP 422.
+2. **Evaluación en tiempo real y alertas:** `LecturaSensorService` persiste la lectura de la unidad asignada y delega la evaluación de rangos a `EvaluadorUmbralesService`. `AlertaMonitoreoService` mantiene un episodio abierto por unidad/variable, lo actualiza mientras persiste la desviación y lo resuelve al recuperarse la medición. La lógica no reside en `RecomendacionService`.
+3. **Disponibilidad del nodo:** la detección automática de sensores sin lecturas durante más de 24 horas (RF-14) no se encuentra implementada en las rutas/servicios actuales; queda pendiente. Tampoco se verificó firmware físico en el repositorio.
 
 ### 2.4. Vista Física / Despliegue (Physical View)
 
@@ -88,9 +89,9 @@ En el proyecto Adaptia, el proceso amplía su alcance operativo a un modelo de c
 
 **Topología de red y dispositivos en Adaptia:**
 
-- **Capa de dispositivos (Device Layer):** nodos ESP32 ubicados en los hogares de los clientes, equipados con la sonda capacitiva de humedad (GPIO D34), sensor climático DHT22 (GPIO D4) y sensor de luz BH1750 por I2C (GPIO D22/D21). El nodo mide y transmite datos; el control de relés, bombas, electroválvulas y riego automático queda fuera del alcance.
-- **Servidor web y backend (Cloud Layer):** contenedor Docker con Laravel (PHP 8.2) expuesto en el puerto HTTP 8000.
-- **Servidor de persistencia:** contenedor Docker con MySQL 8.0 en el puerto 3306 para el entorno de producción.
+- **Capa de dispositivos (Device Layer, diseño previsto):** el diseño contempla nodos ESP32 en los hogares de clientes con sonda capacitiva de humedad (GPIO D34), DHT22 (GPIO D4) y BH1750 por I2C (GPIO D22/D21). El firmware no está versionado/verificado en el repositorio. El control de relés, bombas, electroválvulas y riego automático queda fuera del alcance.
+- **Servidor web y backend (Cloud Layer):** aplicación Laravel 12 / PHP 8.2. No se encontró `docker-compose.yml` en el repositorio; por tanto, no se afirma un despliegue actual en contenedor.
+- **Persistencia:** MySQL está contemplado para producción y SQLite en memoria está configurado para pruebas. No se verificó un entorno de producción conectado.
 - **Canal de interconexión:** peticiones HTTP/REST con transmisión de mensajes codificados en formato JSON.
 
 ### 2.5. Casos de Uso / Escenarios (el "+1")
@@ -101,7 +102,7 @@ En el proyecto Adaptia, el proceso amplía su alcance operativo a un modelo de c
 
 - **Módulo de Recomendación:** registrar perfil del cliente (RF-01), filtrar plantas tóxicas (RF-02), calcular score de compatibilidad (RF-03) y generar ranking de recomendaciones (RF-04).
 - **Módulo de Monitoreo IoT:** recibir lecturas de los sensores (RF-06), evaluar humedad del suelo y microclima contra los rangos de referencia (RF-07 y RF-08), generar alertas informativas específicas sin actuar sobre hardware (RF-09) y consultar el historial (RF-10).
-- **Módulo de Ventas e Inventario:** autenticación de personal (RF-13), gestionar inventario del vivero (RF-11), registrar venta y descontar stock (RF-05), asignar sensor a la planta (RF-06) y notificar stock bajo (RF-12).
+- **Módulo de Ventas e Inventario:** autenticación de personal, gestión de inventario, registro de ventas con descuento de stock, asignación de sensores y alerta de stock bajo. Los documentos RF actuales no asignan códigos específicos a todos estos flujos; la trazabilidad debe completarse en la especificación funcional.
 
 ---
 
@@ -165,7 +166,7 @@ Análisis de Requerimientos ─────────► Pruebas de Aceptació
 | Fase de diseño de software | Nivel de prueba asociado | Herramienta en Adaptia | Objeto de verificación |
 |---|---|---|---|
 | Diseño de Componentes (Module Design) | Pruebas Unitarias (Unit Tests) | Pest TDD | Funciones puras en `RecomendacionService` (scoring, descarte de toxicidad) sin tocar la BD |
-| Diseño Arquitectónico (Architectural Design) | Pruebas de Integración (Feature Tests) | Pest TDD + SQLite in-memory | Endpoints de la API (`POST /api/telemetria`), interacción con Eloquent ORM y respuestas HTTP |
+| Diseño Arquitectónico (Architectural Design) | Pruebas de Integración (Feature Tests) | Pest TDD + SQLite in-memory | Endpoint `POST /api/lecturas`, autenticación del sensor, validación, persistencia, evaluación de umbrales y respuestas HTTP 401/422 |
 | Diseño del Sistema (System Design) | Pruebas de Sistema / Humo (Smoke Tests) | Pest TDD | Disponibilidad de rutas web, salud de la base de datos y respuestas HTTP sanitizadas (HTTP 422) |
 | Análisis de Requerimientos (Requirements Analysis) | Pruebas de Aceptación / End-to-End | Cypress | Flujo completo del usuario desde el navegador web (Perfil → Recomendación → Venta → Alerta) |
 
@@ -178,7 +179,7 @@ Análisis de Requerimientos ─────────► Pruebas de Aceptació
 | Filtros y scoring botánico | Vista Lógica | `RecomendacionService` (Laravel) | Aradea et al. (2023) / Angel et al. (2025) / Univ. Continental (2026) |
 | Estructura del proyecto | Vista de Desarrollo | Laravel MVC + Livewire / C++ Arduino | Ilyas et al. (2022, p. 8) / Univ. Continental (2026, p. 27, 31) |
 | Ingesta y diagnóstico IoT | Vista de Proceso | FormRequests / Evaluador de umbrales | Méndez-Guzmán et al. (2022, p. 10) / Ilyas et al. (2022, p. 10) |
-| Nodos y contenedores | Vista Física | Nodos ESP32 + Docker Compose | Soibam & Vignesh (2025) / Ilyas et al. (2022) / Univ. Continental |
+| Nodos y contenedores | Vista Física | ESP32 previsto + Docker Compose propuesto; no verificados en repositorio | Soibam & Vignesh (2025) / Ilyas et al. (2022) / Univ. Continental |
 | Módulos del sistema | Escenarios / Casos de Uso | Diagrama UML (PlantUML) | Davis (2003 - NMIS) / Univ. Continental (2026, p. 26) |
 
 ---

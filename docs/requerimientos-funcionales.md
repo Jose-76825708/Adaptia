@@ -57,19 +57,19 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 ### RF-06: Recepción y Registro de Telemetría Multisensor
 
-**Descripción:** La API REST de Laravel (POST /api/telemetria) debe recibir paquetes de datos en formato JSON enviados periódicamente por el nodo ESP32 a través de Wi-Fi. El payload debe contener: planta_id, humedad_suelo (obtenida del sensor capacitivo en GPIO D34), temperatura y humedad_aire (obtenidas del DHT22 en GPIO D4) y fecha_hora4more_horiz.
+**Descripción:** La API REST de Laravel recibe lecturas JSON mediante `POST /api/lecturas`. El sensor se autentica con el encabezado `X-Sensor-Token`; el token se valida contra el hash almacenado y el sensor debe estar activo. El payload implementado contiene `planta_vendida_id`, `humedad_suelo`, `temperatura`, `humedad_ambiental`, `luz` y `fecha_hora`. La unidad indicada debe corresponder al sensor autenticado.
 
-**Criterio de Aceptación:** Cada lectura válida debe guardarse en la tabla LecturaTelemetria asociada a la maceta y usuario correspondientes2223.
+**Criterio de Aceptación:** Cada lectura válida se guarda en `lecturas_sensores`, asociada a una unidad de planta vendida (`planta_vendida_id`) y su sensor asignado. La implementación actual y sus pruebas están en `routes/api.php`, `StoreLecturaSensorRequest` y `LecturaSensorApiTest`.
 
-### RF-07: Evaluación de Umbral Hídrico y Notificación "Riega Hoy"
+### RF-07: Evaluación del umbral hídrico y generación de alerta de riego
 
-**Descripción:** El sistema debe comparar la lectura analógica de humedad del suelo recibida contra el umbral mínimo configurado para la especie en el catálogo. Si humedad_suelo < humedad_minima, el controlador debe actualizar inmediatamente el estado de la planta a "Riega hoy" y enviar una alerta visual al dashboard423.
+**Descripción:** El backend compara la humedad del suelo recibida con los límites mínimo y máximo configurados para la especie. Una lectura por debajo del mínimo genera una alerta informativa de tipo `riego`, visible en el historial/dashboard del cliente. El sistema no ejecuta riego ni cambia un estado físico de la planta.
 
 **Sustento Científico:** Elimina la incertidumbre del agua, resolviendo el factor de ansiedad por riego presente en el 56% de los consumidores49.
 
-### RF-08: Monitoreo de Microclima e Indicador "Todo Bien"
+### RF-08: Evaluación de rangos de microclima y humedad ambiental
 
-**Descripción:** Si la humedad del suelo y la temperatura ambiente se encuentran dentro del rango nominal de la especie, el sistema debe mostrar el estado "Todo Bien" en verde dentro del dashboard del usuario4more_horiz. Si el sensor DHT22 detecta temperaturas fuera de tolerancia, debe emitir una alerta de reubicación por estrés térmico420.
+**Descripción:** El backend compara temperatura, humedad ambiental e iluminación con los rangos mínimo y máximo configurados para la especie. Cuando un valor está fuera de rango, genera una alerta informativa `cuidado_planta` con la variable, medición, rango esperado y dirección de la desviación. La presentación muestra alertas activas; no se encontró un indicador persistido de estado "Todo Bien" ni una alerta específica de reubicación.
 
 **Sustento Científico:** Basado en la arquitectura multisensor del Smart Plant Assistant (ESP32 con DHT22 y BH1750)420 y el sistema IoT con interfaz Blynk324.
 
@@ -93,7 +93,7 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 ### RF-11: Mapeo por Identificador Único de Planta (planta_id)
 
-**Descripción:** Cada maceta física y sensor ESP32 debe enlazarse relacionalmente a un código único (planta_id) que asocie al usuario, la especie de GardenLand y el registro histórico de telemetría26more_horiz.
+**Descripción:** El backend relaciona cada lectura con una unidad de planta vendida (`planta_vendida_id`) y el sensor autenticado, vinculando la planta, su propietario y el historial de telemetría. La asociación lógica está implementada y probada; la identificación física de la maceta mediante etiqueta/código y su operación desde firmware ESP32 no están verificadas.
 
 **Sustento Científico:** Sigue los principios de trazabilidad individual por código o etiqueta probados en inventariado agrícola automatizado2628.
 
@@ -107,7 +107,7 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 ### RF-13: Validaciones API Form Request y Código HTTP 422
 
-**Descripción:** La API REST en Laravel debe validar la estructura del JSON entrante. Si falta algún campo obligatorio, si la marca de tiempo está corrupta o si los valores numéricos están fuera de rango físico, el servidor debe rechazar la petición y retornar un código HTTP 422 Unprocessable Entity2328.
+**Descripción:** La API `POST /api/lecturas` valida la estructura del JSON entrante mediante `StoreLecturaSensorRequest`. Si falta un campo obligatorio, la fecha no cumple el formato admitido o una medición queda fuera del rango físico, Laravel rechaza la petición con HTTP 422 Unprocessable Entity. Las credenciales de sensor ausentes o inválidas se rechazan con HTTP 401 antes de validar el payload.
 
 **Sustento Científico:** Previene la contaminación de la base de datos ante ruidos o interferencias en las transmisiones inalámbricas de campo28.
 
@@ -121,17 +121,17 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 | Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente de Sustento | Estado |
 |---|---|---|---|---|
-| RF-01 | Captura de Perfil y Espacio | Recomendador | Art. 5 (Green Oasis: entradas de entorno)26 | Pendiente (Fase 2) |
+| RF-01 | Captura de Perfil y Espacio | Recomendador | Art. 5 (Green Oasis: entradas de entorno)26 | Completo (perfil del cliente implementado) |
 | RF-02 | Filtros Excluyentes (Toxicidad/Luz) | Recomendador | Art. 52 y Art. 6 (60% preocupación por luz)9 | Completo |
-| RF-03 | Ranking y Score Ponderado | Recomendador | Art. 2 (Fauzia et al., 2023: SPSS Conjoint Analysis)1more_horiz | Completo |
-| RF-04 | Entradas Básicas Sin NPK | Recomendador | Art. 1 (Aradea et al., 2023: CNN 1D + Adagrad, 93.64%)14more_horiz | Completo |
+| RF-03 | Ranking y Score Ponderado | Recomendador | Art. 2 (Fauzia et al., 2023: SPSS Conjoint Analysis)1more_horiz | Implementado; pendiente alinear pesos/variables especificados con el servicio vigente |
+| RF-04 | Entradas Básicas Sin NPK | Recomendador | Art. 1 (Aradea et al., 2023: CNN 1D + Adagrad, 93.64%)14more_horiz | Implementado; pendiente confirmar alcance de entradas frente al servicio vigente |
 | RF-05 | Emparejamiento "Plant Parents" | Recomendador | Art. 6 (OnePoll: 70% plant parents, 67% reto)1819 | Completo |
-| RF-06 | Recepción y registro de lecturas JSON | Telemetría IoT | Art. 7 (ESP32 y sensores multisensor) | En progreso (Fase 4) |
-| RF-07 | Evaluación del umbral hídrico | Telemetría IoT | Art. 7 y Art. 6 (necesidad de riego) | Pendiente (Fase 4) |
-| RF-08 | Monitoreo de microclima y estado de la planta | Telemetría IoT | Art. 7 (DHT22/BH1750) y Art. 8 | Pendiente (Fase 4) |
-| RF-09 | Alertas informativas por mediciones fuera de rango | Telemetría IoT | Rangos de referencia configurados por especie | Pendiente (Fase 4) |
-| RF-10 | Vista de historial/alertas del cliente | Base de Datos / Cliente | Art. 326 y Art. 4 (Trazabilidad por id)28 | Pendiente (Fase 2) |
-| RF-11 | Mapeo por planta_id Único | Base de Datos | Art. 3 (NMIS: gestión relacional unificada)2627 | Pendiente (Fase 4) |
+| RF-06 | Recepción y registro de lecturas JSON autenticadas | Telemetría IoT | Art. 7 (ESP32 y sensores multisensor) | Backend completo y probado; integración con firmware físico pendiente |
+| RF-07 | Evaluación de umbrales de medición | Telemetría IoT | Art. 7 y Art. 6 (necesidad de riego) | Completo en backend y probado |
+| RF-08 | Evaluación de rangos de microclima | Telemetría IoT | Art. 7 (DHT22/BH1750) y Art. 8 | Completo en backend y probado; la visualización refleja alertas activas |
+| RF-09 | Alertas informativas por mediciones fuera de rango | Telemetría IoT | Rangos de referencia configurados por especie | Completo en backend y probado |
+| RF-10 | Vista de historial/alertas del cliente | Base de Datos / Cliente | Art. 326 y Art. 4 (Trazabilidad por id)28 | Completo y probado; firmware físico no requerido para las pruebas |
+| RF-11 | Asociación de planta vendida, cliente y sensor | Base de Datos | Art. 3 (NMIS: gestión relacional unificada)2627 | Completo en backend y probado |
 | RF-12 | Alerta de stock bajo por especie | Inventario | Art. 3 y Art. 4 (Stock mínimo y actual) | Completo |
-| RF-13 | Validaciones API (HTTP 422) | API / Calidad | Art. 4 (Manejo de interferencias en datos)28 | Pendiente (Fase 4) |
+| RF-13 | Validaciones API y respuestas HTTP 401/422 | API / Calidad | Art. 4 (Manejo de interferencias en datos)28 | Completo en backend y probado |
 | RF-14 | Detección de Sensores Offline | API / Calidad | Art. 326 y Art. 4 (Control de pérdida de paquetes)28 | Pendiente (Fase 4) |

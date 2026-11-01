@@ -73,9 +73,7 @@ Personas responsables de la revisión y de la aprobación formal del presente pl
 
 Este documento es el plan de pruebas de software de Adaptia. Su propósito es definir el alcance, la estrategia, los criterios, los recursos y la organización del esfuerzo de pruebas del sistema, de modo que los resultados sean verificables y repetibles. Se trata de un plan de nivel detallado: además de la estrategia general, especifica los módulos a probar, los tipos de prueba, los criterios de aceptación, suspensión y reanudación, y las pruebas automatizadas ya implementadas en el repositorio.
 
-El alcance del esfuerzo de pruebas corresponde a las fases 1 y 2 del proyecto, que son las implementadas hasta la fecha: administración de catálogo e inventario (tipos de planta, plantas, movimientos de inventario y sensores), autenticación con roles, perfil e historial del cliente, y el motor de recomendación multicriterio. Las fases 3 (ventas y vendedor), 4 (monitoreo IoT) y 5 (notificaciones) aún no están desarrolladas, por lo que sus pruebas quedan fuera de esta versión del plan y algunas serán incorporadas en la versión 2.0.
-
-El esfuerzo se concentra en el módulo de recomendación, que cuenta al momento de emitir este documento con 11 pruebas automatizadas en verde (9 unitarias y 2 de integración con base de datos), más la prueba base de ejemplo del proyecto, para un total de 12 pruebas que se ejecutan con el comando composer test (php artisan test) sobre una base de datos SQLite en memoria.
+El plan se originó para las fases 1 y 2. El repositorio actual también contiene funcionalidades y pruebas de la fase 3 (ventas y vendedor) y de la fase 4 (backend de monitoreo IoT). La fase 5 (notificaciones push/correo) y la integración física ESP32 no están verificadas en la corrida aquí descrita. En una corrida local del 2026-10-31, `php artisan test` ejecutó 130 pruebas y 774 aserciones, todas aprobadas, usando SQLite en memoria. La cifra es evidencia fechada y puede variar al cambiar la suite. Mantener este documento como plan evolutivo exige distinguir su alcance original de la cobertura actual.
 
 Restricciones: el proyecto se ejecuta sin presupuesto y sin servidores dedicados de pruebas; todo el esfuerzo se realiza en los equipos locales de los integrantes y dentro del calendario del ciclo académico. El equipo de pruebas está conformado por tres integrantes que, además, cubren el desarrollo del software.
 
@@ -104,7 +102,7 @@ Desde el punto de vista del usuario, las funcionalidades nuevas o modificadas qu
 - El administrador registra, edita y elimina tipos de planta y plantas, con imagen, precios, enums de cuidado y niveles de stock.
 - El administrador registra entradas y salidas de inventario y consulta la alerta de stock bajo por especie (RF-12).
 - El administrador registra los sensores disponibles antes de asignarlos.
-- El cliente consulta su historial de alertas (RF-10), funcionalidad que puede presentarse vacía hasta la fase de monitoreo IoT.
+- El cliente consulta su historial de alertas (RF-10); la vista y las pruebas existen, aunque el historial puede estar vacío si no se han recibido lecturas.
 
 ### Pruebas de regresión
 
@@ -118,11 +116,10 @@ Funcionalidades que no son el foco del cambio actual pero que dependen de compon
 
 En Adaptia la regresión del módulo de recomendación es automatizada: la suite de Pest (tests/Unit y tests/Feature) se ejecuta con composer test después de cada corrección de defecto o modificación del modelo de datos. Esto evita el error más frecuente en el seguimiento de incidencias: cerrar un defecto sin verificar que las funcionalidades vecinas continúan funcionando adecuadamente. Este planteamiento coincide con lo señalado por Shah et al. (2025): ejecutar de forma repetida y frecuente las pruebas previas hace más efectiva la regresión y permite a los equipos contener aquellos casos en que una actualización o una corrección introduce nuevos problemas (p. 3). Las áreas sin automatizar (CRUDs por interfaz) se cubren con un recorrido manual de regresión reducido, priorizando las rutas críticas de administrador y de cliente.
 
-### Funcionalidades a no probar
+### Funcionalidades no cubiertas por esta evidencia automatizada
 
-- Monitoreo IoT: firmware del ESP32 y endpoint POST /api/lecturas (fase 4 no iniciada). Además de que la fase aún no se inicia, la literatura explica por qué esta validación exige un tratamiento diferenciado: probar sistemas IoT difiere de probar software convencional y requiere enfoques y herramientas específicos (Ferreira et al., 2023, p. 113); además, los dispositivos suelen contar con menos recursos de procesamiento, memoria, almacenamiento y energía, lo que impide emplear recursos de prueba más sofisticados, y el acoplamiento más estrecho entre software y hardware vuelve las pruebas más complejas y costosas (Ferreira et al., 2023, p. 114). Riesgo asumido: al desarrollarse la fase, la integración entre el dispositivo y el backend podría exigir ajustar este plan.
+- Integración física ESP32, transmisión inalámbrica sostenida y detección de sensor offline (RF-14): no se encontró firmware versionado y RF-14 no está implementado. El backend `POST /api/lecturas`, autenticación, validación, evaluación de umbrales, alertas por episodios e historial del cliente sí cuentan con pruebas Pest. La literatura explica que probar sistemas IoT exige enfoques específicos (Ferreira et al., 2023, p. 113) y que el acoplamiento con hardware vuelve las pruebas más complejas y costosas (p. 114).
 - Notificaciones push y por correo (fase 5 no iniciada). Riesgo asumido: no se valida la entrega de alertas al cliente hasta que la fase esté desarrollada.
-- Módulo de ventas del vendedor y asignación de sensores a plantas vendidas (fase 3 en progreso). Riesgo asumido: el descuento automático de stock por venta no estará verificado en esta versión del plan.
 - Pruebas de carga, estrés y seguridad ofensiva: no se cuenta con entorno desplegado ni servidores, y el alcance es académico. Riesgo asumido: no se detectarían problemas de desempeño ni vulnerabilidades en un entorno productivo.
 - Compatibilidad con navegadores antiguos o equipos de bajo rendimiento: se validan únicamente las versiones actuales de Google Chrome y Mozilla Firefox.
 
@@ -143,7 +140,7 @@ Configuración del entorno de pruebas (phpunit.xml): APP_ENV=testing, base de da
 
 ### Criterios de aceptación o rechazo
 
-- 100 % de las pruebas automatizadas en verde: 12 pruebas (11 del módulo de recomendación y 1 de ejemplo) al momento de emitir este plan, sin tendencia a decrecer. Este criterio toma la suite automatizada como evidencia objetiva de calidad. En el estudio de caso de una plataforma de comercio electrónico reportado por Shah et al. (2025), la adopción de herramientas automatizadas amplió el alcance de la regresión de 60 % a 95 % y redujo el tiempo de ejecución de la suite de unas 10 horas a 3 (p. 8); estos valores corresponden a otro contexto y no constituyen un umbral de referencia para Adaptia, por lo que el 100 % exigido es una decisión propia del equipo.
+- 100 % de las pruebas automatizadas de la corrida aceptadas en verde. La corrida local del 2026-10-31 aprobó 130 pruebas y 774 aserciones de Pest; Node aprobó 9 pruebas JavaScript. Estos resultados describen esa ejecución y no garantizan el estado futuro ni cubren la prueba física del ESP32. En el estudio de caso de una plataforma de comercio electrónico reportado por Shah et al. (2025), la adopción de herramientas automatizadas amplió el alcance de regresión de 60 % a 95 % y redujo el tiempo de ejecución de unas 10 horas a 3 (p. 8); esos valores corresponden a otro contexto.
 - Cobertura de todas las funciones públicas del motor de recomendación (compatibilidadOrdinal, compatibilidadCategoria, calculaScore, plantasNoToxicas y generarRecomendaciones).
 - 100 % de los casos de prueba de la fase ejecutados y aprobados antes de declarar la fase cerrada.
 - 0 defectos críticos o altos abiertos; los defectos menores deben tener responsable y fecha de corrección.

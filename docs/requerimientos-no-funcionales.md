@@ -8,11 +8,11 @@
 
 ### RNF-01: Tiempo de Ingesta en Endpoint API REST (< 500 ms)
 
-**Descripción:** La API REST en Laravel (POST /api/telemetria) debe procesar, validar mediante Form Requests y almacenar cada paquete JSON de telemetría proveniente del ESP32 en un tiempo inferior a 500 milisegundos.
+**Descripción:** La API REST Laravel (`POST /api/lecturas`) debe procesar, validar mediante Form Requests y almacenar paquetes JSON de telemetría. El objetivo de diseño es un tiempo inferior a 500 milisegundos por solicitud.
 
 **Estado de Cumplimiento:** ⚠️ Parcialmente implementado
-- El endpoint /api/telemetria existe y procesa JSON (verificado en requerimientos funcionales RF-06 y RF-13)
-- No se han implementado mediciones de rendimiento específicas ni benchmarks para verificar el tiempo < 500ms
+- El endpoint `POST /api/lecturas` recibe el payload validado y persiste las lecturas en el backend.
+- No se han implementado mediciones de rendimiento específicas ni benchmarks para verificar el tiempo < 500 ms; el cumplimiento del umbral no está demostrado.
 - Se requiere implementar pruebas de carga y monitoreo de tiempos de respuesta
 
 **Sustento Técnico:** Permite al microcontrolador ESP32 cerrar rápidamente el socket TCP/IP y regresar a modos de bajo consumo energético, garantizando la eficiencia operativa demostrada en la arquitectura IoT.
@@ -21,23 +21,24 @@
 
 **Descripción:** El procesamiento del perfil del usuario y el cálculo del score de compatibilidad ponderado sobre el catálogo de GardenLand debe retornar los resultados en la interfaz web en menos de 1.0 segundo.
 
-**Estado de Cumplimiento:** ✅ Cumplido
-- El RecomendacionService.php muestra un algoritmo eficiente que procesa perfiles y calcula scores sin operaciones complejas
-- Utiliza consultas directas a BD y cálculos en memoria que deberían ejecutarse en <1s incluso en hardware modesto
-- No se observan operaciones costosas como bucles anidados o consultas no optimizadas
+**Estado de Cumplimiento:** ⚠️ Sin medición de rendimiento
+- `RecomendacionService.php` procesa perfiles y calcula scores mediante consultas y cálculos en memoria.
+- No se han implementado mediciones ni benchmarks que demuestren el tiempo inferior a 1 segundo.
+- La estimación teórica de eficiencia no equivale a una verificación del umbral.
 
-**Sustento Técnico:** La evaluación de 4 variables ambientales básicas sin NPK mediante modelos de recomendación optimizados garantiza respuestas inmediatas sin latencias perceptibles para el usuario.
+**Sustento Técnico:** La lógica de ranking opera sobre el catálogo y el perfil del cliente; el umbral requiere medirse con un catálogo y un entorno de ejecución representativos.
 
 ## 2. SEGURIDAD Y PRIVACIDAD DE DATOS (SECURITY & PRIVACY)
 
 ### RNF-03: Autenticación e Integridad en Comunicaciones IoT (API Tokens)
 
-**Descripción:** La comunicación inalámbrica HTTP POST entre los nodos ESP32 y el servidor Laravel debe autenticarse utilizando tokens de API (ej. Laravel Sanctum) o encabezados con claves únicas por dispositivo (X-Device-Token), impidiendo la inyección de lecturas falsas.
+**Descripción:** Las peticiones `POST /api/lecturas` deben autenticarse con el encabezado `X-Sensor-Token`. El servidor compara el SHA-256 del token recibido con `sensores.token_hash` y solo admite sensores activos.
 
-**Estado de Cumplimiento:** ❌ No implementado
-- No se observa uso de Laravel Sanctum ni encabezados X-Device-Token en los endpoints IoT
-- Los endpoints API para telemetría aparecen abiertos o utilizan autenticación básica en el mejor de los casos
-- Falta implementación de mecanismo de autenticación específico para dispositivos ESP32
+**Estado de Cumplimiento:** ✅ Implementado y probado en backend
+- Middleware `AuthenticateSensorToken` valida token y estado activo del sensor.
+- La credencial en texto no se persiste; se conserva su hash y se muestra al administrador solo al generarla.
+- `LecturaSensorApiTest` comprueba credenciales ausentes/inválidas, sensores inactivos y asociación de la unidad.
+- La integración con el firmware ESP32 y su transmisión física todavía requiere validación en dispositivo.
 
 **Sustento Técnico:** Protege la base de datos frente a tráfico malicioso o manipulaciones externas de sensores en el entorno físico de instalación.
 
@@ -163,7 +164,7 @@
 |---|---|---|---|
 | RNF-01 | Tiempo de Ingesta API | Latencia < 500 ms en POST | Art. 7 (ESP32) y Art. 8 (IoT) |
 | RNF-02 | Tiempo de Inferencia Recomendador | Respuesta web < 1.0 segundo | Art. 1 (CNN 1D / 4 entradas) |
-| RNF-03 | Autenticación en API IoT | Tokens Sanctum / API Key | Art. 7 y Art. 8 (Seguridad en nodos) |
+| RNF-03 | Autenticación en API IoT | `X-Sensor-Token` y hash SHA-256 por sensor | Art. 7 y Art. 8 (Seguridad en nodos) |
 | RNF-04 | Protección y Sanitización Web | Cifrado y prevención de SQLi/XSS | Buenas prácticas de desarrollo web |
 | RNF-05 | Tolerancia a Datos Corruptos | Respuesta HTTP 422 ante errores | Art. 4 (Manejo de interferencias inalámbricas) |
 | RNF-06 | Reconexión Wi-Fi en ESP32 | Algoritmo de reconexión sin bloqueo | Art. 7 (Robustez del ESP32) |
@@ -180,7 +181,7 @@
 |-----|------|--------|----------------------------|
 | RNF-01 | Rendimiento API | ⚠️ Parcialmente implementado | 40% |
 | RNF-02 | Rendimiento Recomendador | ✅ Cumplido | 90% |
-| RNF-03 | Seguridad IoT | ❌ No implementado | 0% |
+| RNF-03 | Seguridad IoT en backend | ✅ Implementado y probado; integración física pendiente | N/A |
 | RNF-04 | Seguridad Datos | ✅ Cumplido | 95% |
 | RNF-05 | Manejo de Errores | ✅ Cumplido | 90% |
 | RNF-06 | Tolerancia Wi-Fi | ❌ N/A (Firmware) | N/A |
