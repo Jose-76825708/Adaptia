@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MovimientoInventarioRequest;
 use App\Models\Planta;
 use App\Services\MovimientoInventarioService;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MovimientoInventarioController extends Controller
 {
@@ -28,16 +29,12 @@ class MovimientoInventarioController extends Controller
         return view('movimientos-inventario.create', compact('plantas'));
     }
 
-    public function store(Request $request)
+    public function store(MovimientoInventarioRequest $request)
     {
-        $validar_datos = $request->validate([
-            'planta_id' => 'required|exists:plantas,id',
-            'user_id' => 'required|exists:users,id',
-            'tipo' => 'required|in:entrada,salida',
-            'cantidad' => 'required|integer|min:1',
-        ]);
+        $datos = $request->validated();
+        $datos['user_id'] = Auth::id();
 
-        $this->service->createMovimiento($validar_datos);
+        $this->service->createMovimiento($datos);
 
         return redirect()->route('movimientos-inventario.index')
             ->with('success', 'Movimiento de inventario registrado correctamente.');
@@ -51,16 +48,11 @@ class MovimientoInventarioController extends Controller
         return view('movimientos-inventario.edit', compact('movimiento', 'plantas'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(MovimientoInventarioRequest $request, string $id)
     {
-        $validar_datos = $request->validate([
-            'planta_id' => 'required|exists:plantas,id',
-            'user_id' => 'required|exists:users,id',
-            'tipo' => 'required|in:entrada,salida',
-            'cantidad' => 'required|integer|min:1',
-        ]);
+        $datos = $request->validated();
 
-        $this->service->updateMovimiento($id, $validar_datos);
+        $this->service->updateMovimiento($id, $datos);
 
         return redirect()->route('movimientos-inventario.index')
             ->with('success', 'Movimiento de inventario actualizado correctamente.');
