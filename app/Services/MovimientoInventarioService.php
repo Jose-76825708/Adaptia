@@ -45,9 +45,8 @@ class MovimientoInventarioService
     public function createMovimiento(array $data): Model
     {
         return DB::transaction(function () use ($data) {
-            $movimiento = MovimientoInventario::create($data);
-
             $planta = Planta::query()->lockForUpdate()->findOrFail($data['planta_id']);
+            $stockAntes = $planta->stock_actual;
 
             if ($data['tipo'] === 'entrada') {
                 $planta->increment('stock_actual', $data['cantidad']);
@@ -58,6 +57,12 @@ class MovimientoInventarioService
                 $planta->decrement('stock_actual', $data['cantidad']);
             }
             $planta->save();
+
+            $movimiento = MovimientoInventario::create([
+                ...$data,
+                'stock_antes' => $stockAntes,
+                'stock_despues' => $planta->stock_actual,
+            ]);
 
             $this->alertaStockService->evaluar($planta, 'Stock bajo detectado tras movimiento de inventario', [
                 'planta_id' => $planta->id,
@@ -85,6 +90,7 @@ class MovimientoInventarioService
             $movimiento = $this->getById($id);
 
             $planta = Planta::query()->lockForUpdate()->findOrFail($movimiento->planta_id);
+            $stockAntes = $planta->stock_actual;
             $efectoActual = ($movimiento->tipo === 'entrada') ? $movimiento->cantidad : -$movimiento->cantidad;
 
             $nuevoTipo = $data['tipo'] ?? $movimiento->tipo;
@@ -104,6 +110,11 @@ class MovimientoInventarioService
                 $planta->decrement('stock_actual', $reduccion);
             }
             $planta->save();
+
+            $movimiento->update([
+                'stock_antes' => $stockAntes,
+                'stock_despues' => $planta->stock_actual,
+            ]);
 
             $this->alertaStockService->evaluar($planta, 'Stock bajo detectado tras actualización de movimiento', [
                 'planta_id' => $planta->id,

@@ -70,6 +70,8 @@ class VentaService
                 ]);
             }
 
+            $stockAntes = $planta->stock_actual;
+
             $venta = Venta::create([
                 'user_id' => $cliente->id,
                 'vendedor_id' => $vendedor->id,
@@ -93,6 +95,8 @@ class VentaService
                 'user_id' => $vendedor->id,
                 'tipo' => 'salida',
                 'cantidad' => $datos['cantidad'],
+                'stock_antes' => $stockAntes,
+                'stock_despues' => $planta->stock_actual,
             ]);
 
             $this->alertaStockService->evaluar($planta, 'Stock bajo detectado tras registrar venta', [
