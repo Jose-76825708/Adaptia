@@ -17,11 +17,16 @@ class MovimientoInventario extends Model
         'user_id',
         'tipo',
         'cantidad',
+        'motivo',
+        'stock_antes',
+        'stock_despues',
     ];
 
     protected $casts = [
         'tipo' => 'string',
         'cantidad' => 'integer',
+        'stock_antes' => 'integer',
+        'stock_despues' => 'integer',
     ];
 
     public function planta(): BelongsTo
