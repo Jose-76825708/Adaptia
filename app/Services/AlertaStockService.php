@@ -5,22 +5,41 @@ namespace App\Services;
 use App\Models\Alerta;
 use App\Models\Planta;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use InvalidArgumentException;
 
 class AlertaStockService
 {
     /**
      * Evalúa si la planta requiere una alerta persistente de stock bajo.
-     * Supuesto: el llamador debe serializar la operación con lockForUpdate() cuando
-     * necesite evitar duplicados concurrentes en la misma fila de alerta.
+     * La validación ocurre siempre después del cambio de stock para cubrir
+     * también el caso en el que el stock vuelve a la normalidad.
      */
-    public function evaluar(Planta $planta): ?Alerta
+    public function evaluar(Planta $planta, string $contexto = 'Stock bajo detectado', array $extra = []): ?Alerta
     {
         if (! $planta->exists) {
             throw new InvalidArgumentException('La planta debe existir para evaluar su stock bajo.');
         }
 
-        if (! $this->esStockBajo((int) $planta->stock_actual, (int) $planta->stock_minimo)) {
+        $stockBajo = $this->esStockBajo((int) $planta->stock_actual, (int) $planta->stock_minimo);
+
+        if ($stockBajo) {
+            Session::flash(
+                'stock_warning',
+                "Advertencia: El stock de {$planta->nombre} está bajo el mínimo. " .
+                    "Actual: {$planta->stock_actual}, Mínimo: {$planta->stock_minimo}"
+            );
+
+            Log::warning($contexto, array_merge([
+                'planta_id' => $planta->id,
+                'planta_nombre' => $planta->nombre,
+                'stock_actual' => $planta->stock_actual,
+                'stock_minimo' => $planta->stock_minimo,
+            ], $extra));
+        }
+
+        if (! $stockBajo) {
             return $this->resolverAlertaAbiertaPorPlanta($planta);
         }
 

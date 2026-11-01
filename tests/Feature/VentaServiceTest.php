@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Alerta;
 use App\Models\MovimientoInventario;
 use App\Models\Planta;
 use App\Models\PlantaVendida;
@@ -10,6 +11,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Tests\Support\MonitoreoFixtures;
 
@@ -164,4 +166,74 @@ test('emite advertencia cuando la venta deja el stock bajo el mínimo', function
 
     expect(session()->get('stock_warning'))
         ->toBe("Advertencia: El stock de {$planta->nombre} está bajo el mínimo. Actual: 1, Mínimo: 2");
+});
+
+
+test('genera alerta persistente al registrar una venta bajo el mínimo', function () {
+    Log::spy();
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
+    $planta = Planta::factory()->create([
+        'stock_actual' => 3,
+        'stock_minimo' => 2,
+    ]);
+
+    app(VentaService::class)->registrarVenta(
+        datosVenta($cliente, $planta, 2),
+        $vendedor
+    );
+
+    expect(session()->get('stock_warning'))
+        ->toBe("Advertencia: El stock de {$planta->nombre} está bajo el mínimo. Actual: 1, Mínimo: 2")
+        ->and(Alerta::where('planta_id', $planta->id)->where('tipo', 'stock_bajo')->count())->toBe(1);
+    Log::shouldHaveReceived('warning')
+        ->once()
+        ->with('Stock bajo detectado tras registrar venta', Mockery::any());
+});
+
+test('resuelve la alerta si una venta posterior recupera el stock', function () {
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
+    $planta = Planta::factory()->create([
+        'stock_actual' => 3,
+        'stock_minimo' => 2,
+    ]);
+
+    app(VentaService::class)->registrarVenta(
+        datosVenta($cliente, $planta, 2),
+        $vendedor
+    );
+
+    $alerta = Alerta::where('planta_id', $planta->id)->where('tipo', 'stock_bajo')->first();
+    expect($alerta)->not->toBeNull();
+
+    $planta->stock_actual = 3;
+    $planta->save();
+    app(\App\Services\AlertaStockService::class)->evaluar($planta);
+    $alerta->refresh();
+
+    expect($alerta->resuelta_en)->not->toBeNull();
+});
+
+test('rollback sin alerta huérfana cuando la alerta falla después de crearse', function () {
+    $cliente = MonitoreoFixtures::cliente();
+    $vendedor = MonitoreoFixtures::vendedor();
+    $planta = Planta::factory()->create([
+        'stock_actual' => 2,
+        'stock_minimo' => 3,
+    ]);
+
+    DB::listen(function (QueryExecuted $query) {
+        if (str_contains(strtolower($query->sql), 'insert into "alertas"')) {
+            throw new RuntimeException('Fallo simulado al crear alerta.');
+        }
+    });
+
+    expect(fn () => app(VentaService::class)->registrarVenta(
+        datosVenta($cliente, $planta, 1),
+        $vendedor
+    ))->toThrow(RuntimeException::class, 'Fallo simulado al crear alerta.');
+
+    expect(Alerta::count())->toBe(0)
+        ->and($planta->fresh()->stock_actual)->toBe(2);
 });

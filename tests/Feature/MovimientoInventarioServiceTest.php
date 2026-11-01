@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Alerta;
 use App\Exceptions\StockInsuficienteException;
 use App\Models\MovimientoInventario;
 use App\Models\Planta;
@@ -192,4 +193,114 @@ test('registra advertencia al eliminar un movimiento que deja el stock bajo el m
     Log::shouldHaveReceived('warning')
         ->once()
         ->with('Stock bajo detectado tras eliminación de movimiento', Mockery::any());
+});
+
+
+test('genera alerta persistente al registrar una entrada bajo el mínimo', function () {
+    Log::spy();
+    $usuario = User::factory()->create();
+    $planta = Planta::factory()->create([
+        'stock_actual' => 1,
+        'stock_minimo' => 3,
+        'nombre' => 'Monstera',
+    ]);
+
+    app(MovimientoInventarioService::class)->createMovimiento(
+        datosMovimientoInventario($usuario, $planta, 'entrada', 1)
+    );
+
+    expect(session('stock_warning'))
+        ->toBe('Advertencia: El stock de Monstera está bajo el mínimo. Actual: 2, Mínimo: 3')
+        ->and(Alerta::where('planta_id', $planta->id)->where('tipo', 'stock_bajo')->count())->toBe(1);
+    Log::shouldHaveReceived('warning')
+        ->once()
+        ->with('Stock bajo detectado tras movimiento de inventario', Mockery::any());
+});
+
+test('genera alerta persistente al actualizar un movimiento bajo el mínimo', function () {
+    Log::spy();
+    $usuario = User::factory()->create();
+    $planta = Planta::factory()->create(['stock_actual' => 3, 'stock_minimo' => 3]);
+    $movimiento = MovimientoInventario::create(
+        datosMovimientoInventario($usuario, $planta, 'salida', 1)
+    );
+
+    app(MovimientoInventarioService::class)->updateMovimiento((string) $movimiento->id, [
+        'cantidad' => 2,
+    ]);
+
+    expect(session('stock_warning'))
+        ->toBe("Advertencia: El stock de {$planta->nombre} está bajo el mínimo. Actual: 2, Mínimo: 3")
+        ->and(Alerta::where('planta_id', $planta->id)->where('tipo', 'stock_bajo')->count())->toBe(1);
+    Log::shouldHaveReceived('warning')
+        ->once()
+        ->with('Stock bajo detectado tras actualización de movimiento', Mockery::any());
+});
+
+test('genera alerta persistente al eliminar un movimiento bajo el mínimo', function () {
+    Log::spy();
+    $usuario = User::factory()->create();
+    $planta = Planta::factory()->create(['stock_actual' => 1, 'stock_minimo' => 3]);
+    $movimiento = MovimientoInventario::create(
+        datosMovimientoInventario($usuario, $planta, 'salida', 1)
+    );
+
+    app(MovimientoInventarioService::class)->deleteMovimiento((string) $movimiento->id);
+
+    expect(session('stock_warning'))
+        ->toBe("Advertencia: El stock de {$planta->nombre} está bajo el mínimo. Actual: 2, Mínimo: 3")
+        ->and(Alerta::where('planta_id', $planta->id)->where('tipo', 'stock_bajo')->count())->toBe(1);
+    Log::shouldHaveReceived('warning')
+        ->once()
+        ->with('Stock bajo detectado tras eliminación de movimiento', Mockery::any());
+});
+
+test('resuelve la alerta cuando un update recupera el stock', function () {
+    $usuario = User::factory()->create();
+    $planta = Planta::factory()->create(['stock_actual' => 0, 'stock_minimo' => 3]);
+
+    $movimiento = app(MovimientoInventarioService::class)->createMovimiento(
+        datosMovimientoInventario($usuario, $planta, 'entrada', 1)
+    );
+    $alerta = Alerta::where('planta_id', $planta->id)->where('tipo', 'stock_bajo')->first();
+
+    expect($alerta)->not->toBeNull()
+        ->and($alerta->resuelta_en)->toBeNull();
+
+    app(MovimientoInventarioService::class)->updateMovimiento((string) $movimiento->id, ['cantidad' => 3]);
+    $alerta->refresh();
+
+    expect($alerta->resuelta_en)->not->toBeNull();
+});
+
+test('resuelve la alerta al eliminar un movimiento', function () {
+    $usuario = User::factory()->create();
+    $planta = Planta::factory()->create(['stock_actual' => 4, 'stock_minimo' => 3]);
+
+    $movimiento = app(MovimientoInventarioService::class)->createMovimiento(
+        datosMovimientoInventario($usuario, $planta, 'salida', 2)
+    );
+    $alerta = Alerta::where('planta_id', $planta->id)->where('tipo', 'stock_bajo')->first();
+
+    expect($alerta)->not->toBeNull()
+        ->and($alerta->resuelta_en)->toBeNull();
+
+    app(MovimientoInventarioService::class)->deleteMovimiento((string) $movimiento->id);
+    $alerta->refresh();
+
+    expect($alerta->resuelta_en)->not->toBeNull();
+});
+
+test('no duplica alertas en dos bajas consecutivas sobre el mismo stock crítico', function () {
+    $usuario = User::factory()->create();
+    $planta = Planta::factory()->create(['stock_actual' => 3, 'stock_minimo' => 2]);
+
+    app(MovimientoInventarioService::class)->createMovimiento(
+        datosMovimientoInventario($usuario, $planta, 'salida', 2)
+    );
+    app(MovimientoInventarioService::class)->createMovimiento(
+        datosMovimientoInventario($usuario, $planta, 'salida', 1)
+    );
+
+    expect(Alerta::where('planta_id', $planta->id)->where('tipo', 'stock_bajo')->count())->toBe(1);
 });

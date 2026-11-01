@@ -10,12 +10,14 @@ use App\Models\Venta;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 
 class VentaService
 {
+    public function __construct(private AlertaStockService $alertaStockService)
+    {
+    }
+
     public function getAll(): Collection
     {
         return Venta::with(['cliente', 'vendedor', 'planta', 'plantasVendidas.sensor'])
@@ -93,17 +95,7 @@ class VentaService
                 'cantidad' => $datos['cantidad'],
             ]);
 
-            return [$venta, $planta];
-        });
-
-        if ($planta->stock_actual < $planta->stock_minimo) {
-            Session::flash(
-                'stock_warning',
-                "Advertencia: El stock de {$planta->nombre} está bajo el mínimo. " .
-                    "Actual: {$planta->stock_actual}, Mínimo: {$planta->stock_minimo}"
-            );
-
-            Log::warning('Stock bajo detectado tras registrar venta', [
+            $this->alertaStockService->evaluar($planta, 'Stock bajo detectado tras registrar venta', [
                 'planta_id' => $planta->id,
                 'planta_nombre' => $planta->nombre,
                 'stock_actual' => $planta->stock_actual,
@@ -113,8 +105,11 @@ class VentaService
                 'venta_id' => $venta->id,
                 'vendedor_id' => $vendedor->id,
             ]);
-        }
+
+            return [$venta, $planta];
+        });
 
         return $venta;
     }
 }
+
