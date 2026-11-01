@@ -19,6 +19,7 @@ class MovimientoInventarioRequest extends FormRequest
             'planta_id' => ['required', 'exists:plantas,id'],
             'tipo' => ['required', 'in:entrada,salida'],
             'cantidad' => ['required', 'integer', 'min:1'],
+            'motivo' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

@@ -84,6 +84,14 @@
                         </div>
                     </div>
 
+                    <div class="flex flex-col gap-2">
+                        <label for="motivo" class="text-[#304e42] font-semibold text-[1.1em]">Motivo (opcional)</label>
+                        <input type="text" name="motivo" id="motivo" maxlength="255"
+                               class="p-4 bg-[#f3f5f3] border-2 @error('motivo') border-red-500 @else border-[#ecedea] @enderror rounded-[10px] outline-none focus:border-[#629f22] transition duration-300"
+                               placeholder="Ej: Reposición de proveedor" value="{{ old('motivo', $movimiento->motivo) }}">
+                        @error('motivo') <span class="text-red-500 text-[0.9em] font-medium">{{ $message }}</span> @enderror
+                    </div>
+
                     <div class="flex justify-end mt-6">
                         <button type="submit"
                                 class="flex items-center justify-between py-4 px-10 bg-[#629f22] text-[#fbfbfb] rounded-[10px] gap-3 hover:scale-110 transition duration-300 font-bold text-[1.1em]">
