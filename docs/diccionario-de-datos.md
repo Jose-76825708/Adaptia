@@ -92,12 +92,13 @@ La respuesta también incluye `alertas`, con la categoría (`riego` o `cuidado_p
 
 ## 6. TABLA: alertas (Alertas informativas)
 
-Las alertas de monitoreo conservan los tipos existentes `riego` y `stock_bajo`, y agregan `cuidado_planta` para las demás condiciones ambientales. Se mantiene como máximo un episodio abierto por unidad y variable; las lecturas posteriores actualizan su medición/mensaje, y una lectura dentro del rango lo resuelve. Los campos específicos de medición son opcionales para preservar alertas existentes y alertas no relacionadas con sensores.
+Las alertas de monitoreo conservan los tipos existentes `riego` y `stock_bajo`, y agregan `cuidado_planta` para las demás condiciones ambientales. Para `stock_bajo`, la alerta se asocia a una `planta` del catálogo y la FK a `planta_vendida_id` debe quedar nula; para alertas de monitoreo de sensor, la FK a `planta_vendida_id` es la activa y `planta_id` queda nula. La regla de integridad exige que exactamente una de las dos claves foráneas sea no nula.
 
 | Campo | Tipo de Dato | Requerido | Clave | Descripción y dominio |
 |---|---|---|---|---|
 | id | BIGINT (Unsigned) | Sí | PK | Identificador de la alerta. |
-| planta_vendida_id | BIGINT (Unsigned) | Sí | FK | Unidad individual a la que corresponde la alerta. |
+| planta_id | BIGINT (Unsigned) | No | FK | Planta del catálogo asociada a una alerta de stock bajo. Nulo para alertas de sensor. |
+| planta_vendida_id | BIGINT (Unsigned) | No | FK | Unidad individual a la que corresponde la alerta de monitoreo. Nulo para alertas por stock del catálogo. |
 | tipo | ENUM | Sí | - | Categoría: `riego`, `abono`, `stock_bajo` o `cuidado_planta`. |
 | variable | VARCHAR | No | - | Medición afectada: `humedad_suelo`, `temperatura`, `humedad_ambiental` o `luz`. |
 | valor_medido | DECIMAL(10,2) | No | - | Valor más reciente recibido mientras el episodio permanece activo. |

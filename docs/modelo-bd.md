@@ -114,7 +114,8 @@ entity "lecturas_sensores" as lecturas_sensores {
 entity "alertas" as alertas {
   * id : bigint <<PK>>
   --
-  planta_vendida_id : bigint <<FK>>
+  planta_id : bigint <<FK>> (nullable)
+  planta_vendida_id : bigint <<FK>> (nullable)
   tipo : enum(riego, abono, stock_bajo, cuidado_planta)
   variable : string (nullable)
   valor_medido : decimal (nullable)
@@ -125,6 +126,8 @@ entity "alertas" as alertas {
   mensaje : text (nullable)
   leida : boolean
   resuelta_en : timestamp (nullable)
+  --
+  note: debe existir exactamente una FK no nula
 }
 
 entity "notificaciones" as notificaciones {
@@ -150,6 +153,7 @@ users ||--o{ plantas_vendidas
 sensores ||--o| plantas_vendidas
 
 plantas_vendidas ||--o{ lecturas_sensores
+plantas ||--o{ alertas
 plantas_vendidas ||--o{ alertas
 alertas ||--o{ notificaciones
 users ||--o{ notificaciones
