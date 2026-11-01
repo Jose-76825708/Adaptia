@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Alerta;
 use App\Models\Planta;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
@@ -71,6 +72,54 @@ class AlertaStockService
                 'resuelta_en' => null,
             ]);
         });
+    }
+
+    public function listarPaginadas(string $estado = 'abiertas'): LengthAwarePaginator
+    {
+        $estadosValidos = ['abiertas', 'no_leidas', 'leidas', 'resueltas', 'todas'];
+
+        if (! in_array($estado, $estadosValidos, true)) {
+            $estado = 'abiertas';
+        }
+
+        $query = Alerta::query()
+            ->whereNotNull('planta_id')
+            ->with('planta');
+
+        switch ($estado) {
+            case 'abiertas':
+                $query->whereNull('resuelta_en');
+                break;
+            case 'no_leidas':
+                $query->whereNull('resuelta_en')->where('leida', false);
+                break;
+            case 'leidas':
+                $query->whereNull('resuelta_en')->where('leida', true);
+                break;
+            case 'resueltas':
+                $query->whereNotNull('resuelta_en');
+                break;
+            case 'todas':
+            default:
+                break;
+        }
+
+        return $query
+            ->orderByDesc('created_at')
+            ->paginate(15)
+            ->withQueryString();
+    }
+
+    public function marcarLeida(Alerta $alerta): Alerta
+    {
+        if ($alerta->resuelta_en !== null || $alerta->leida) {
+            return $alerta;
+        }
+
+        $alerta->leida = true;
+        $alerta->save();
+
+        return $alerta;
     }
 
     private function alertaAbiertaPorPlanta(Planta $planta): ?Alerta

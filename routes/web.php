@@ -46,6 +46,11 @@ Route::middleware(['auth', 'role:administrador'])->group(function () {
         ->name('personal.create');
     Route::post('/personal', [PersonalController::class, 'store'])
         ->name('personal.store');
+
+    Route::get('/alertas-stock', [App\Http\Controllers\AlertaStockController::class, 'index'])
+        ->name('alertas-stock.index');
+    Route::patch('/alertas-stock/{alerta}/leida', [App\Http\Controllers\AlertaStockController::class, 'marcarLeida'])
+        ->name('alertas-stock.marcar-leida');
 });
 
 // Consulta y registro de ventas exclusivos para vendedores.
