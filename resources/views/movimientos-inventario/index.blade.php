@@ -44,6 +44,62 @@
         @endif
 
         @php($esAdmin = auth()->user()->rol === 'administrador')
+        @php($hayFiltros = collect($filtros)->filter()->isNotEmpty())
+
+        @if($errors->hasAny(['planta_id', 'tipo', 'desde', 'hasta', 'page']))
+            <div class="p-4 bg-red-100 text-red-700 rounded-[10px] border border-red-200 font-medium">
+                @foreach($errors->only(['planta_id', 'tipo', 'desde', 'hasta', 'page']) as $mensajes)
+                    @foreach((array) $mensajes as $mensaje)
+                        <p>{{ $mensaje }}</p>
+                    @endforeach
+                @endforeach
+            </div>
+        @endif
+
+        <form method="GET" action="{{ route('movimientos-inventario.index') }}"
+            class="flex flex-wrap items-end gap-4 p-6 bg-[#fefdfe] text-[#304e42] rounded-[10px] shadow-xl">
+            <div class="flex flex-col gap-1">
+                <label for="filtro-planta" class="font-bold">Planta</label>
+                <select id="filtro-planta" name="planta_id"
+                    class="p-2 bg-[#f3f5f3] border-2 border-[#ecedea] rounded-[8px] outline-none focus:border-[#629f22]">
+                    <option value="">Todas</option>
+                    @foreach($plantas as $planta)
+                        <option value="{{ $planta->id }}" @selected((string) ($filtros['planta_id'] ?? '') === (string) $planta->id)>
+                            {{ $planta->nombre }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label for="filtro-tipo" class="font-bold">Tipo</label>
+                <select id="filtro-tipo" name="tipo"
+                    class="p-2 bg-[#f3f5f3] border-2 border-[#ecedea] rounded-[8px] outline-none focus:border-[#629f22]">
+                    <option value="">Todos</option>
+                    <option value="entrada" @selected(($filtros['tipo'] ?? '') === 'entrada')>Entrada</option>
+                    <option value="salida" @selected(($filtros['tipo'] ?? '') === 'salida')>Salida</option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label for="filtro-desde" class="font-bold">Desde</label>
+                <input id="filtro-desde" type="date" name="desde" value="{{ $filtros['desde'] ?? '' }}"
+                    class="p-2 bg-[#f3f5f3] border-2 border-[#ecedea] rounded-[8px] outline-none focus:border-[#629f22]">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label for="filtro-hasta" class="font-bold">Hasta</label>
+                <input id="filtro-hasta" type="date" name="hasta" value="{{ $filtros['hasta'] ?? '' }}"
+                    class="p-2 bg-[#f3f5f3] border-2 border-[#ecedea] rounded-[8px] outline-none focus:border-[#629f22]">
+            </div>
+            <div class="flex items-center gap-3">
+                <button type="submit"
+                    class="py-2 px-6 bg-[#629f22] text-[#fbfbfb] font-bold rounded-[10px] hover:scale-105 transition duration-200">
+                    Filtrar
+                </button>
+                <a href="{{ route('movimientos-inventario.index') }}"
+                    class="py-2 px-6 bg-[#f3f5f3] text-[#304e42] font-bold rounded-[10px] hover:scale-105 transition duration-200">
+                    Limpiar
+                </a>
+            </div>
+        </form>
 
         <section class="flex p-8 bg-[#fefdfe] text-[#304e42] rounded-[10px] shadow-xl overflow-x-auto">
             <table class="w-full text-left">
@@ -118,13 +174,38 @@
                     @empty
                         <tr>
                             <td colspan="{{ $esAdmin ? 10 : 9 }}" class="p-4 text-center text-[#8b8d8f]">
-                                No hay movimientos de inventario registrados.
+                                @if($hayFiltros)
+                                    No hay movimientos que coincidan con los filtros aplicados.
+                                @else
+                                    No hay movimientos de inventario registrados.
+                                @endif
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </section>
+
+        @if($movimientos->total() > 0)
+            <nav class="flex items-center justify-between text-[#304e42]" aria-label="Paginación de movimientos">
+                <span>Mostrando {{ $movimientos->firstItem() }}–{{ $movimientos->lastItem() }} de {{ $movimientos->total() }} movimientos (página {{ $movimientos->currentPage() }} de {{ $movimientos->lastPage() }})</span>
+                <div class="flex items-center gap-3">
+                    @if($movimientos->onFirstPage())
+                        <span class="py-2 px-6 bg-[#f3f5f3] text-[#c2c4c7] font-bold rounded-[10px]">Anterior</span>
+                    @else
+                        <a href="{{ $movimientos->previousPageUrl() }}" rel="prev"
+                            class="py-2 px-6 bg-[#629f22] text-[#fbfbfb] font-bold rounded-[10px] hover:scale-105 transition duration-200">Anterior</a>
+                    @endif
+
+                    @if($movimientos->hasMorePages())
+                        <a href="{{ $movimientos->nextPageUrl() }}" rel="next"
+                            class="py-2 px-6 bg-[#629f22] text-[#fbfbfb] font-bold rounded-[10px] hover:scale-105 transition duration-200">Siguiente</a>
+                    @else
+                        <span class="py-2 px-6 bg-[#f3f5f3] text-[#c2c4c7] font-bold rounded-[10px]">Siguiente</span>
+                    @endif
+                </div>
+            </nav>
+        @endif
     </main>
 </body>
 </html>

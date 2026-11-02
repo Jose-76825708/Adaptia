@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\MovimientoNoAnulableException;
 use App\Exceptions\StockInsuficienteException;
 use App\Http\Requests\AnularMovimientoRequest;
+use App\Http\Requests\FiltroMovimientosRequest;
 use App\Http\Requests\MovimientoInventarioRequest;
 use App\Models\Planta;
 use App\Services\MovimientoInventarioService;
@@ -19,11 +20,15 @@ class MovimientoInventarioController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(FiltroMovimientosRequest $request)
     {
-        $movimientos = $this->service->getAll();
+        $filtros = $request->safe()->only(['planta_id', 'tipo', 'desde', 'hasta']);
 
-        return view('movimientos-inventario.index', compact('movimientos'));
+        return view('movimientos-inventario.index', [
+            'movimientos' => $this->service->listarPaginado($filtros),
+            'plantas' => $this->service->plantasParaFiltro(),
+            'filtros' => $filtros,
+        ]);
     }
 
     public function create()
