@@ -2,6 +2,13 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
+use Illuminate\Translation\ArrayLoader;
+use Illuminate\Translation\Translator;
+use Illuminate\Validation\Factory;
+use Illuminate\Validation\ValidationException;
+
 class SolicitudMantenimientoService
 {
     /**
@@ -38,6 +45,72 @@ class SolicitudMantenimientoService
         }
 
         return $salida;
+    }
+
+    public function validar(array $solicitud, ?CarbonInterface $hoy = null): array
+    {
+        $hoy = $hoy ?? Carbon::now();
+
+        $reglas = [
+            'area_verde' => ['required', 'string', 'min:3', 'max:120'],
+            'descripcion' => ['required', 'string', 'min:10', 'max:1000'],
+            'fecha_deseada' => [
+                'nullable',
+                function ($attribute, $value, $fail) use ($hoy) {
+                    if ($value === null || $value === '') {
+                        return;
+                    }
+
+                    if (!is_string($value)) {
+                        $fail('La fecha deseada no es una fecha válida.');
+                        return;
+                    }
+
+                    $fecha = \DateTime::createFromFormat('Y-m-d', $value);
+
+                    if ($fecha === false || $fecha->format('Y-m-d') !== $value) {
+                        $fail('La fecha deseada no es una fecha válida.');
+                        return;
+                    }
+
+                    $fechaHoy = $hoy->copy()->startOfDay();
+
+                    if ($fecha < $fechaHoy) {
+                        $fail('La fecha deseada no puede ser anterior a hoy.');
+                    }
+                },
+            ],
+            'observaciones' => ['nullable', 'array'],
+            'observaciones.*' => ['string', 'max:500'],
+        ];
+
+        $mensajes = [
+            'area_verde.required' => 'El campo área verde es obligatorio.',
+            'area_verde.string' => 'El campo área verde debe ser un texto válido.',
+            'area_verde.min' => 'El campo área verde debe tener entre 3 y 120 caracteres.',
+            'area_verde.max' => 'El campo área verde debe tener entre 3 y 120 caracteres.',
+            'descripcion.required' => 'El campo descripción es obligatorio.',
+            'descripcion.string' => 'El campo descripción debe ser un texto válido.',
+            'descripcion.min' => 'El campo descripción debe tener entre 10 y 1000 caracteres.',
+            'descripcion.max' => 'El campo descripción debe tener entre 10 y 1000 caracteres.',
+            'fecha_deseada.date_format' => 'La fecha deseada no es una fecha válida.',
+            'fecha_deseada.after_or_equal' => 'La fecha deseada no puede ser anterior a hoy.',
+            'observaciones.array' => 'El campo observaciones debe ser un arreglo de textos.',
+            'observaciones.*.string' => 'Cada observación debe ser un texto válido.',
+            'observaciones.*.max' => 'La observación 1 no debe tener más de 500 caracteres.',
+        ];
+
+        $factory = new Factory(
+            new Translator(new ArrayLoader(), 'es')
+        );
+
+        $validator = $factory->make($solicitud, $reglas, $mensajes);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        return $validator->validated();
     }
 
     private function normalizarTexto(mixed $valor): ?string
