@@ -31,6 +31,15 @@
                 class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
                 <a class="flex w-full h-full items-center gap-2" href="{{ route('plantas.index') }}"><img class="w-7 h-auto" src="{{ asset('images/plantas.png') }}" alt="">Plantas</a>
             </li>
+            @if (in_array(auth()->user()->rol, ['administrador', 'vendedor'], true))
+                <li
+                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
+                    <a class="flex w-full h-full items-center gap-3" href="{{ route('almacen.resumen') }}">
+                        <img class="w-5 h-auto" src="{{ asset('images/inventario.png') }}" alt="">
+                        Resumen de almacén
+                    </a>
+                </li>
+            @endif
             <li
                 class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
                 <a class="flex w-full h-full items-center gap-3" href="{{ route('movimientos-inventario.index') }}">

@@ -14,6 +14,7 @@ use App\Http\Controllers\CatalogoClienteController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\PlantaVendidaController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\ResumenAlmacenController;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
@@ -33,6 +34,8 @@ Route::middleware(['auth', 'role:administrador,vendedor'])->group(function () {
     Route::resource('movimientos-inventario', MovimientoInventarioController::class)
         ->only(['index', 'create', 'store']);
     Route::resource('sensores', SensorController::class)->except(['show']);
+    Route::get('/almacen/resumen', [ResumenAlmacenController::class, 'index'])
+        ->name('almacen.resumen');
 });
 
 // Gestión de credenciales IoT exclusiva para administradores.
