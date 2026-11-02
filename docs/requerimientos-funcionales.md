@@ -117,6 +117,16 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 **Sustento Científico:** Garantiza la integridad del monitoreo detectando fallas de batería, desconexiones Wi-Fi o fallas en el sensor2628.
 
+### RF-15: Trazabilidad e inmutabilidad de movimientos de inventario
+
+**Descripción:** Los movimientos de inventario no se editan ni se eliminan. Cada movimiento registra el usuario autenticado que lo realizó, un motivo opcional y el stock de la planta antes y después del cambio. Para corregir un movimiento, un administrador lo anula indicando un motivo obligatorio: el sistema crea un contramovimiento de tipo inverso y misma cantidad, vinculado al original, y ajusta el stock. Un movimiento solo puede anularse una vez y una anulación no puede anularse.
+
+**Entradas:** Identificador del movimiento a anular y motivo de la anulación (obligatorio, máximo 255 caracteres).
+
+**Criterio de Aceptación:** (1) No existen rutas para editar o eliminar movimientos. (2) Anular una entrada crea una salida y anular una salida crea una entrada, con `stock_antes` y `stock_despues` del contramovimiento. (3) Anular una entrada se rechaza si el stock disponible es insuficiente. (4) Solo el rol administrador puede anular. (5) Tras anular se reevalúa la alerta de stock bajo (RF-12).
+
+**Sustento:** Regla de negocio del proyecto (mapa de Bolts INT-015); no se asocia a un artículo de la bibliografía.
+
 ## 5. TABLA RESUMEN DE REQUERIMIENTOS FUNCIONALES
 
 | Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente de Sustento | Estado |
@@ -135,3 +145,4 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 | RF-12 | Alerta de stock bajo por especie | Inventario | Art. 3 y Art. 4 (Stock mínimo y actual) | Completo |
 | RF-13 | Validaciones API y respuestas HTTP 401/422 | API / Calidad | Art. 4 (Manejo de interferencias en datos)28 | Completo en backend y probado |
 | RF-14 | Detección de Sensores Offline | API / Calidad | Art. 326 y Art. 4 (Control de pérdida de paquetes)28 | Pendiente (Fase 4) |
+| RF-15 | Trazabilidad e inmutabilidad de movimientos de inventario | Inventario | Regla de negocio del proyecto (INT-015) | Implementado (INT-015-BOLT-001 a 003) |
