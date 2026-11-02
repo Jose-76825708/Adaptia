@@ -157,14 +157,15 @@
                                     @if(! $movimiento->esAnulacion() && ! $movimiento->anulacion)
                                         <form action="{{ route('movimientos-inventario.anular', $movimiento->id) }}" method="POST" class="flex flex-col gap-2">
                                             @csrf
-                                            <input type="text" name="motivo" required maxlength="255" placeholder="Motivo de anulación"
-                                                class="p-2 bg-[#f3f5f3] border-2 border-[#ecedea] rounded-[8px] outline-none focus:border-[#629f22]">
-                                            <button type="submit"
-                                                class="flex items-center justify-center bg-[#fdebeb] py-1 text-[#f06f73] font-bold rounded-[8px] hover:scale-105 transition duration-200"
-                                                onclick="return confirm('¿Anular este movimiento? Se creará un movimiento inverso.');">
-                                                Anular
-                                            </button>
-                                        </form>
+                                           <label for="motivo-anulacion-{{ $movimiento->id }}" class="sr-only">Motivo de anulación</label>
+                                           <input id="motivo-anulacion-{{ $movimiento->id }}" type="text" name="motivo" required maxlength="255" placeholder="Motivo de anulación"
+                                               class="p-2 bg-[#f3f5f3] border-2 border-[#ecedea] rounded-[8px] outline-none focus:border-[#629f22]">
+                                           <button type="submit"
+                                               class="flex items-center justify-center bg-[#fdebeb] py-1 text-[#f06f73] font-bold rounded-[8px] hover:scale-105 transition duration-200"
+                                               onclick="return confirm('¿Anular este movimiento? Se creará un movimiento inverso.');">
+                                               Anular
+                                           </button>
+                                       </form>
                                     @else
                                         <span class="block text-center text-[#8b8d8f]">—</span>
                                     @endif
