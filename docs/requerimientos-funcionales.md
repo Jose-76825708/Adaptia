@@ -117,6 +117,14 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 **Sustento Científico:** Garantiza la integridad del monitoreo detectando fallas de batería, desconexiones Wi-Fi o fallas en el sensor2628.
 
+### RF-15: Normalización de Solicitudes de Mantenimiento
+
+**Descripción:** El sistema debe normalizar toda solicitud de mantenimiento recibida en formato libre o semi estructurado para convertirla en un contrato estándar de entrada. La normalización aplica limpieza textual, filtrado de claves no permitidas, manejo de fechas y arreglo de observaciones, sin depender de autenticación, base de datos ni fecha actual del sistema. La salida debe ser determinista, idempotente y reutilizable por el siguiente bolt del proceso de mantenimiento.
+
+**Entradas:** Arreglo asociativo con datos del solicitante, área, descripción de la solicitud, fecha deseada y observaciones. Se ignoran claves ajenas al contrato: user_id, estado, id, created_at, updated_at, etc.
+
+**Criterio de Aceptación:** El servicio devuelve siempre un arreglo con exactamente las claves permitidas: `area_verde`, `descripcion`, `fecha_deseada` y `observaciones`. Los textos se limpian con trim y colapso de espacios; los vacíos se convierten en `null`; las fechas se aceptan en formato `Y-m-d` y `d/m/Y` y se devuelven en `Y-m-d` cuando son válidas; si la fecha no es interpretada, se conserva como texto limpio sin convertir; las observaciones se limitan a 6 elementos; las claves no permitidas se descartan; la función es idempotente y sin efectos secundarios.
+
 ## 5. TABLA RESUMEN DE REQUERIMIENTOS FUNCIONALES
 
 | Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente de Sustento | Estado |
@@ -135,3 +143,4 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 | RF-12 | Alerta de stock bajo por especie | Inventario | Art. 3 y Art. 4 (Stock mínimo y actual) | Completo |
 | RF-13 | Validaciones API y respuestas HTTP 401/422 | API / Calidad | Art. 4 (Manejo de interferencias en datos)28 | Completo en backend y probado |
 | RF-14 | Detección de Sensores Offline | API / Calidad | Art. 326 y Art. 4 (Control de pérdida de paquetes)28 | Pendiente (Fase 4) |
+| RF-15 | Normalización de solicitudes de mantenimiento | Mantenimiento | Proceso de normalización del caso de mantenimiento | En implementación (Bolt 001) |
