@@ -127,6 +127,16 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 **Sustento:** Regla de negocio del proyecto (mapa de Bolts INT-015); no se asocia a un artículo de la bibliografía.
 
+### RF-16: Consulta paginada y filtrada de movimientos de inventario
+
+**Descripción:** El administrador y el vendedor pueden consultar el historial de movimientos de inventario en un listado paginado (15 movimientos por página) ordenado del más reciente al más antiguo. El listado puede filtrarse por planta, por tipo de movimiento (entrada o salida) y por rango de fechas (desde y hasta, ambos inclusivos y aplicados sobre el día completo). Los filtros se combinan entre sí y se conservan al cambiar de página.
+
+**Entradas:** Parámetros opcionales `planta_id`, `tipo` (`entrada` o `salida`), `desde` y `hasta` (formato AAAA-MM-DD) y `page`. Los parámetros enviados en blanco se ignoran.
+
+**Criterio de Aceptación:** (1) Sin filtros se listan todos los movimientos, 15 por página y del más reciente al más antiguo. (2) Cada filtro restringe el resultado y los filtros combinados se aplican con AND. (3) `desde` y `hasta` incluyen todo el día indicado. (4) Un valor inválido (tipo desconocido, planta inexistente, fecha con formato incorrecto, `hasta` anterior a `desde`) devuelve al listado con un mensaje de error y sin aplicar filtros. (5) Los enlaces de paginación conservan los filtros activos y el formulario muestra los valores aplicados. (6) Si ningún movimiento coincide se muestra un mensaje distinto según haya o no filtros. (7) El número de consultas a la base de datos no crece con la cantidad de movimientos. (8) Solo administrador y vendedor acceden; el cliente recibe 403 y el invitado es enviado al inicio de sesión.
+
+**Sustento:** Regla de negocio del proyecto (mapa de Bolts INT-016); no se asocia a un artículo de la bibliografía.
+
 ## 5. TABLA RESUMEN DE REQUERIMIENTOS FUNCIONALES
 
 | Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente de Sustento | Estado |
@@ -146,3 +156,4 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 | RF-13 | Validaciones API y respuestas HTTP 401/422 | API / Calidad | Art. 4 (Manejo de interferencias en datos)28 | Completo en backend y probado |
 | RF-14 | Detección de Sensores Offline | API / Calidad | Art. 326 y Art. 4 (Control de pérdida de paquetes)28 | Pendiente (Fase 4) |
 | RF-15 | Trazabilidad e inmutabilidad de movimientos de inventario | Inventario | Regla de negocio del proyecto (INT-015) | Implementado (INT-015-BOLT-001 a 003) |
+| RF-16 | Consulta paginada y filtrada de movimientos de inventario | Inventario | Regla de negocio del proyecto (INT-016) | Implementado (INT-016-BOLT-001); panel resumen pendiente (INT-016-BOLT-002) |
