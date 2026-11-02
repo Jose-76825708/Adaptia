@@ -137,6 +137,16 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 **Sustento:** Regla de negocio del proyecto (mapa de Bolts INT-016); no se asocia a un artículo de la bibliografía.
 
+### RF-17: Panel resumen del almacén
+
+**Descripción:** El administrador y el vendedor disponen de un panel de solo lectura con el estado general del almacén: stock total de plantas, cantidad de plantas por debajo de su stock mínimo, alertas de stock bajo abiertas (con cuántas siguen sin leer) y los 5 movimientos de inventario más recientes. La regla de "bajo el mínimo" es la misma que usa la alerta de stock bajo (RF-12).
+
+**Entradas:** Ninguna. Ruta `GET /almacen/resumen` (`almacen.resumen`).
+
+**Criterio de Aceptación:** (1) El stock total es la suma de `stock_actual` de todas las plantas (0 si no hay plantas). (2) Una planta cuenta como bajo el mínimo solo si `stock_minimo > 0` y `stock_actual < stock_minimo`; estar justo en el mínimo no cuenta. (3) Las alertas abiertas son las de tipo `stock_bajo` sin resolver; las resueltas y las de monitoreo IoT no cuentan, y se informa cuántas están sin leer. (4) Los movimientos recientes son los 5 más nuevos, del más reciente al más antiguo, e incluyen las anulaciones, marcando los movimientos anulados. (5) Sin movimientos se muestra un mensaje vacío. (6) El número de consultas no crece con la cantidad de movimientos. (7) Solo administrador y vendedor acceden; el cliente recibe 403 y el invitado es enviado al inicio de sesión. (8) El enlace a las alertas solo se muestra al administrador.
+
+**Sustento:** Regla de negocio del proyecto (mapa de Bolts INT-016); no se asocia a un artículo de la bibliografía.
+
 ## 5. TABLA RESUMEN DE REQUERIMIENTOS FUNCIONALES
 
 | Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente de Sustento | Estado |
@@ -156,4 +166,5 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 | RF-13 | Validaciones API y respuestas HTTP 401/422 | API / Calidad | Art. 4 (Manejo de interferencias en datos)28 | Completo en backend y probado |
 | RF-14 | Detección de Sensores Offline | API / Calidad | Art. 326 y Art. 4 (Control de pérdida de paquetes)28 | Pendiente (Fase 4) |
 | RF-15 | Trazabilidad e inmutabilidad de movimientos de inventario | Inventario | Regla de negocio del proyecto (INT-015) | Implementado (INT-015-BOLT-001 a 003) |
-| RF-16 | Consulta paginada y filtrada de movimientos de inventario | Inventario | Regla de negocio del proyecto (INT-016) | Implementado (INT-016-BOLT-001); panel resumen pendiente (INT-016-BOLT-002) |
+| RF-16 | Consulta paginada y filtrada de movimientos de inventario | Inventario | Regla de negocio del proyecto (INT-016) | Implementado (INT-016-BOLT-001) |
+| RF-17 | Panel resumen del almacén | Inventario | Regla de negocio del proyecto (INT-016) | Implementado (INT-016-BOLT-002) |
