@@ -37,6 +37,14 @@
             </div>
         @endif
 
+        @if($errors->has('motivo'))
+            <div class="p-4 bg-red-100 text-red-700 rounded-[10px] border border-red-200 text-center font-medium">
+                {{ $errors->first('motivo') }}
+            </div>
+        @endif
+
+        @php($esAdmin = auth()->user()->rol === 'administrador')
+
         <section class="flex p-8 bg-[#fefdfe] text-[#304e42] rounded-[10px] shadow-xl overflow-x-auto">
             <table class="w-full text-left">
                 <thead class="bg-[#f3f5f3]">
@@ -45,15 +53,20 @@
                         <th class="p-4">Planta</th>
                         <th class="p-4">Tipo</th>
                         <th class="p-4">Cantidad</th>
+                        <th class="p-4">Stock</th>
+                        <th class="p-4">Motivo</th>
                         <th class="p-4">Usuario</th>
                         <th class="p-4">Fecha</th>
-                        <th class="rounded-tr-[20px] p-4 w-64 text-center">Acciones</th>
+                        <th class="p-4">Estado</th>
+                        @if($esAdmin)
+                            <th class="rounded-tr-[20px] p-4 w-64 text-center">Acciones</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($movimientos as $movimiento)
                         <tr class="border-t-2 border-[#c2c4c7]">
-                            <td class="p-4 font-bold text-center">{{ $loop->iteration }}</td>
+                            <td class="p-4 font-bold text-center">{{ $movimiento->id }}</td>
                             <td class="p-4">{{ $movimiento->planta->nombre }}</td>
                             <td class="p-4">
                                 <span class="px-2 py-1 rounded-full text-xs font-bold
@@ -62,27 +75,49 @@
                                 </span>
                             </td>
                             <td class="p-4">{{ $movimiento->cantidad }}</td>
+                            <td class="p-4">
+                                @if($movimiento->stock_antes !== null && $movimiento->stock_despues !== null)
+                                    {{ $movimiento->stock_antes }} → {{ $movimiento->stock_despues }}
+                                @else
+                                    —
+                                @endif
+                            </td>
+                            <td class="p-4">{{ $movimiento->motivo ?? '—' }}</td>
                             <td class="p-4">{{ $movimiento->user->name }}</td>
                             <td class="p-4">{{ $movimiento->created_at->format('d/m/Y H:i') }}</td>
-                            <td class="flex gap-2 p-4 justify-center">
-                                <a href="{{ route('movimientos-inventario.edit', $movimiento->id) }}"
-                                    class="flex flex-1 items-center justify-center gap-2 bg-[#f5f9f0] py-1 text-[#77a856] font-bold rounded-[8px] hover:scale-105 transition duration-200">
-                                    <img class="w-3 h-auto" src="{{ asset('images/editar.png') }}" alt=""> Editar
-                                </a>
-                                <form action="{{ route('movimientos-inventario.destroy', $movimiento->id) }}" method="POST" class="flex flex-1">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="flex flex-1 items-center justify-center gap-2 bg-[#fdebeb] py-1 text-[#f06f73] font-bold rounded-[8px] hover:scale-105 transition duration-200"
-                                        onclick="return confirm('¿Estás seguro de eliminar este movimiento de inventario?');">
-                                        <img class="w-3 h-auto" src="{{ asset('images/eliminar.png') }}" alt=""> Eliminar
-                                    </button>
-                                </form>
+                            <td class="p-4">
+                                @if($movimiento->esAnulacion())
+                                    <span class="px-2 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">
+                                        Anulación del movimiento {{ $movimiento->movimiento_original_id }}
+                                    </span>
+                                @elseif($movimiento->anulacion)
+                                    <span class="px-2 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-600">Anulado</span>
+                                @else
+                                    <span class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-600">Vigente</span>
+                                @endif
                             </td>
+                            @if($esAdmin)
+                                <td class="p-4">
+                                    @if(! $movimiento->esAnulacion() && ! $movimiento->anulacion)
+                                        <form action="{{ route('movimientos-inventario.anular', $movimiento->id) }}" method="POST" class="flex flex-col gap-2">
+                                            @csrf
+                                            <input type="text" name="motivo" required maxlength="255" placeholder="Motivo de anulación"
+                                                class="p-2 bg-[#f3f5f3] border-2 border-[#ecedea] rounded-[8px] outline-none focus:border-[#629f22]">
+                                            <button type="submit"
+                                                class="flex items-center justify-center bg-[#fdebeb] py-1 text-[#f06f73] font-bold rounded-[8px] hover:scale-105 transition duration-200"
+                                                onclick="return confirm('¿Anular este movimiento? Se creará un movimiento inverso.');">
+                                                Anular
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="block text-center text-[#8b8d8f]">—</span>
+                                    @endif
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="p-4 text-center text-[#8b8d8f]">
+                            <td colspan="{{ $esAdmin ? 10 : 9 }}" class="p-4 text-center text-[#8b8d8f]">
                                 No hay movimientos de inventario registrados.
                             </td>
                         </tr>

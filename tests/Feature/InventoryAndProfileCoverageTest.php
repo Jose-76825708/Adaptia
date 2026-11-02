@@ -143,21 +143,10 @@ test('administrador gestiona movimientos desde el CRUD y valida las cantidades',
     $movimiento = MovimientoInventario::query()->firstOrFail();
     expect($planta->fresh()->stock_actual)->toBe(7);
 
-    $this->get(route('movimientos-inventario.edit', $movimiento))
-        ->assertOk()
-        ->assertViewIs('movimientos-inventario.edit')
-        ->assertViewHas('movimiento', fn ($value) => $value->is($movimiento));
-
-    $this->put(route('movimientos-inventario.update', $movimiento), array_merge($payload, ['cantidad' => 3]))
+    $this->post(route('movimientos-inventario.anular', $movimiento->id), ['motivo' => 'Error de registro'])
         ->assertRedirect(route('movimientos-inventario.index'))
-        ->assertSessionHas('success', 'Movimiento de inventario actualizado correctamente.');
-    expect($movimiento->fresh()->cantidad)->toBe(3)
-        ->and($planta->fresh()->stock_actual)->toBe(8);
-
-    $this->delete(route('movimientos-inventario.destroy', $movimiento))
-        ->assertRedirect(route('movimientos-inventario.index'))
-        ->assertSessionHas('success', 'Movimiento de inventario eliminado correctamente.');
-    expect(MovimientoInventario::count())->toBe(0)
+        ->assertSessionHas('success', 'Movimiento anulado correctamente.');
+    expect(MovimientoInventario::count())->toBe(2)
         ->and($planta->fresh()->stock_actual)->toBe(5);
 
     $invalidPayload = $payload;

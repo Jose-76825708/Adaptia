@@ -42,29 +42,6 @@ test('salida guarda stock_antes y stock_despues', function () {
         ->and($planta->fresh()->stock_actual)->toBe(6);
 });
 
-test('update recalcula stock_antes y stock_despues al momento de la edicion', function () {
-    $usuario = User::factory()->create(['rol' => 'administrador']);
-    $planta = Planta::factory()->create(['stock_actual' => 5, 'stock_minimo' => 0]);
-    $service = app(MovimientoInventarioService::class);
-
-    $movimiento = $service->createMovimiento([
-        'planta_id' => $planta->id,
-        'user_id' => $usuario->id,
-        'tipo' => 'entrada',
-        'cantidad' => 3,
-    ]);
-
-    $service->updateMovimiento((string) $movimiento->id, [
-        'planta_id' => $planta->id,
-        'tipo' => 'entrada',
-        'cantidad' => 5,
-    ]);
-
-    expect($movimiento->fresh()->stock_antes)->toBe(8)
-        ->and($movimiento->fresh()->stock_despues)->toBe(10)
-        ->and($planta->fresh()->stock_actual)->toBe(10);
-});
-
 test('motivo es opcional y se guarda cuando se envia', function () {
     $administrador = User::factory()->create(['rol' => 'administrador']);
     $planta = Planta::factory()->create(['stock_actual' => 5, 'stock_minimo' => 0]);

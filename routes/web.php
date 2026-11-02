@@ -30,7 +30,8 @@ Route::controller(AuthController::class)->group(function () {
 Route::middleware(['auth', 'role:administrador,vendedor'])->group(function () {
     Route::resource('plantas', PlantaController::class);
     Route::resource('tipoPlantas', TipoPlantaController::class)->except(['show']);
-    Route::resource('movimientos-inventario', MovimientoInventarioController::class);
+    Route::resource('movimientos-inventario', MovimientoInventarioController::class)
+        ->only(['index', 'create', 'store']);
     Route::resource('sensores', SensorController::class)->except(['show']);
 });
 
@@ -46,6 +47,9 @@ Route::middleware(['auth', 'role:administrador'])->group(function () {
         ->name('personal.create');
     Route::post('/personal', [PersonalController::class, 'store'])
         ->name('personal.store');
+
+    Route::post('/movimientos-inventario/{id}/anular', [MovimientoInventarioController::class, 'anular'])
+        ->name('movimientos-inventario.anular');
 
     Route::get('/alertas-stock', [App\Http\Controllers\AlertaStockController::class, 'index'])
         ->name('alertas-stock.index');

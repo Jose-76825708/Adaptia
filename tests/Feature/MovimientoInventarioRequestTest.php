@@ -27,31 +27,6 @@ test('store ignora user_id del request y guarda Auth::id()', function () {
         ->and($movimiento->cantidad)->toBe(2);
 });
 
-test('update conserva el user_id original del movimiento', function () {
-    $vendedor = User::factory()->create(['rol' => 'vendedor']);
-    $otroUsuario = User::factory()->create(['rol' => 'administrador']);
-    $planta = Planta::factory()->create(['stock_actual' => 7, 'stock_minimo' => 0]);
-    $movimiento = MovimientoInventario::create([
-        'planta_id' => $planta->id,
-        'user_id' => $vendedor->id,
-        'tipo' => 'entrada',
-        'cantidad' => 2,
-    ]);
-
-    $this->actingAs($otroUsuario)
-        ->put(route('movimientos-inventario.update', $movimiento), [
-            'planta_id' => $planta->id,
-            'user_id' => $otroUsuario->id,
-            'tipo' => 'salida',
-            'cantidad' => 1,
-        ])
-        ->assertRedirect(route('movimientos-inventario.index'));
-
-    expect($movimiento->fresh()->user_id)->toBe($vendedor->id)
-        ->and($movimiento->fresh()->tipo)->toBe('salida')
-        ->and($movimiento->fresh()->cantidad)->toBe(1);
-});
-
 test('store rechaza datos inválidos del movimiento de inventario', function () {
     $administrador = User::factory()->create(['rol' => 'administrador']);
     $planta = Planta::factory()->create(['stock_actual' => 5, 'stock_minimo' => 0]);

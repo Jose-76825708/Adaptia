@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\MovimientoNoAnulableException;
 use App\Exceptions\StockInsuficienteException;
 use App\Models\MovimientoInventario;
 use App\Models\Planta;
@@ -22,7 +23,7 @@ class MovimientoInventarioService
      */
     public function getAll(): Collection
     {
-        return MovimientoInventario::with(['planta', 'user'])->get();
+        return MovimientoInventario::with(['planta', 'user', 'anulacion'])->get();
     }
 
     /**
@@ -48,15 +49,7 @@ class MovimientoInventarioService
             $planta = Planta::query()->lockForUpdate()->findOrFail($data['planta_id']);
             $stockAntes = $planta->stock_actual;
 
-            if ($data['tipo'] === 'entrada') {
-                $planta->increment('stock_actual', $data['cantidad']);
-            } else {
-                if ($planta->stock_actual < $data['cantidad']) {
-                    throw new StockInsuficienteException("Stock insuficiente para {$planta->nombre}. Disponible: {$planta->stock_actual}, requerido: {$data['cantidad']}");
-                }
-                $planta->decrement('stock_actual', $data['cantidad']);
-            }
-            $planta->save();
+            $this->aplicarCambioStock($planta, $data['tipo'], (int) $data['cantidad']);
 
             $movimiento = MovimientoInventario::create([
                 ...$data,
@@ -78,93 +71,76 @@ class MovimientoInventarioService
     }
 
     /**
-     * Actualiza un movimiento de inventario existente.
+     * Anula un movimiento creando un contramovimiento de signo contrario.
+     * El movimiento original nunca se modifica ni se elimina.
      *
      * @param string $id
-     * @param array $data
+     * @param string $motivo
+     * @param int $userId
      * @return Model
+     *
+     * @throws MovimientoNoAnulableException
+     * @throws StockInsuficienteException
      */
-    public function updateMovimiento(string $id, array $data): Model
+    public function anularMovimiento(string $id, string $motivo, int $userId): Model
     {
-        return DB::transaction(function () use ($id, $data) {
-            $movimiento = $this->getById($id);
+        return DB::transaction(function () use ($id, $motivo, $userId) {
+            $original = MovimientoInventario::query()->lockForUpdate()->findOrFail($id);
 
-            $planta = Planta::query()->lockForUpdate()->findOrFail($movimiento->planta_id);
-            $stockAntes = $planta->stock_actual;
-            $efectoActual = ($movimiento->tipo === 'entrada') ? $movimiento->cantidad : -$movimiento->cantidad;
-
-            $nuevoTipo = $data['tipo'] ?? $movimiento->tipo;
-            $nuevaCantidad = $data['cantidad'] ?? $movimiento->cantidad;
-            $nuevoEfecto = ($nuevoTipo === 'entrada') ? $nuevaCantidad : -$nuevaCantidad;
-            $diferencia = $nuevoEfecto - $efectoActual;
-
-            $movimiento->update($data);
-
-            if ($diferencia > 0) {
-                $planta->increment('stock_actual', $diferencia);
-            } elseif ($diferencia < 0) {
-                $reduccion = abs($diferencia);
-                if ($planta->stock_actual < $reduccion) {
-                    throw new StockInsuficienteException("Stock insuficiente para actualizar movimiento. Disponible: {$planta->stock_actual}, requerido: {$reduccion}");
-                }
-                $planta->decrement('stock_actual', $reduccion);
+            if ($original->esAnulacion()) {
+                throw new MovimientoNoAnulableException('No se puede anular un movimiento que ya es una anulación.');
             }
-            $planta->save();
 
-            $movimiento->update([
+            if ($original->anulacion()->exists()) {
+                throw new MovimientoNoAnulableException('El movimiento ya fue anulado.');
+            }
+
+            $planta = Planta::query()->lockForUpdate()->findOrFail($original->planta_id);
+            $stockAntes = $planta->stock_actual;
+            $tipoInverso = $original->tipo === 'entrada' ? 'salida' : 'entrada';
+
+            $this->aplicarCambioStock($planta, $tipoInverso, (int) $original->cantidad);
+
+            $anulacion = MovimientoInventario::create([
+                'planta_id' => $original->planta_id,
+                'user_id' => $userId,
+                'tipo' => $tipoInverso,
+                'cantidad' => $original->cantidad,
+                'motivo' => $motivo,
                 'stock_antes' => $stockAntes,
                 'stock_despues' => $planta->stock_actual,
+                'movimiento_original_id' => $original->id,
             ]);
 
-            $this->alertaStockService->evaluar($planta, 'Stock bajo detectado tras actualización de movimiento', [
+            $this->alertaStockService->evaluar($planta, 'Stock bajo detectado tras anulación de movimiento', [
                 'planta_id' => $planta->id,
                 'planta_nombre' => $planta->nombre,
                 'stock_actual' => $planta->stock_actual,
                 'stock_minimo' => $planta->stock_minimo,
-                'tipo_movimiento_original' => $movimiento->tipo,
-                'nuevo_tipo_movimiento' => $data['tipo'] ?? $movimiento->tipo,
-                'cantidad_original' => $movimiento->cantidad,
-                'nueva_cantidad' => $data['cantidad'] ?? $movimiento->cantidad,
-                'diferencia_stock' => $diferencia,
+                'movimiento_original_id' => $original->id,
+                'tipo_anulacion' => $tipoInverso,
+                'cantidad_revertida' => $original->cantidad,
             ]);
 
-            return $movimiento;
+            return $anulacion;
         });
     }
 
     /**
-     * Elimina un movimiento de inventario.
+     * Aplica una entrada o salida sobre el stock de la planta bloqueada.
      *
-     * @param string $id
-     * @return bool
+     * @throws StockInsuficienteException
      */
-    public function deleteMovimiento(string $id): bool
+    private function aplicarCambioStock(Planta $planta, string $tipo, int $cantidad): void
     {
-        return DB::transaction(function () use ($id) {
-            $movimiento = $this->getById($id);
-
-            $planta = Planta::query()->lockForUpdate()->findOrFail($movimiento->planta_id);
-
-            if ($movimiento->tipo === 'entrada') {
-                if ($planta->stock_actual < $movimiento->cantidad) {
-                    throw new StockInsuficienteException("Stock insuficiente para revertir movimiento. Disponible: {$planta->stock_actual}, requerido: {$movimiento->cantidad}");
-                }
-                $planta->decrement('stock_actual', $movimiento->cantidad);
-            } else {
-                $planta->increment('stock_actual', $movimiento->cantidad);
+        if ($tipo === 'entrada') {
+            $planta->increment('stock_actual', $cantidad);
+        } else {
+            if ($planta->stock_actual < $cantidad) {
+                throw new StockInsuficienteException("Stock insuficiente para {$planta->nombre}. Disponible: {$planta->stock_actual}, requerido: {$cantidad}");
             }
-            $planta->save();
-
-            $this->alertaStockService->evaluar($planta, 'Stock bajo detectado tras eliminación de movimiento', [
-                'planta_id' => $planta->id,
-                'planta_nombre' => $planta->nombre,
-                'stock_actual' => $planta->stock_actual,
-                'stock_minimo' => $planta->stock_minimo,
-                'tipo_movimiento' => $movimiento->tipo,
-                'cantidad_revertida' => $movimiento->cantidad,
-            ]);
-
-            return $movimiento->delete();
-        });
+            $planta->decrement('stock_actual', $cantidad);
+        }
+        $planta->save();
     }
 }

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\MovimientoNoAnulableException;
+use App\Exceptions\StockInsuficienteException;
+use App\Http\Requests\AnularMovimientoRequest;
 use App\Http\Requests\MovimientoInventarioRequest;
 use App\Models\Planta;
 use App\Services\MovimientoInventarioService;
@@ -40,29 +43,16 @@ class MovimientoInventarioController extends Controller
             ->with('success', 'Movimiento de inventario registrado correctamente.');
     }
 
-    public function edit(string $id)
+    public function anular(AnularMovimientoRequest $request, string $id)
     {
-        $movimiento = $this->service->getById($id);
-        $plantas = Planta::all();
-
-        return view('movimientos-inventario.edit', compact('movimiento', 'plantas'));
-    }
-
-    public function update(MovimientoInventarioRequest $request, string $id)
-    {
-        $datos = $request->validated();
-
-        $this->service->updateMovimiento($id, $datos);
+        try {
+            $this->service->anularMovimiento($id, $request->validated('motivo'), Auth::id());
+        } catch (StockInsuficienteException|MovimientoNoAnulableException $e) {
+            return redirect()->route('movimientos-inventario.index')
+                ->with('error', $e->getMessage());
+        }
 
         return redirect()->route('movimientos-inventario.index')
-            ->with('success', 'Movimiento de inventario actualizado correctamente.');
-    }
-
-    public function destroy(string $id)
-    {
-        $this->service->deleteMovimiento($id);
-
-        return redirect()->route('movimientos-inventario.index')
-            ->with('success', 'Movimiento de inventario eliminado correctamente.');
+            ->with('success', 'Movimiento anulado correctamente.');
     }
 }
