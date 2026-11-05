@@ -11,14 +11,14 @@ test('acepta una solicitud normalizada completamente válida', function () {
         'area_verde' => 'Jardín principal',
         'descripcion' => 'Necesito podar y limpiar el área verde.',
         'fecha_deseada' => '2026-11-10',
-        'observaciones' => ['Se requiere atención urgente'],
+        'observaciones' => 'Se requiere atención urgente',
     ], $hoy);
 
     expect($resultado)->toBe([
         'area_verde' => 'Jardín principal',
         'descripcion' => 'Necesito podar y limpiar el área verde.',
         'fecha_deseada' => '2026-11-10',
-        'observaciones' => ['Se requiere atención urgente'],
+        'observaciones' => 'Se requiere atención urgente',
     ]);
 });
 
@@ -30,7 +30,7 @@ test('rechaza campos obligatorios nulos o vacios', function () {
             'area_verde' => null,
             'descripcion' => null,
             'fecha_deseada' => null,
-            'observaciones' => [],
+            'observaciones' => null,
         ], $hoy);
 
         $this->fail('Se esperaba ValidationException');
@@ -51,7 +51,7 @@ test('rechaza area_verde fuera del rango permitido', function () {
             'area_verde' => 'AB',
             'descripcion' => 'Necesito revisión general del jardín.',
             'fecha_deseada' => '2026-11-12',
-            'observaciones' => [],
+            'observaciones' => null,
         ], $hoy);
 
         $this->fail('Se esperaba ValidationException');
@@ -68,7 +68,7 @@ test('rechaza descripcion fuera del rango permitido', function () {
             'area_verde' => 'Patio central',
             'descripcion' => 'Poca',
             'fecha_deseada' => '2026-11-12',
-            'observaciones' => [],
+            'observaciones' => null,
         ], $hoy);
 
         $this->fail('Se esperaba ValidationException');
@@ -85,7 +85,7 @@ test('rechaza fechas invalidas o anteriores a hoy', function () {
             'area_verde' => 'Patio central',
             'descripcion' => 'Necesito revisión general del jardín.',
             'fecha_deseada' => '31/02/2026',
-            'observaciones' => [],
+            'observaciones' => null,
         ], $hoy);
 
         $this->fail('Se esperaba ValidationException');
@@ -98,7 +98,7 @@ test('rechaza fechas invalidas o anteriores a hoy', function () {
             'area_verde' => 'Patio central',
             'descripcion' => 'Necesito revisión general del jardín.',
             'fecha_deseada' => '2026-11-01',
-            'observaciones' => [],
+            'observaciones' => null,
         ], $hoy);
 
         $this->fail('Se esperaba ValidationException');
@@ -107,7 +107,7 @@ test('rechaza fechas invalidas o anteriores a hoy', function () {
     }
 });
 
-test('rechaza observaciones con elementos demasiado largos o no válidos', function () {
+test('rechaza observaciones demasiado largas o no válidas', function () {
     $hoy = Carbon::parse('2026-11-02');
 
     try {
@@ -115,12 +115,12 @@ test('rechaza observaciones con elementos demasiado largos o no válidos', funct
             'area_verde' => 'Patio central',
             'descripcion' => 'Necesito revisión general del jardín.',
             'fecha_deseada' => '2026-11-12',
-            'observaciones' => [str_repeat('a', 501)],
+            'observaciones' => str_repeat('a', 501),
         ], $hoy);
 
         $this->fail('Se esperaba ValidationException');
     } catch (ValidationException $e) {
-        expect($e->errors()['observaciones.0'][0])->toBe('La observación 1 no debe tener más de 500 caracteres.');
+        expect($e->errors()['observaciones'][0])->toBe('El campo observaciones no debe tener más de 500 caracteres.');
     }
 });
 
@@ -132,13 +132,13 @@ test('devuelve todos los errores de validacion juntos', function () {
             'area_verde' => 'AB',
             'descripcion' => 'Poca',
             'fecha_deseada' => '2026-11-01',
-            'observaciones' => [str_repeat('x', 501)],
+            'observaciones' => str_repeat('x', 501),
         ], $hoy);
 
         $this->fail('Se esperaba ValidationException');
     } catch (ValidationException $e) {
         $errors = $e->errors();
 
-        expect($errors)->toHaveKeys(['area_verde', 'descripcion', 'fecha_deseada', 'observaciones.0']);
+        expect($errors)->toHaveKeys(['area_verde', 'descripcion', 'fecha_deseada', 'observaciones']);
     }
 });

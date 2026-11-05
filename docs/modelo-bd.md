@@ -62,6 +62,23 @@ entity "plantas" as plantas {
   luz_max : decimal (nullable)
 }
 
+' ---- Capa 3: Mantenimiento ----
+entity "casos_mantenimiento" as casos_mantenimiento {
+  * id : bigint <<PK>>
+  --
+  * solicitante_id : bigint <<FK>>
+  codigo : string <<unique>>
+  area_verde : string
+  descripcion : text
+  fecha_deseada : date (nullable)
+  observaciones : json (nullable)
+  tipo_mantenimiento : string
+  urgencia : enum(baja, media, alta)
+  estado : string
+  created_at : timestamp
+  updated_at : timestamp
+}
+
 ' ---- Capa 3: Ventas ----
 entity "ventas" as ventas {
   * id : bigint <<PK>>
@@ -139,6 +156,8 @@ entity "notificaciones" as notificaciones {
 ' ---- Relaciones agrupadas por capa (arriba hacia abajo) ----
 users ||--o| perfiles_cliente
 tipos_planta ||--o{ plantas
+
+users ||--o{ casos_mantenimiento
 
 users ||--o{ ventas
 plantas ||--o{ ventas

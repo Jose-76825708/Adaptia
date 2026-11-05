@@ -48,7 +48,7 @@ class SolicitudMantenimientoService
             'area_verde' => null,
             'descripcion' => null,
             'fecha_deseada' => null,
-            'observaciones' => [],
+            'observaciones' => null,
         ];
 
         $entrada = array_intersect_key($datos, array_flip(array_keys($salida)));
@@ -105,8 +105,7 @@ class SolicitudMantenimientoService
                     }
                 },
             ],
-            'observaciones' => ['nullable', 'array'],
-            'observaciones.*' => ['string', 'max:500'],
+            'observaciones' => ['nullable', 'string', 'max:500'],
         ];
 
         $mensajes = [
@@ -120,9 +119,8 @@ class SolicitudMantenimientoService
             'descripcion.max' => 'El campo descripción debe tener entre 10 y 1000 caracteres.',
             'fecha_deseada.date_format' => 'La fecha deseada no es una fecha válida.',
             'fecha_deseada.after_or_equal' => 'La fecha deseada no puede ser anterior a hoy.',
-            'observaciones.array' => 'El campo observaciones debe ser un arreglo de textos.',
-            'observaciones.*.string' => 'Cada observación debe ser un texto válido.',
-            'observaciones.*.max' => 'La observación 1 no debe tener más de 500 caracteres.',
+            'observaciones.string' => 'El campo observaciones debe ser un texto válido.',
+            'observaciones.max' => 'El campo observaciones no debe tener más de 500 caracteres.',
         ];
 
         $factory = new Factory(
@@ -347,34 +345,16 @@ class SolicitudMantenimientoService
         return $fecha->format('Y-m-d');
     }
 
-    private function normalizarObservaciones(mixed $valor): array
+    private function normalizarObservaciones(mixed $valor): ?string
     {
-        if (is_null($valor)) {
-            return [];
-        }
-
         if (is_array($valor)) {
-            $items = $valor;
-        } else {
-            $texto = $this->normalizarTexto($valor);
-            if ($texto === null) {
-                return [];
-            }
-
-            $items = preg_split('/[\r\n;]+/', $texto) ?: [$texto];
+            return null;
         }
 
-        $normalizadas = [];
-
-        foreach ($items as $item) {
-            $valorNormalizado = $this->normalizarTexto($item);
-            if ($valorNormalizado !== null) {
-                $normalizadas[] = $valorNormalizado;
-            }
+        if (is_null($valor)) {
+            return null;
         }
 
-        $normalizadas = array_slice($normalizadas, 0, 6);
-
-        return array_values($normalizadas);
+        return $this->normalizarTexto($valor);
     }
 }

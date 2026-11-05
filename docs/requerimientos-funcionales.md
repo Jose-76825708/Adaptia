@@ -119,11 +119,11 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 ### RF-15: Normalización de Solicitudes de Mantenimiento
 
-**Descripción:** El sistema debe normalizar toda solicitud de mantenimiento recibida en formato libre o semi estructurado para convertirla en un contrato estándar de entrada. La normalización aplica limpieza textual, filtrado de claves no permitidas, manejo de fechas y arreglo de observaciones, sin depender de autenticación, base de datos ni fecha actual del sistema. La salida debe ser determinista, idempotente y reutilizable por el siguiente bolt del proceso de mantenimiento.
+**Descripción:** El sistema debe normalizar toda solicitud de mantenimiento recibida en formato libre o semi estructurado para convertirla en un contrato estándar de entrada. La normalización aplica limpieza textual, filtrado de claves no permitidas, manejo de fechas y texto de observaciones, sin depender de autenticación, base de datos ni fecha actual del sistema. La salida debe ser determinista, idempotente y reutilizable por el siguiente bolt del proceso de mantenimiento.
 
-**Entradas:** Arreglo asociativo con datos del solicitante, área, descripción de la solicitud, fecha deseada y observaciones. Se ignoran claves ajenas al contrato: user_id, estado, id, created_at, updated_at, etc.
+**Entradas:** Arreglo asociativo con área verde, descripción de la solicitud, fecha deseada y observaciones (texto). El solicitante no forma parte de la entrada: lo aporta la sesión autenticada al abrir el caso. Se ignoran claves ajenas al contrato: user_id, estado, id, created_at, updated_at, etc.
 
-**Criterio de Aceptación:** El servicio devuelve siempre un arreglo con exactamente las claves permitidas: `area_verde`, `descripcion`, `fecha_deseada` y `observaciones`. Los textos se limpian con trim y colapso de espacios; los vacíos se convierten en `null`; las fechas se aceptan en formato `Y-m-d` y `d/m/Y` y se devuelven en `Y-m-d` cuando son válidas; si la fecha no es interpretada, se conserva como texto limpio sin convertir; las observaciones se limitan a 6 elementos; las claves no permitidas se descartan; la función es idempotente y sin efectos secundarios.
+**Criterio de Aceptación:** El servicio devuelve siempre un arreglo con exactamente las claves permitidas: `area_verde`, `descripcion`, `fecha_deseada` y `observaciones`. Los textos se limpian con trim y colapso de espacios; los vacíos se convierten en `null`; las fechas se aceptan en formato `Y-m-d` y `d/m/Y` y se devuelven en `Y-m-d` cuando son válidas; si la fecha no es interpretada, se conserva como texto limpio sin convertir; las observaciones son un único texto (máximo 500 caracteres, regla que aplica la validación); si se recibe algo que no es texto, queda en null; las claves no permitidas se descartan; la función es idempotente y sin efectos secundarios.
 
 ## 5. TABLA RESUMEN DE REQUERIMIENTOS FUNCIONALES
 
