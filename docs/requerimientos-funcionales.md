@@ -125,6 +125,8 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 **Criterio de Aceptación:** El servicio devuelve siempre un arreglo con exactamente las claves permitidas: `area_verde`, `descripcion`, `fecha_deseada` y `observaciones`. Los textos se limpian con trim y colapso de espacios; los vacíos se convierten en `null`; las fechas se aceptan en formato `Y-m-d` y `d/m/Y` y se devuelven en `Y-m-d` cuando son válidas; si la fecha no es interpretada, se conserva como texto limpio sin convertir; las observaciones son un único texto (máximo 500 caracteres, regla que aplica la validación); si se recibe algo que no es texto, queda en null; las claves no permitidas se descartan; la función es idempotente y sin efectos secundarios.
 
+**Criterio de Exposición al Cliente (Bolt 005):** El cliente autenticado debe poder abrir una solicitud de mantenimiento desde la web y consultar únicamente sus propias solicitudes. La ruta de creación permite registrar `area_verde`, `descripcion`, `fecha_deseada` y `observaciones`; la validación del backend se conserva y cualquier error devuelve el formulario con los datos antiguos. El listado del cliente muestra sus casos ordenados por fecha de creación más reciente, sin mezclar información de otros usuarios. La ruta no expone detalle administrativo ni lógica del backend fuera del flujo del cliente.
+
 ## 5. TABLA RESUMEN DE REQUERIMIENTOS FUNCIONALES
 
 | Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente de Sustento | Estado |

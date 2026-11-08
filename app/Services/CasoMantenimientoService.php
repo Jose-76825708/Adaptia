@@ -57,6 +57,14 @@ class CasoMantenimientoService
         });
     }
 
+    public function listarPorSolicitante(int $solicitanteId, int $porPagina = 10)
+    {
+        return CasoMantenimiento::where('solicitante_id', $solicitanteId)
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate($porPagina);
+    }
+
     public function puedeTransicionar(string $desde, string $hacia): bool
     {
         $desde = strtolower(trim($desde));

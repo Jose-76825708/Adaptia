@@ -76,3 +76,12 @@ Route::middleware(['auth', 'role:cliente'])->group(function () {
     Route::get('/cliente/monitoreo/historial', [HomeController::class, 'datosMonitoreoHistorial'])
         ->name('cliente.monitoreo.historial');
 });
+
+Route::middleware(['auth', 'role:cliente'])->group(function () {
+    Route::get('/mantenimiento/solicitudes/crear', [\App\Http\Controllers\SolicitudMantenimientoController::class, 'create'])
+        ->name('mantenimiento.solicitudes.create');
+    Route::post('/mantenimiento/solicitudes', [\App\Http\Controllers\SolicitudMantenimientoController::class, 'store'])
+        ->name('mantenimiento.solicitudes.store');
+    Route::get('/mantenimiento/solicitudes', [\App\Http\Controllers\SolicitudMantenimientoController::class, 'index'])
+        ->name('mantenimiento.solicitudes.index');
+});
