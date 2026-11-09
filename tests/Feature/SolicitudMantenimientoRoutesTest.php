@@ -8,6 +8,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->cliente = User::factory()->create(['rol' => 'cliente']);
+    $this->travelTo(\Carbon\Carbon::parse('2026-11-04'));
 });
 
 test('el cliente puede ver el formulario de solicitud de mantenimiento', function () {

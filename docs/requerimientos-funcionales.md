@@ -127,6 +127,8 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 **Criterio de Exposición al Cliente (Bolt 005):** El cliente autenticado debe poder abrir una solicitud de mantenimiento desde la web y consultar únicamente sus propias solicitudes. La ruta de creación permite registrar `area_verde`, `descripcion`, `fecha_deseada` y `observaciones`; la validación del backend se conserva y cualquier error devuelve el formulario con los datos antiguos. El listado del cliente muestra sus casos ordenados por fecha de creación más reciente, sin mezclar información de otros usuarios. La ruta no expone detalle administrativo ni lógica del backend fuera del flujo del cliente.
 
+**Criterio de Gestión Administrativa (Bolt 006):** El administrador autenticado debe poder consultar la bandeja de casos de mantenimiento de los clientes, filtrarlos por estado, urgencia, tipo y búsqueda libre, y abrir el detalle del caso sin cambiar su estado ni su clasificación. La bandeja conserva el orden estable por fecha de creación más reciente y por id como desempate, con paginación y filtros persistidos. El detalle muestra los datos del caso y del solicitante, y maneja correctamente los valores nulos de observaciones o fecha deseada, sin renderizar `[]` ni vacíos no esperados. Todo texto de cliente se renderiza escapado por Blade y no se admite HTML incrustado.
+
 ## 5. TABLA RESUMEN DE REQUERIMIENTOS FUNCIONALES
 
 | Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente de Sustento | Estado |

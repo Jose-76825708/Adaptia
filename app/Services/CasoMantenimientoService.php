@@ -65,6 +65,47 @@ class CasoMantenimientoService
             ->paginate($porPagina);
     }
 
+    public function listar(array $filtros = [], int $porPagina = 15)
+    {
+        $query = CasoMantenimiento::query()->with('solicitante');
+        $filtrosAplicados = [];
+
+        $estado = $filtros['estado'] ?? null;
+        if (is_string($estado) && in_array($estado, self::ESTADOS, true)) {
+            $query->where('estado', $estado);
+            $filtrosAplicados['estado'] = $estado;
+        }
+
+        $urgencia = $filtros['urgencia'] ?? null;
+        if (is_string($urgencia) && in_array($urgencia, \App\Services\SolicitudMantenimientoService::URGENCIAS, true)) {
+            $query->where('urgencia', $urgencia);
+            $filtrosAplicados['urgencia'] = $urgencia;
+        }
+
+        $tipo = $filtros['tipo'] ?? null;
+        if (is_string($tipo) && in_array($tipo, \App\Services\SolicitudMantenimientoService::TIPOS, true)) {
+            $query->where('tipo_mantenimiento', $tipo);
+            $filtrosAplicados['tipo'] = $tipo;
+        }
+
+        $busqueda = $filtros['q'] ?? null;
+        if (is_string($busqueda)) {
+            $busqueda = trim($busqueda);
+            if ($busqueda !== '') {
+                $query->where(function ($subQuery) use ($busqueda) {
+                    $subQuery->where('codigo', 'like', "%{$busqueda}%")
+                        ->orWhere('area_verde', 'like', "%{$busqueda}%");
+                });
+                $filtrosAplicados['q'] = $busqueda;
+            }
+        }
+
+        return $query->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate($porPagina)
+            ->appends($filtrosAplicados);
+    }
+
     public function puedeTransicionar(string $desde, string $hacia): bool
     {
         $desde = strtolower(trim($desde));

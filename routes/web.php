@@ -85,3 +85,10 @@ Route::middleware(['auth', 'role:cliente'])->group(function () {
     Route::get('/mantenimiento/solicitudes', [\App\Http\Controllers\SolicitudMantenimientoController::class, 'index'])
         ->name('mantenimiento.solicitudes.index');
 });
+
+Route::middleware(['auth', 'role:administrador'])->group(function () {
+    Route::get('/mantenimiento/casos', [\App\Http\Controllers\CasoMantenimientoController::class, 'index'])
+        ->name('mantenimiento.casos.index');
+    Route::get('/mantenimiento/casos/{caso}', [\App\Http\Controllers\CasoMantenimientoController::class, 'show'])
+        ->name('mantenimiento.casos.show');
+});
