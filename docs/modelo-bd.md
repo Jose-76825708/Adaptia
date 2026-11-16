@@ -79,6 +79,19 @@ entity "casos_mantenimiento" as casos_mantenimiento {
   updated_at : timestamp
 }
 
+entity "evidencias_caso" as evidencias_caso {
+  * id : bigint <<PK>>
+  --
+  * caso_id : bigint <<FK>>
+  * autor_id : bigint <<FK>>
+  tipo : enum(nota, foto)
+  contenido : text (nullable)
+  ruta : string (nullable)
+  descripcion : string (nullable)
+  created_at : timestamp
+  updated_at : timestamp
+}
+
 ' ---- Capa 3: Ventas ----
 entity "ventas" as ventas {
   * id : bigint <<PK>>
@@ -158,6 +171,8 @@ users ||--o| perfiles_cliente
 tipos_planta ||--o{ plantas
 
 users ||--o{ casos_mantenimiento
+casos_mantenimiento ||--o{ evidencias_caso
+users ||--o{ evidencias_caso
 
 users ||--o{ ventas
 plantas ||--o{ ventas

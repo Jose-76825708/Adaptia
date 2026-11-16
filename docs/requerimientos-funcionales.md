@@ -129,6 +129,14 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 **Criterio de Gestión Administrativa (Bolt 006):** El administrador autenticado debe poder consultar la bandeja de casos de mantenimiento de los clientes, filtrarlos por estado, urgencia, tipo y búsqueda libre, y abrir el detalle del caso sin cambiar su estado ni su clasificación. La bandeja conserva el orden estable por fecha de creación más reciente y por id como desempate, con paginación y filtros persistidos. El detalle muestra los datos del caso y del solicitante, y maneja correctamente los valores nulos de observaciones o fecha deseada, sin renderizar `[]` ni vacíos no esperados. Todo texto de cliente se renderiza escapado por Blade y no se admite HTML incrustado.
 
+### RF-18: Ingesta y compila evidencia por caso de mantenimiento
+
+**Descripción:** El sistema debe registrar y consolidar la evidencia asociada a cada caso de mantenimiento para soportar la evaluación técnica posterior. La evidencia puede ser de tipo nota o foto y debe quedar vinculada al caso y al autor que la registra. Además, el sistema debe compilar un paquete de contexto con la información base del caso, la evidencia registrada y las lecturas del monitoreo ya existentes para una ventana de 7 días, sin evaluar ni diagnosticar rangos ni cambiar el estado del caso.
+
+**Entradas:** Un caso de mantenimiento existente, un autor autenticado, una nota de texto o una foto válida, y la fecha de referencia opcional para la ventana de lecturas.
+
+**Criterio de Aceptación:** El servicio debe permitir registrar notas con longitud entre 3 y 1000 caracteres y guardar valores nulos para contenido opcional. Debe aceptar fotos jpg, jpeg, png y webp de hasta 5 MB y máximo 10 por caso, guardándolas en el disco público bajo `evidencias/{caso_id}/` con nombre hash generado por Laravel. Si el caso está cerrado, la evidencia se rechaza con un mensaje en español y no se guarda ni archivo ni fila. El paquete compilado debe incluir siempre `caso`, `evidencias` y `sensores`, con la evidencia ordenada por fecha y la sección de sensores compuesta por lecturas ya existentes dentro de la ventana de 7 días. La compilación no evalúa rangos, no genera alertas ni cambia el estado del caso, y la lectura de sensores sigue siendo una consulta de lectura sin duplicación ni copia de datos.
+
 ## 5. TABLA RESUMEN DE REQUERIMIENTOS FUNCIONALES
 
 | Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente de Sustento | Estado |
@@ -148,3 +156,4 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 | RF-13 | Validaciones API y respuestas HTTP 401/422 | API / Calidad | Art. 4 (Manejo de interferencias en datos)28 | Completo en backend y probado |
 | RF-14 | Detección de Sensores Offline | API / Calidad | Art. 326 y Art. 4 (Control de pérdida de paquetes)28 | Pendiente (Fase 4) |
 | RF-15 | Normalización de solicitudes de mantenimiento | Mantenimiento | Proceso de normalización del caso de mantenimiento | En implementación (Bolt 001) |
+| RF-18 | Ingesta y compila evidencia por caso de mantenimiento | Mantenimiento | Evidencia asociada al caso y lecturas de monitoreo existentes | En implementación (INT-019-BOLT-001) |

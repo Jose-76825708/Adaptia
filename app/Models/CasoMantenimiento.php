@@ -6,6 +6,7 @@ use Database\Factories\CasoMantenimientoFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CasoMantenimiento extends Model
 {
@@ -29,5 +30,10 @@ class CasoMantenimiento extends Model
     public function solicitante(): BelongsTo
     {
         return $this->belongsTo(User::class, 'solicitante_id');
+    }
+
+    public function evidencias(): HasMany
+    {
+        return $this->hasMany(EvidenciaCaso::class, 'caso_id');
     }
 }
