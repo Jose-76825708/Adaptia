@@ -100,14 +100,19 @@
             </div>
         </section>
 
-        <div class="mt-8 space-y-4">
-            @includeIf('mantenimiento.casos.paneles.diagnostico', ['caso' => $caso])
-            @includeIf('mantenimiento.casos.paneles.plan', ['caso' => $caso])
-            @includeIf('mantenimiento.casos.paneles.recursos', ['caso' => $caso])
-            @includeIf('mantenimiento.casos.paneles.abastecimiento', ['caso' => $caso])
-            @includeIf('mantenimiento.casos.paneles.ejecucion', ['caso' => $caso])
-            @includeIf('mantenimiento.casos.paneles.cierre', ['caso' => $caso])
-        </div>
+        <section class="mt-8 rounded-[10px] border border-[#e4ebdf] bg-white p-6 shadow-sm" aria-labelledby="secuencia-titulo">
+            <h2 id="secuencia-titulo" class="text-xl font-bold text-[#103928]">Flujo de mantenimiento</h2>
+            <p class="mt-2 text-sm text-[#5f6d5f]">Abre una etapa para trabajarla. Cada etapa conserva Volver, Guardar y Siguiente.</p>
+
+            <div class="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                <a href="{{ route('mantenimiento.casos.show.etapa', ['caso' => $caso, 'etapa' => 'diagnostico']) }}" class="rounded-[10px] border border-[#dce6d7] bg-[#f8faf6] px-4 py-4 font-semibold text-[#0f3c2b] transition hover:border-[#7cb22b] hover:bg-[#f1f7ee]">Diagnosticar</a>
+                <a href="{{ route('mantenimiento.casos.show.etapa', ['caso' => $caso, 'etapa' => 'plan']) }}" class="rounded-[10px] border border-[#dce6d7] bg-[#f8faf6] px-4 py-4 font-semibold text-[#0f3c2b] transition hover:border-[#7cb22b] hover:bg-[#f1f7ee]">Plan de mantenimiento</a>
+                <a href="{{ route('mantenimiento.casos.show.etapa', ['caso' => $caso, 'etapa' => 'recursos']) }}" class="rounded-[10px] border border-[#dce6d7] bg-[#f8faf6] px-4 py-4 font-semibold text-[#0f3c2b] transition hover:border-[#7cb22b] hover:bg-[#f1f7ee]">Disponibilidad de recursos</a>
+                <a href="{{ route('mantenimiento.casos.show.etapa', ['caso' => $caso, 'etapa' => 'abastecimiento']) }}" class="rounded-[10px] border border-[#dce6d7] bg-[#f8faf6] px-4 py-4 font-semibold text-[#0f3c2b] transition hover:border-[#7cb22b] hover:bg-[#f1f7ee]">Abastecimiento</a>
+                <a href="{{ route('mantenimiento.casos.show.etapa', ['caso' => $caso, 'etapa' => 'ejecucion']) }}" class="rounded-[10px] border border-[#dce6d7] bg-[#f8faf6] px-4 py-4 font-semibold text-[#0f3c2b] transition hover:border-[#7cb22b] hover:bg-[#f1f7ee]">Ejecución</a>
+                <a href="{{ route('mantenimiento.casos.show.etapa', ['caso' => $caso, 'etapa' => 'cierre']) }}" class="rounded-[10px] border border-[#dce6d7] bg-[#f8faf6] px-4 py-4 font-semibold text-[#0f3c2b] transition hover:border-[#7cb22b] hover:bg-[#f1f7ee]">Cierre / Reapertura</a>
+            </div>
+        </section>
     </main>
 </body>
 

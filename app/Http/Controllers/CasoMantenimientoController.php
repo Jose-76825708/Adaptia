@@ -24,6 +24,20 @@ class CasoMantenimientoController extends Controller
         ]);
     }
 
+    public function etapa(CasoMantenimiento $caso, string $etapa)
+    {
+        $permitidas = ['diagnostico', 'plan', 'recursos', 'abastecimiento', 'ejecucion', 'cierre'];
+
+        if (!in_array($etapa, $permitidas, true)) {
+            abort(404);
+        }
+
+        return view('mantenimiento.casos.etapa', [
+            'caso' => $caso->load('solicitante'),
+            'etapa' => $etapa,
+        ]);
+    }
+
     public function show(CasoMantenimiento $caso)
     {
         return view('mantenimiento.casos.show', [

@@ -36,4 +36,19 @@ class CasoMantenimiento extends Model
     {
         return $this->hasMany(EvidenciaCaso::class, 'caso_id');
     }
+
+    public function diagnosticos(): HasMany
+    {
+        return $this->hasMany(DiagnosticoCaso::class, 'caso_id');
+    }
+
+    public function planes(): HasMany
+    {
+        return $this->hasMany(PlanMantenimiento::class, 'caso_id');
+    }
+
+    public function informes(): HasMany
+    {
+        return $this->hasMany(InformeCierre::class, 'caso_id');
+    }
 }

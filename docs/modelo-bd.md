@@ -92,6 +92,145 @@ entity "evidencias_caso" as evidencias_caso {
   updated_at : timestamp
 }
 
+entity "diagnosticos_caso" as diagnosticos_caso {
+  * id : bigint <<PK>>
+  --
+  * caso_id : bigint <<FK>>
+  * autor_id : bigint <<FK>>
+  * version : integer
+  severidad : string
+  resumen : text
+  justificacion : text
+  evaluado_en : timestamp
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity "hallazgos_diagnostico" as hallazgos_diagnostico {
+  * id : bigint <<PK>>
+  --
+  * diagnostico_id : bigint <<FK>>
+  tipo : string
+  variable : string (nullable)
+  severidad : string
+  descripcion : text
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+' ---- Capa 3: Plan de mantenimiento ----
+entity "recursos_catalogo" as recursos_catalogo {
+  * id : bigint <<PK>>
+  --
+  tipo : string
+  * codigo : string <<unique>>
+  nombre : string
+  unidad : string
+  stock_actual : decimal(10,2)
+  stock_minimo : decimal(10,2) (nullable)
+}
+
+entity "planes_mantenimiento" as planes_mantenimiento {
+  * id : bigint <<PK>>
+  --
+  * caso_id : bigint <<FK>>
+  * autor_id : bigint <<FK>>
+  * version : integer
+  generado_en : timestamp
+  descripcion : text
+}
+
+entity "tareas_plan" as tareas_plan {
+  * id : bigint <<PK>>
+  --
+  * plan_id : bigint <<FK>>
+  * codigo : string
+  titulo : string
+  descripcion : text
+  prioridad : string
+  criticidad : string
+  depende_de_tarea_id : bigint <<FK>> (nullable)
+  fecha_estimada : date (nullable)
+  duracion_dias : integer
+  estado : string
+}
+
+entity "tarea_recursos" as tarea_recursos {
+  * id : bigint <<PK>>
+  --
+  * tarea_id : bigint <<FK>>
+  * recurso_id : bigint <<FK>>
+  cantidad : decimal(10,2)
+}
+
+entity "items_checklist" as items_checklist {
+  * id : bigint <<PK>>
+  --
+  * tarea_id : bigint <<FK>>
+  descripcion : text
+  cumplido : boolean
+}
+
+' ---- Capa 3: Abastecimiento ----
+entity "requisiciones_mantenimiento" as requisiciones_mantenimiento {
+  * id : bigint <<PK>>
+  --
+  * caso_id : bigint <<FK>>
+  * autor_id : bigint <<FK>>
+  estado : string
+  motivo : text (nullable)
+}
+
+entity "requisicion_items" as requisicion_items {
+  * id : bigint <<PK>>
+  --
+  * requisicion_id : bigint <<FK>>
+  * recurso_id : bigint <<FK>>
+  cantidad_solicitada : decimal(10,2)
+  cantidad_recibida : decimal(10,2)
+  estado : string
+}
+
+entity "movimientos_material" as movimientos_material {
+  * id : bigint <<PK>>
+  --
+  requisicion_item_id : bigint <<FK>> (nullable)
+  * caso_id : bigint <<FK>>
+  * recurso_id : bigint <<FK>>
+  tipo : string
+  stock_antes : decimal(10,2)
+  stock_despues : decimal(10,2)
+  cantidad : decimal(10,2)
+  motivo : text
+  * autor_id : bigint <<FK>>
+}
+
+' ---- Capa 4: Ejecución y cierre ----
+entity "eventos_ejecucion" as eventos_ejecucion {
+  * id : bigint <<PK>>
+  --
+  * caso_id : bigint <<FK>>
+  tarea_id : bigint <<FK>> (nullable)
+  tipo : string
+  descripcion : text
+  * autor_id : bigint <<FK>>
+  fecha : timestamp
+  resuelta_en : timestamp (nullable)
+}
+
+entity "informes_cierre" as informes_cierre {
+  * id : bigint <<PK>>
+  --
+  * caso_id : bigint <<FK>>
+  * autor_id : bigint <<FK>>
+  * destinatario_id : bigint <<FK>>
+  * version : integer
+  resumen : text
+  contenido : text
+  notificacion_pendiente : boolean
+  cerrado_en : timestamp
+}
+
 ' ---- Capa 3: Ventas ----
 entity "ventas" as ventas {
   * id : bigint <<PK>>
@@ -173,6 +312,30 @@ tipos_planta ||--o{ plantas
 users ||--o{ casos_mantenimiento
 casos_mantenimiento ||--o{ evidencias_caso
 users ||--o{ evidencias_caso
+casos_mantenimiento ||--o{ planes_mantenimiento
+casos_mantenimiento ||--o{ requisiciones_mantenimiento
+users ||--o{ requisiciones_mantenimiento
+requisiciones_mantenimiento ||--o{ requisicion_items
+recursos_catalogo ||--o{ requisicion_items
+requisicion_items ||--o{ movimientos_material
+casos_mantenimiento ||--o{ movimientos_material
+casos_mantenimiento ||--o{ eventos_ejecucion
+users ||--o{ eventos_ejecucion
+tareas_plan ||--o{ eventos_ejecucion
+casos_mantenimiento ||--o{ informes_cierre
+users ||--o{ informes_cierre : autor_id
+users ||--o{ informes_cierre : destinatario_id
+recursos_catalogo ||--o{ movimientos_material
+users ||--o{ movimientos_material
+users ||--o{ planes_mantenimiento
+planes_mantenimiento ||--o{ tareas_plan
+tareas_plan ||--o{ tareas_plan : depende_de_tarea_id
+tareas_plan ||--o{ tarea_recursos
+recursos_catalogo ||--o{ tarea_recursos
+tareas_plan ||--o{ items_checklist
+casos_mantenimiento ||--o{ diagnosticos_caso
+users ||--o{ diagnosticos_caso
+diagnosticos_caso ||--o{ hallazgos_diagnostico
 
 users ||--o{ ventas
 plantas ||--o{ ventas

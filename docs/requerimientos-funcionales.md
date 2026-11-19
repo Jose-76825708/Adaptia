@@ -137,6 +137,71 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 
 **Criterio de Aceptación:** El servicio debe permitir registrar notas con longitud entre 3 y 1000 caracteres y guardar valores nulos para contenido opcional. Debe aceptar fotos jpg, jpeg, png y webp de hasta 5 MB y máximo 10 por caso, guardándolas en el disco público bajo `evidencias/{caso_id}/` con nombre hash generado por Laravel. Si el caso está cerrado, la evidencia se rechaza con un mensaje en español y no se guarda ni archivo ni fila. El paquete compilado debe incluir siempre `caso`, `evidencias` y `sensores`, con la evidencia ordenada por fecha y la sección de sensores compuesta por lecturas ya existentes dentro de la ventana de 7 días. La compilación no evalúa rangos, no genera alertas ni cambia el estado del caso, y la lectura de sensores sigue siendo una consulta de lectura sin duplicación ni copia de datos.
 
+**Criterio de Diagnóstico (Bolt 002):** El evaluador puro debe comparar cada variable con los rangos de la planta asociada y omitir las variables que no tengan ambos límites. Un promedio fuera de rango genera severidad alta 3; mínimo o máximo fuera genera media 2; última lectura fuera con promedio dentro genera tendencia media 2; 2 variables altas de una misma planta generan riesgo alto 3; 2 o 3 alertas iguales generan reincidencia media y 4 o más alta 3.
+
+**Criterio de Diagnóstico (Bolt 003):** El resultado debe ser estructurado y contener severidad global, hallazgos, variables afectadas y justificación. Las palabras críticas urgente, peligro, riesgo, se muere, caído y desplomado cuentan las ocurrencias en notas y solicitud: 1 o 2 generan hallazgo medio y 3 o más alto. Sin hallazgos se genera un hallazgo texto baja con "Sin hallazgos con la evidencia disponible". La severidad global suma los puntos de hallazgo: alta desde 6, media de 3 a 5 y baja hasta 2.
+
+**Criterio de Persistencia (Bolt 004):** El diagnóstico se guarda como una versión nueva y sus hallazgos como filas hijas. Solo el estado abierto puede avanzar a diagnosticado mediante `CasoMantenimientoService::cambiarEstado`; reevaluar un caso diagnosticado crea una versión nueva sin cambiar el estado. Los estados cerrado y planificado posterior rechazan reevaluación y todo cambio queda dentro de una transacción.
+
+**Criterio de Interfaz (Bolt 005):** El panel diagnóstico se incluye dentro del detalle del caso sin modificar su vista contenedora. Debe mostrar formularios accesibles para nota y foto, el botón de evaluación, el diagnóstico vigente y la evidencia registrada; toda salida textual se escapa y las fotos usan texto alternativo.
+
+### RF-19: Plan de mantenimiento derivado del diagnóstico
+
+**Descripción:** El sistema debe derivar tareas de mantenimiento desde el diagnóstico vigente, ordenarlas de forma determinista, generar checklist y persistir una versión de plan asociada al caso. El plan puede regenerarse mientras el caso esté diagnosticado o planificado y no cambia el estado hasta el primer cierre de generación aprobado.
+
+**Entradas:** Caso existente con diagnóstico vigente, tipo de mantenimiento, severidad, variables afectadas y catálogo de recursos disponibles.
+
+**Criterios por Bolt:**
+- **Bolt 001:** Las plantillas de tareas son constantes por tipo de mantenimiento y una severidad alta eleva todas las prioridades un nivel; las variables afectadas agregan al final una tarea de seguimiento sin recursos.
+- **Bolt 002:** Las tareas se ordenan respetando dependencias y luego por prioridad, criticidad y código estable.
+- **Bolt 003:** Cada tarea tiene entre dos y tres ítems de checklist; el seguimiento crea un ítem por variable única.
+- **Bolt 004:** El plan se persiste en versión nueva junto a tareas, dependencias, recursos y checklist; el caso pasa de diagnosticado a planificado solo mediante `CasoMantenimientoService::cambiarEstado`. Un código de recurso ausente falla sin guardar.
+- **Bolt 005:** El panel plan muestra las tareas vigentes y sus datos, sin checklist, usando ids con prefijo `plan-` y error bag propio.
+
+### RF-20: Disponibilidad de recursos y veredicto de ejecución
+
+**Descripción:** El sistema debe consultar herramientas y materiales del catálogo, agregarlos según las tareas del plan y emitir un veredicto sin persistirlo.
+
+**Criterios por Bolt:**
+- **Bolt 001:** Una herramienta está disponible si su stock actual alcanza el máximo requerido por las tareas.
+- **Bolt 002:** Los materiales suman cantidad requerida por código y muestran faltante como máximo requerido menos disponible.
+- **Bolt 003:** El estado es bloqueado si falta cualquier herramienta, faltan si solo faltan materiales y ejecutable si todo alcanza.
+- **Bolt 004:** El panel recursos muestra requerido, disponible, faltantes y el veredicto vigente sin una ruta POST de verificar.
+
+### RF-21: Abastecimiento y preparación del caso
+
+**Descripción:** El sistema debe generar requisiciones de materiales faltantes, recomendar compras por prioridad, registrar recepción parcial y llevar el caso a preparado solo con disponibilidad ejecutable.
+
+**Criterios por Bolt:**
+- **Bolt 001:** Solo puede existir una requisición no recibida por caso y no se genera para veredictos bloqueados.
+- **Bolt 002:** Las recomendaciones se ordenan por prioridad de tarea y código estable.
+- **Bolt 003:** La recepción suma stock, registra movimiento entrada con trazabilidad y permite estados pendiente, parcial o recibida.
+- **Bolt 004:** El caso pasa de planificado a preparado únicamente si el veredicto vigente vuelve a ser ejecutable.
+- **Bolt 005:** El panel muestra requisición, recomendaciones, recepción por ítem y acción de preparado.
+
+### RF-22: Ejecución y seguimiento del plan
+
+**Descripción:** El sistema debe registrar eventos y avances, comparar la ejecución real con el plan, detectar desviaciones y mantener estados de tarea desde el checklist.
+
+**Criterios por Bolt:**
+- **Bolt 001:** El primer evento debe ser inicio desde preparado y crea fechas estimadas acumuladas.
+- **Bolt 002:** La comparación separa completadas, pendientes y retrasadas.
+- **Bolt 003:** Las incidencias abiertas y retrasos generan riesgos y recomendaciones.
+- **Bolt 004:** Checklist completo marca la tarea completada; desmarcar devuelve en_curso.
+- **Bolt 005:** El panel permite eventos, checklist e incidencias con prefijo ejec- y error bag propio.
+
+### RF-23: Cierre y reapertura del caso
+
+**Descripción:** El sistema debe reevaluar el resultado final, decidir cierre o reapertura, generar informe plano y preparar una notificación sin enviarla.
+
+**Criterios por Bolt:**
+- **Bolt 001:** La reevaluación usa el motor de estado desde el evento de inicio y omite sensores sin lecturas posteriores.
+- **Bolt 002:** Se puede cerrar con severidad baja/media, cero tareas pendientes y cero incidencias abiertas; reapertura exige motivo.
+- **Bolt 003:** El informe final contiene contenido plano, resumen, autor, destinatario y versión vigente.
+- **Bolt 004:** El cierre cambia en_ejecucion a cerrado dentro de una transacción y marca notificacion_pendiente.
+- **Bolt 005:** El panel cierre expone evaluar, cerrar y reapertura con prefijo cierre-.
+- **Bolt 006:** El informe es accesible solo a administrador o dueño y muestra 404 sin informe.
+
 ## 5. TABLA RESUMEN DE REQUERIMIENTOS FUNCIONALES
 
 | Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente de Sustento | Estado |
@@ -157,3 +222,8 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 | RF-14 | Detección de Sensores Offline | API / Calidad | Art. 326 y Art. 4 (Control de pérdida de paquetes)28 | Pendiente (Fase 4) |
 | RF-15 | Normalización de solicitudes de mantenimiento | Mantenimiento | Proceso de normalización del caso de mantenimiento | En implementación (Bolt 001) |
 | RF-18 | Ingesta y compila evidencia por caso de mantenimiento | Mantenimiento | Evidencia asociada al caso y lecturas de monitoreo existentes | En implementación (INT-019-BOLT-001) |
+| RF-19 | Plan de mantenimiento derivado del diagnóstico | Mantenimiento | Diagnóstico vigente y plantillas por tipo | En implementación (INT-020-BOLT-004) |
+| RF-20 | Disponibilidad de recursos y veredicto de ejecución | Mantenimiento | Catálogo y plan vigente | En implementación (INT-021-BOLT-004) |
+| RF-21 | Abastecimiento y preparación del caso | Mantenimiento | Requisición y recepción de materiales | En implementación (INT-022-BOLT-005) |
+| RF-22 | Ejecución y seguimiento del plan | Mantenimiento | Eventos, checklist y comparación | En implementación (INT-023-BOLT-005) |
+| RF-23 | Cierre y reapertura del caso | Mantenimiento | Reevaluación e informe final | En implementación (INT-024-BOLT-006) |

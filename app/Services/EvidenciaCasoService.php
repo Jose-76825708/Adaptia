@@ -187,6 +187,23 @@ class EvidenciaCasoService
         ];
     }
 
+    public function eliminarFoto(CasoMantenimiento $caso, EvidenciaCaso $evidencia): void
+    {
+        $this->validarCasoAbierto($caso);
+
+        if ((int) $evidencia->caso_id !== (int) $caso->id || $evidencia->tipo !== 'foto') {
+            throw ValidationException::withMessages([
+                'evidencia' => 'La foto no pertenece al caso indicado.',
+            ]);
+        }
+
+        if ($evidencia->ruta) {
+            Storage::disk('public')->delete($evidencia->ruta);
+        }
+
+        $evidencia->delete();
+    }
+
     public function resumirLecturas(array $lecturas): array
     {
         $valores = [];

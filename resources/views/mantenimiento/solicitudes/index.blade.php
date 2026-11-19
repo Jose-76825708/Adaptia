@@ -50,6 +50,9 @@
                                         <span class="inline-flex rounded-full bg-[#edf8e7] px-2.5 py-1 text-xs font-semibold text-[#3b5d2d]">
                                             {{ str_replace('_', ' ', ucfirst($caso->estado)) }}
                                         </span>
+                                        @if ($caso->estado === 'cerrado')
+                                            <a href="{{ route('mantenimiento.casos.informe', $caso) }}" class="ml-2 text-sm font-semibold text-[#2d5f3a] underline">Ver informe</a>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-3">{{ $caso->created_at->format('d/m/Y') }}</td>
                                 </tr>
