@@ -29,6 +29,10 @@
                     <span>{{ Auth::user()->updated_at->diffForHumans() }}</span>
                 </div>
             </div>
+            <div class="relative mt-6 flex flex-wrap items-center justify-center gap-3">
+                <a href="{{ route('mantenimiento.solicitudes.create') }}" class="rounded-full bg-[#d4e8ba] px-5 py-2.5 text-sm font-semibold text-[#0f3c2b] transition duration-300 hover:scale-105">Solicitar mantenimiento</a>
+                <a href="{{ route('mantenimiento.solicitudes.index') }}" class="rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition duration-300 hover:bg-white/15">Mis solicitudes</a>
+            </div>
         </div>
     </section>
 

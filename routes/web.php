@@ -76,3 +76,61 @@ Route::middleware(['auth', 'role:cliente'])->group(function () {
     Route::get('/cliente/monitoreo/historial', [HomeController::class, 'datosMonitoreoHistorial'])
         ->name('cliente.monitoreo.historial');
 });
+
+Route::middleware(['auth', 'role:cliente'])->group(function () {
+    Route::get('/mantenimiento/solicitudes/crear', [\App\Http\Controllers\SolicitudMantenimientoController::class, 'create'])
+        ->name('mantenimiento.solicitudes.create');
+    Route::post('/mantenimiento/solicitudes', [\App\Http\Controllers\SolicitudMantenimientoController::class, 'store'])
+        ->name('mantenimiento.solicitudes.store');
+    Route::get('/mantenimiento/solicitudes', [\App\Http\Controllers\SolicitudMantenimientoController::class, 'index'])
+        ->name('mantenimiento.solicitudes.index');
+});
+
+Route::middleware(['auth', 'role:administrador'])->group(function () {
+    Route::get('/mantenimiento/casos', [\App\Http\Controllers\CasoMantenimientoController::class, 'index'])
+        ->name('mantenimiento.casos.index');
+    Route::get('/mantenimiento/casos/{caso}', [\App\Http\Controllers\CasoMantenimientoController::class, 'show'])
+        ->name('mantenimiento.casos.show');
+    Route::get('/mantenimiento/casos/{caso}/etapa/{etapa}', [\App\Http\Controllers\CasoMantenimientoController::class, 'etapa'])
+        ->name('mantenimiento.casos.show.etapa');
+});
+
+Route::middleware(['auth', 'role:administrador'])->group(function () {
+    Route::post('/mantenimiento/casos/{caso}/diagnostico/notas', [\App\Http\Controllers\DiagnosticoCasoController::class, 'registrarNota'])
+        ->name('mantenimiento.casos.diagnostico.notas');
+    Route::post('/mantenimiento/casos/{caso}/diagnostico/fotos', [\App\Http\Controllers\DiagnosticoCasoController::class, 'registrarFoto'])
+        ->name('mantenimiento.casos.diagnostico.fotos');
+    Route::post('/mantenimiento/casos/{caso}/diagnostico/evaluar', [\App\Http\Controllers\DiagnosticoCasoController::class, 'evaluar'])
+        ->name('mantenimiento.casos.diagnostico.evaluar');
+    Route::post('/mantenimiento/casos/{caso}/diagnostico/guardar', [\App\Http\Controllers\DiagnosticoCasoController::class, 'guardar'])
+        ->name('mantenimiento.casos.diagnostico.guardar');
+    Route::post('/mantenimiento/casos/{caso}/diagnostico/fotos/{evidencia}/eliminar', [\App\Http\Controllers\DiagnosticoCasoController::class, 'eliminarFoto'])
+        ->name('mantenimiento.casos.diagnostico.fotos.eliminar');
+
+    Route::post('/mantenimiento/casos/{caso}/plan/generar', [\App\Http\Controllers\PlanMantenimientoController::class, 'generar'])
+        ->name('mantenimiento.casos.plan.generar');
+
+    Route::post('/mantenimiento/casos/{caso}/requisicion/generar', [\App\Http\Controllers\AbastecimientoMantenimientoController::class, 'generar'])
+        ->name('mantenimiento.casos.requisicion.generar');
+    Route::post('/mantenimiento/casos/{caso}/requisicion/recibir', [\App\Http\Controllers\AbastecimientoMantenimientoController::class, 'recibir'])
+        ->name('mantenimiento.casos.requisicion.recibir');
+    Route::post('/mantenimiento/casos/{caso}/abastecimiento/preparar', [\App\Http\Controllers\AbastecimientoMantenimientoController::class, 'preparar'])
+        ->name('mantenimiento.casos.abastecimiento.preparar');
+
+    Route::post('/mantenimiento/casos/{caso}/ejecucion/evento', [\App\Http\Controllers\EjecucionMantenimientoController::class, 'registrarEvento'])
+        ->name('mantenimiento.casos.ejecucion.evento');
+    Route::post('/mantenimiento/casos/{caso}/ejecucion/checklist/{item}', [\App\Http\Controllers\EjecucionMantenimientoController::class, 'actualizarChecklist'])
+        ->name('mantenimiento.casos.ejecucion.checklist');
+    Route::post('/mantenimiento/casos/{caso}/ejecucion/incidencias/{evento}/resolver', [\App\Http\Controllers\EjecucionMantenimientoController::class, 'resolverIncidencia'])
+        ->name('mantenimiento.casos.ejecucion.incidencia.resolver');
+
+    Route::post('/mantenimiento/casos/{caso}/cierre/cerrar', [\App\Http\Controllers\CierreMantenimientoController::class, 'cerrar'])
+        ->name('mantenimiento.casos.cierre.cerrar');
+    Route::post('/mantenimiento/casos/{caso}/cierre/reabrir', [\App\Http\Controllers\CierreMantenimientoController::class, 'reabrir'])
+        ->name('mantenimiento.casos.cierre.reabrir');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/mantenimiento/casos/{caso}/informe', [\App\Http\Controllers\CierreMantenimientoController::class, 'informe'])
+        ->name('mantenimiento.casos.informe');
+});

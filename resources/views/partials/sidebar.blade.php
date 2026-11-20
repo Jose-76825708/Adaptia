@@ -15,6 +15,13 @@
                         Personal
                     </a>
                 </li>
+                <li
+                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] transition duration-300 cursor-pointer {{ Route::is('mantenimiento.casos.index') || Route::is('mantenimiento.casos.show') ? 'bg-[#6eab26]' : 'hover:bg-[#6eab26]' }}">
+                    <a class="flex w-full h-full items-center gap-3" href="{{ route('mantenimiento.casos.index') }}">
+                        <img class="w-5 h-auto" src="{{ asset('images/inventario.png') }}" alt="">
+                        Casos de mantenimiento
+                    </a>
+                </li>
             @endif
             <li
                 class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
