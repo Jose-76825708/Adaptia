@@ -227,8 +227,8 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 | RF-21 | Abastecimiento y preparación del caso | Mantenimiento | Requisición y recepción de materiales | En implementación (INT-022-BOLT-005) |
 | RF-22 | Ejecución y seguimiento del plan | Mantenimiento | Eventos, checklist y comparación | En implementación (INT-023-BOLT-005) |
 | RF-23 | Cierre y reapertura del caso | Mantenimiento | Reevaluación e informe final | En implementación (INT-024-BOLT-006) |
-| RF-24 | Gestión del ciclo de planeación comercial | Planeación comercial | Campañas, productos y estados del macroproceso | Etapa A completa |
-| RF-25 | Demanda y evaluación comercial | Planeación comercial | Ventas, catálogo y periodo de campaña | Etapa A completa |
+| RF-24 | Gestión del ciclo de planeación comercial | Planeación comercial | Campañas, productos y estados del macroproceso | Etapas A y B completas |
+| RF-25 | Demanda y evaluación comercial | Planeación comercial | Ventas, catálogo y periodo de campaña | Etapas A y B completas |
 
 ## 6. MÓDULO 4: PLANEACIÓN COMERCIAL
 

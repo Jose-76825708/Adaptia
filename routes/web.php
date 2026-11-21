@@ -134,3 +134,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/mantenimiento/casos/{caso}/informe', [\App\Http\Controllers\CierreMantenimientoController::class, 'informe'])
         ->name('mantenimiento.casos.informe');
 });
+
+Route::middleware(['auth', 'role:administrador,vendedor'])
+    ->prefix('planeacion-comercial')
+    ->name('planeacion-comercial.')
+    ->controller(\App\Http\Controllers\PlaneacionComercialController::class)
+    ->group(function () {
+        Route::get('/campanas', 'index')->name('campanas.index');
+        Route::get('/campanas/crear', 'create')->middleware('role:vendedor')->name('campanas.create');
+        Route::post('/campanas', 'store')->middleware('role:vendedor')->name('campanas.store');
+        Route::get('/campanas/{campana}', 'show')->name('campanas.show');
+        Route::post('/campanas/{campana}/transicion', 'transicionar')->name('campanas.transicionar');
+        Route::post('/campanas/{campana}/oferta', 'ajustarOferta')->name('campanas.oferta.ajustar');
+        Route::post('/solicitudes/{solicitud}/disponibilidad', 'gestionarDisponibilidad')
+            ->name('solicitudes.disponibilidad');
+        Route::get('/demanda', 'demanda')->name('demanda');
+    });

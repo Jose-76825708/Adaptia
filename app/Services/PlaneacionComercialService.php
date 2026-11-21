@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\CampanaComercial;
+use App\Models\Planta;
 use App\Models\ProductoCampana;
 use App\Models\SolicitudDisponibilidad;
 use App\Models\User;
@@ -95,6 +96,54 @@ class PlaneacionComercialService
 
             return $campana->fresh(['productos.planta']);
         });
+    }
+
+    public function listar(array $filtros = [], int $porPagina = 15)
+    {
+        $consulta = CampanaComercial::query()->with('creador');
+        $aplicados = [];
+
+        $estado = $filtros['estado'] ?? null;
+        if (is_string($estado) && in_array($estado, self::ESTADOS, true)) {
+            $consulta->where('estado', $estado);
+            $aplicados['estado'] = $estado;
+        }
+
+        $busqueda = $filtros['q'] ?? null;
+        if (is_string($busqueda)) {
+            $busqueda = trim(mb_substr($busqueda, 0, 100));
+            if ($busqueda !== '') {
+                $consulta->where(function ($subconsulta) use ($busqueda) {
+                    $subconsulta->where('codigo', 'like', "%{$busqueda}%")
+                        ->orWhere('objetivos', 'like', "%{$busqueda}%");
+                });
+                $aplicados['q'] = $busqueda;
+            }
+        }
+
+        return $consulta->withCount(['productos' => fn ($query) => $query->where('incluida', true)])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate($porPagina)
+            ->appends($aplicados);
+    }
+
+    public function obtener(int $id): CampanaComercial
+    {
+        return CampanaComercial::query()
+            ->with([
+                'creador',
+                'productos.planta',
+                'productos.solicitudDisponibilidad.gestionadaPor',
+            ])
+            ->findOrFail($id);
+    }
+
+    public function plantasDisponibles()
+    {
+        return Planta::query()
+            ->orderBy('nombre')
+            ->get(['id', 'nombre', 'stock_actual', 'stock_minimo', 'precio']);
     }
 
     public function puedeTransicionar(string $desde, string $hacia): bool
