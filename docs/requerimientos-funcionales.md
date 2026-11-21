@@ -227,3 +227,19 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 | RF-21 | Abastecimiento y preparación del caso | Mantenimiento | Requisición y recepción de materiales | En implementación (INT-022-BOLT-005) |
 | RF-22 | Ejecución y seguimiento del plan | Mantenimiento | Eventos, checklist y comparación | En implementación (INT-023-BOLT-005) |
 | RF-23 | Cierre y reapertura del caso | Mantenimiento | Reevaluación e informe final | En implementación (INT-024-BOLT-006) |
+| RF-24 | Gestión del ciclo de planeación comercial | Planeación comercial | Campañas, productos y estados del macroproceso | Etapa A completa |
+| RF-25 | Demanda y evaluación comercial | Planeación comercial | Ventas, catálogo y periodo de campaña | Etapa A completa |
+
+## 6. MÓDULO 4: PLANEACIÓN COMERCIAL
+
+### RF-24: Gestión del ciclo de planeación comercial
+
+**Descripción:** El sistema debe registrar campañas comerciales con objetivos, presupuesto, fechas, plantas ofertadas y metas cuantitativas. Debe permitir avanzar por las actividades de análisis de demanda, identificación de productos, revisión y gestión de disponibilidad, planificación de oferta, promoción, evaluación y documentación de ajustes para el siguiente ciclo.
+
+**Criterios de aceptación:** La campaña recibe un código único `CAM-AAAA-00001`. El vendedor ejecuta las actividades comerciales; el administrador ejecuta disponibilidad y evaluación. Cada transición valida estado y rol en el Service. No se planifica una oferta cuyo stock actual no cubra las cantidades meta; la disponibilidad no reserva inventario. Si la reposición no se logra, el vendedor puede reducir o descartar productos y volver a intentar la planificación solo con disponibilidad suficiente.
+
+### RF-25: Demanda y evaluación comercial
+
+**Descripción:** El sistema debe consultar ventas por planta dentro de un periodo, ordenar el ranking de unidades vendidas, identificar plantas bajo el stock mínimo y plantas sin ventas. Al finalizar una campaña debe comparar las ventas de sus plantas en sus fechas con las cantidades meta, calcular porcentaje de cumplimiento e ingresos aproximados.
+
+**Criterios de aceptación:** La evaluación se habilita después de la fecha final y de marcar la promoción como realizada. Los resultados se guardan como una fotografía de la evaluación. Como las ventas no identifican campaña ni precio cobrado, se consideran todas las ventas de esas plantas durante el periodo y se estima el ingreso con el precio actual de catálogo; el descuento planificado no se asume aplicado. No se generan métricas de recomendaciones.

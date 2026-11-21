@@ -118,3 +118,10 @@ Cypress para end-to-end (más adelante).
 Código simple y legible por sobre "elegante" — proyecto académico de
 pregrado. No Repository, no CQRS, no Domain Events. Prioriza que cada
 pieza sea fácil de explicar en una sustentación.
+
+## Módulo: Planeación comercial
+- Etapa A (datos, reglas y servicios): implementada y probada.
+- Etapa B (interfaz): pendiente de confirmación de José.
+- Etapa C (asistente de IA interno de solo lectura): pendiente de confirmación; verificar primero soporte de tool calling del modelo configurado.
+- Mapeo único de carriles en `PlaneacionComercialService`: Responsable Comercial = vendedor; Producción y Administración = administrador.
+- La disponibilidad usa stock actual sin reservas. La evaluación estima ingresos con precio actual y no atribuye ventas a una campaña porque `ventas` no guarda campaña ni precio cobrado.

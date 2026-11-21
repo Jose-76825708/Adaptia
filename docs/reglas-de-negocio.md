@@ -120,5 +120,28 @@ Sustento Científico: El Artículo 4 define el formato EPC de 12 bits como el id
 | RN-10 | Sanitización y Log en microSD | Artículos 4, 7 | Pendiente (Fase 4) |
 | RN-11 | Protocolo Heartbeat (Latido) | Artículos 3, 4 | Pendiente (Fase 4) |
 | RN-12 | Identificación EPC de 12 bits (NMIS) | Artículos 3, 4 | Completo |
+| RN-13 | Mapeo de roles de planeación comercial | Roles existentes de Adaptia | Etapa A completa |
+| RN-14 | Transiciones comerciales validadas por rol/estado | Máquina de estados comercial | Etapa A completa |
+| RN-15 | Disponibilidad comercial sin reserva de stock | Inventario actual de plantas | Etapa A completa |
+| RN-16 | Gestión de faltantes y ajuste de oferta | Solicitudes de disponibilidad | Etapa A completa |
+| RN-17 | Ventana temporal y fotografía de evaluación | Fechas y ventas de campaña | Etapa A completa |
+| RN-18 | Límites de atribución e ingresos estimados | Estructura existente de ventas | Etapa A completa |
+| RN-19 | Métricas de demanda por planta | Ventas y stock actual | Etapa A completa |
 
 **Conclusión** La arquitectura de reglas de negocio de ADAPTIA garantiza un sistema donde cada decisión técnica, desde el descarte de variables NPK por escasez de datos hasta la implementación de registros en microSD, está fundamentada en evidencia científica. Esta rigurosidad asegura la viabilidad técnica y comercial, posicionando a ADAPTIA como el estándar líder en sistemas de agricultura de precisión doméstica.
+
+## 6. Reglas del macroproceso de planeación comercial
+
+**RN-13: Roles del macroproceso.** El carril Responsable Comercial se ejecuta con el rol `vendedor`; los carriles Producción y Administración se ejecutan con `administrador`. El mapeo se mantiene en un solo lugar del `PlaneacionComercialService`. No se crean roles nuevos.
+
+**RN-14: Transiciones válidas.** Cada campaña sigue únicamente las transiciones declaradas por `PlaneacionComercialService`. El servicio valida estado y rol en cada operación; ocultar una acción en la interfaz no sustituye la autorización del servidor.
+
+**RN-15: Disponibilidad sin reserva.** La disponibilidad de cada planta se determina comparando `cantidad_meta` con `stock_actual` vigente. Es una fotografía del momento y no reserva existencias. No se permite planificar si algún producto incluido supera el stock disponible.
+
+**RN-16: Gestión de faltantes y salida del bucle.** Producción registra para cada faltante si fue atendido o no logrado. Un faltante atendido solo cuenta como asegurado cuando el stock real cubre la meta al volver a revisar. Si una solicitud no se logra, el vendedor reduce o descarta productos; la oferta solo se planifica al alcanzar disponibilidad suficiente.
+
+**RN-17: Ventana de evaluación.** Solo se evalúa una campaña cuya promoción se marcó como realizada y cuya `fecha_fin` ya pasó. Se consideran las ventas de las plantas incluidas entre `fecha_inicio` y `fecha_fin`, ambas inclusive. La evaluación guarda una fotografía de las cantidades vendidas, cumplimiento e ingresos estimados.
+
+**RN-18: Límites de atribución e ingresos.** La tabla `ventas` no identifica la campaña ni guarda el precio cobrado. Por tanto, todas las ventas de esas plantas durante las fechas se cuentan sin atribuir causalidad a la campaña; los ingresos se aproximan con cantidad vendida por precio actual de catálogo. El cálculo no confirma que se aplicó el descuento planificado.
+
+**RN-19: Demanda comercial.** El ranking usa cantidades de ventas por planta en el periodo elegido. El reporte de stock bajo compara `stock_actual < stock_minimo`; las plantas sin ventas se determinan en el mismo periodo. No se calculan recomendaciones ni especies recomendadas.
