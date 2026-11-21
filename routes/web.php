@@ -150,3 +150,11 @@ Route::middleware(['auth', 'role:administrador,vendedor'])
             ->name('solicitudes.disponibilidad');
         Route::get('/demanda', 'demanda')->name('demanda');
     });
+
+Route::middleware(['auth', 'role:vendedor,administrador'])->group(function () {
+    Route::get('/asistente', [\App\Http\Controllers\AsistenteController::class, 'index'])
+        ->name('asistente.index');
+    Route::post('/asistente/chat', [\App\Http\Controllers\AsistenteController::class, 'chat'])
+        ->middleware('throttle:10,1')
+        ->name('asistente.chat');
+});

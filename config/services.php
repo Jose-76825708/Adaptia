@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'ollama' => [
+        'base_url' => env('OLLAMA_BASE_URL'),
+        'model' => env('OLLAMA_MODEL'),
+        'timeout' => env('OLLAMA_TIMEOUT'),
+    ],
+
 ];

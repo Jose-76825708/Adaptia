@@ -139,6 +139,86 @@ class PlaneacionComercialService
             ->findOrFail($id);
     }
 
+    public function buscarPorCodigo(string $codigo): ?CampanaComercial
+    {
+        return CampanaComercial::query()
+            ->with(['productos.planta', 'productos.solicitudDisponibilidad'])
+            ->where('codigo', strtoupper(trim($codigo)))
+            ->first();
+    }
+
+    public function consultarCampana(string $codigo): array
+    {
+        $campana = $this->buscarPorCodigo($codigo);
+        if (!$campana) {
+            return ['encontrada' => false, 'codigo' => strtoupper(trim($codigo))];
+        }
+
+        return [
+            'encontrada' => true,
+            'codigo' => $campana->codigo,
+            'estado' => $campana->estado,
+            'objetivos' => $campana->objetivos,
+            'fecha_inicio' => $campana->fecha_inicio->toDateString(),
+            'fecha_fin' => $campana->fecha_fin->toDateString(),
+            'productos' => $campana->productos
+                ->where('incluida', true)
+                ->take(20)
+                ->map(fn (ProductoCampana $producto) => [
+                    'planta' => $producto->planta->nombre,
+                    'cantidad_meta' => $producto->cantidad_meta,
+                    'descuento_porcentaje' => $producto->descuento_porcentaje,
+                    'solicitud_disponibilidad' => $producto->solicitudDisponibilidad?->estado,
+                ])
+                ->values()
+                ->all(),
+        ];
+    }
+
+    public function campanasPorEstado(string $estado, int $limite = 20): array
+    {
+        if (!in_array($estado, self::ESTADOS, true) || $limite < 1 || $limite > 50) {
+            throw new InvalidArgumentException('El estado o límite de campañas no es válido.');
+        }
+
+        return CampanaComercial::query()
+            ->where('estado', $estado)
+            ->orderByDesc('created_at')
+            ->limit($limite)
+            ->get(['codigo', 'estado', 'objetivos', 'fecha_inicio', 'fecha_fin'])
+            ->map(fn (CampanaComercial $campana) => [
+                'codigo' => $campana->codigo,
+                'estado' => $campana->estado,
+                'objetivos' => $campana->objetivos,
+                'fecha_inicio' => $campana->fecha_inicio->toDateString(),
+                'fecha_fin' => $campana->fecha_fin->toDateString(),
+            ])
+            ->all();
+    }
+
+    public function solicitudesPendientes(int $limite = 30): array
+    {
+        if ($limite < 1 || $limite > 50) {
+            throw new InvalidArgumentException('El límite de solicitudes debe estar entre 1 y 50.');
+        }
+
+        return SolicitudDisponibilidad::query()
+            ->where('estado', 'pendiente')
+            ->whereHas('productoCampana', fn ($query) => $query->where('incluida', true))
+            ->with(['productoCampana.campana', 'productoCampana.planta'])
+            ->orderBy('created_at')
+            ->limit($limite)
+            ->get()
+            ->map(fn (SolicitudDisponibilidad $solicitud) => [
+                'codigo_campana' => $solicitud->productoCampana->campana->codigo,
+                'planta' => $solicitud->productoCampana->planta->nombre,
+                'faltante' => $solicitud->faltante,
+                'notas' => $solicitud->notas,
+                'solicitada_en' => $solicitud->created_at?->toDateTimeString(),
+            ])
+            ->all();
+    }
+
     public function plantasDisponibles()
     {
         return Planta::query()

@@ -122,6 +122,8 @@ pieza sea fácil de explicar en una sustentación.
 ## Módulo: Planeación comercial
 - Etapa A (datos, reglas y servicios): implementada y probada.
 - Etapa B (interfaz): implementada y probada; bandeja, detalle por etapas, demanda y controles por rol.
-- Etapa C (asistente de IA interno de solo lectura): pendiente de confirmación; verificar primero soporte de tool calling del modelo configurado.
+- Etapa C (asistente de IA interno de solo lectura): implementada y probada con `Http::fake`; Gemma 4 tiene tool calling nativo.
 - Mapeo único de carriles en `PlaneacionComercialService`: Responsable Comercial = vendedor; Producción y Administración = administrador.
 - La disponibilidad usa stock actual sin reservas. La evaluación estima ingresos con precio actual y no atribuye ventas a una campaña porque `ventas` no guarda campaña ni precio cobrado.
+- El asistente usa `gemma4:31b` en Ollama local y solo admite hosts loopback para evitar enviar datos comerciales a terceros. El `Modelfile` existente se conserva sin cambios.
+- La herramienta `solicitudes_disponibilidad_pendientes` es exclusiva del administrador; el resto de herramientas de consulta se comparte entre vendedor y administrador.

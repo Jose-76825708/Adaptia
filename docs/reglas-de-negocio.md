@@ -127,6 +127,12 @@ Sustento Científico: El Artículo 4 define el formato EPC de 12 bits como el id
 | RN-17 | Ventana temporal y fotografía de evaluación | Fechas y ventas de campaña | Etapa A completa |
 | RN-18 | Límites de atribución e ingresos estimados | Estructura existente de ventas | Etapa A completa |
 | RN-19 | Métricas de demanda por planta | Ventas y stock actual | Etapa A completa |
+| RN-20 | Asistente sin mutaciones ni SQL libre | Registro cerrado de herramientas | Etapa C completa |
+| RN-21 | Autorización por herramienta y rol | Sesión autenticada de Adaptia | Etapa C completa |
+| RN-22 | Entrada e historial acotados del asistente | Solicitudes web y sesión | Etapa C completa |
+| RN-23 | Herramientas como datos, no instrucciones | Prompt del sistema en español | Etapa C completa |
+| RN-24 | Iteraciones, timeout y errores amables | Cliente HTTP de Ollama | Etapa C completa |
+| RN-25 | Procesamiento en Ollama local | Endpoint loopback configurado | Etapa C completa |
 
 **Conclusión** La arquitectura de reglas de negocio de ADAPTIA garantiza un sistema donde cada decisión técnica, desde el descarte de variables NPK por escasez de datos hasta la implementación de registros en microSD, está fundamentada en evidencia científica. Esta rigurosidad asegura la viabilidad técnica y comercial, posicionando a ADAPTIA como el estándar líder en sistemas de agricultura de precisión doméstica.
 
@@ -145,3 +151,17 @@ Sustento Científico: El Artículo 4 define el formato EPC de 12 bits como el id
 **RN-18: Límites de atribución e ingresos.** La tabla `ventas` no identifica la campaña ni guarda el precio cobrado. Por tanto, todas las ventas de esas plantas durante las fechas se cuentan sin atribuir causalidad a la campaña; los ingresos se aproximan con cantidad vendida por precio actual de catálogo. El cálculo no confirma que se aplicó el descuento planificado.
 
 **RN-19: Demanda comercial.** El ranking usa cantidades de ventas por planta en el periodo elegido. El reporte de stock bajo compara `stock_actual < stock_minimo`; las plantas sin ventas se determinan en el mismo periodo. No se calculan recomendaciones ni especies recomendadas.
+
+## 7. Reglas del asistente interno
+
+**RN-20: Solo lectura y registro cerrado.** El asistente solo puede invocar las ocho herramientas registradas en el servidor. No recibe acceso a Eloquent arbitrario, no genera ni ejecuta SQL, y no ofrece herramientas de escritura.
+
+**RN-21: Autorización por herramienta.** El ejecutor consulta el rol del usuario autenticado en el servidor para cada herramienta; nunca usa roles declarados por el modelo o navegador. `solicitudes_disponibilidad_pendientes` solo está habilitada para `administrador`; las otras herramientas están disponibles para vendedor y administrador.
+
+**RN-22: Mensajes y argumentos acotados.** El navegador solo puede enviar un campo `message` de hasta 1000 caracteres; no se aceptan mensajes `system`, `assistant` o `tool` del navegador. La sesión conserva solo hasta 10 mensajes recientes, truncados a 2000 caracteres, y cada argumento se valida por tipo, longitud y dominio permitido.
+
+**RN-23: Separación de instrucciones y datos.** El prompt del sistema está en español y ordena responder solo con datos obtenidos por herramientas, reconocer cuando no hay información, no inventar cifras y no afirmar acciones. Nombres, descripciones, notas y demás valores de herramientas son datos, no instrucciones.
+
+**RN-24: Ejecución limitada y errores.** El asistente ejecuta como máximo cuatro iteraciones de herramientas y ocho llamadas por consulta. Cada petición HTTP tiene timeout configurado. Los errores del modelo se muestran sin trazas; no se registran prompts, respuestas ni secretos.
+
+**RN-25: Procesamiento local.** Para no transferir ventas, stock, campañas ni presupuestos a terceros, el cliente HTTP solo acepta `localhost`, `127.0.0.1` o `::1`. El modelo configurado es `gemma4:31b` servido por Ollama local.

@@ -9,6 +9,13 @@
         <ul class="flex flex-col gap-8 p-3 text-[white]">
             @if (auth()->user()->rol === 'administrador')
                 <li
+                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] transition duration-300 cursor-pointer {{ Route::is('asistente.*') ? 'bg-[#6eab26]' : 'hover:bg-[#6eab26]' }}">
+                    <a class="flex w-full h-full items-center gap-3" href="{{ route('asistente.index') }}">
+                        <img class="w-5 h-auto" src="{{ asset('images/placeholder-user.png') }}" alt="">
+                        Asistente interno
+                    </a>
+                </li>
+                <li
                     class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] hover:bg-[#6eab26] transition duration-300 cursor-pointer">
                     <a class="flex w-full h-full items-center gap-3" href="{{ route('personal.create') }}">
                         <img class="w-5 h-auto" src="{{ asset('images/placeholder-user.png') }}" alt="">
@@ -46,6 +53,13 @@
                 </a>
             </li>
             @if (auth()->user()->rol === 'vendedor')
+                <li
+                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] transition duration-300 cursor-pointer {{ Route::is('asistente.*') ? 'bg-[#6eab26]' : 'hover:bg-[#6eab26]' }}">
+                    <a class="flex w-full h-full items-center gap-3" href="{{ route('asistente.index') }}">
+                        <img class="w-5 h-auto" src="{{ asset('images/placeholder-user.png') }}" alt="">
+                        Asistente interno
+                    </a>
+                </li>
                 <li
                     class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] transition duration-300 cursor-pointer {{ Route::is('planeacion-comercial.*') ? 'bg-[#6eab26]' : 'hover:bg-[#6eab26]' }}">
                     <a class="flex w-full h-full items-center gap-3" href="{{ route('planeacion-comercial.campanas.index') }}">

@@ -53,3 +53,9 @@ Las pantallas están bajo `/planeacion-comercial`; las acciones de cada estado s
 - La tabla `ventas` no guarda una campaña ni el precio cobrado. La evaluación incluye todas las ventas de las plantas de la campaña en el periodo `[fecha_inicio, fecha_fin]`, por lo que no prueba atribución a la promoción.
 - Los ingresos se aproximan como cantidad vendida por el precio actual de la planta. No se puede verificar el precio histórico ni si se aplicó el descuento de campaña.
 - La demanda no incluye conteos de especies recomendadas; el recomendador del cliente no se modifica.
+
+## Asistente interno de consultas
+
+El asistente de consulta se ofrece en `/asistente` a vendedor y administrador. Su registro tiene ocho consultas de solo lectura: stock por nombre, plantas bajo stock mínimo, disponibilidad de campaña, estado y productos de campaña, campañas por estado, ranking de ventas por periodo, avance de campaña y solicitudes de disponibilidad pendientes. Esta última consulta es exclusiva del administrador.
+
+El cliente web solo envía el texto de usuario; el servidor arma system/history/tool messages. El ejecutor valida de nuevo el rol y los argumentos. Ollama se sirve localmente con `gemma4:31b`; la URL configurada debe ser loopback. La ficha oficial de [Gemma 4 en Ollama](https://ollama.com/library/gemma4) anuncia function calling nativo; la [API de tool calling](https://docs.ollama.com/capabilities/tool-calling) documenta el flujo de `/api/chat`.

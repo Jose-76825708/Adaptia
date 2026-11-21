@@ -9,6 +9,55 @@ use InvalidArgumentException;
 
 class DemandaComercialService
 {
+    public function consultarStockPorNombre(string $nombre): array
+    {
+        $nombreNormalizado = mb_strtolower(trim($nombre));
+        if ($nombreNormalizado === '' || mb_strlen($nombreNormalizado) > 100) {
+            throw new InvalidArgumentException('El nombre de planta debe tener entre 1 y 100 caracteres.');
+        }
+
+        $plantas = Planta::query()
+            ->whereRaw('LOWER(nombre) = ?', [$nombreNormalizado])
+            ->orderBy('id')
+            ->limit(10)
+            ->get(['id', 'nombre', 'stock_actual', 'stock_minimo', 'precio'])
+            ->map(fn (Planta $planta) => [
+                'planta_id' => $planta->id,
+                'nombre' => $planta->nombre,
+                'stock_actual' => $planta->stock_actual,
+                'stock_minimo' => $planta->stock_minimo,
+                'precio_actual' => $planta->precio,
+            ])
+            ->all();
+
+        return [
+            'encontrada' => $plantas !== [],
+            'coincidencias' => count($plantas),
+            'plantas' => $plantas,
+        ];
+    }
+
+    public function listarPlantasBajoStock(int $limite = 20): array
+    {
+        if ($limite < 1 || $limite > 50) {
+            throw new InvalidArgumentException('El límite de plantas debe estar entre 1 y 50.');
+        }
+
+        return Planta::query()
+            ->whereColumn('stock_actual', '<', 'stock_minimo')
+            ->orderBy('stock_actual')
+            ->orderBy('nombre')
+            ->limit($limite)
+            ->get(['id', 'nombre', 'stock_actual', 'stock_minimo'])
+            ->map(fn (Planta $planta) => [
+                'planta_id' => $planta->id,
+                'nombre' => $planta->nombre,
+                'stock_actual' => $planta->stock_actual,
+                'stock_minimo' => $planta->stock_minimo,
+            ])
+            ->all();
+    }
+
     /**
      * @return array{ranking_ventas: array, stock_bajo: array, sin_ventas: array}
      */
