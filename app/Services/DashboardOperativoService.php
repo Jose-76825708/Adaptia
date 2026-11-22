@@ -8,6 +8,7 @@ use App\Models\CasoMantenimiento;
 use App\Models\LecturaSensor;
 use App\Models\MovimientoInventario;
 use App\Models\Planta;
+use App\Models\ProyectoPaisajismo;
 use App\Models\Sensor;
 use App\Models\SolicitudDisponibilidad;
 use App\Models\User;
@@ -31,6 +32,7 @@ class DashboardOperativoService
             'unidades_vendidas_mes' => (int) (clone $ventasDelMes)->sum('cantidad'),
             'ingresos_estimados_mes' => $this->estimarIngresos(clone $ventasDelMes),
             'casos_abiertos' => CasoMantenimiento::query()->where('estado', '!=', 'cerrado')->count(),
+            'paisajismo_por_estado' => $this->proyectosPaisajismoPorEstado(),
             'alertas_activas' => Alerta::query()->whereNull('resuelta_en')->count(),
             'campanas_activas' => CampanaComercial::query()->where('estado', '!=', 'cerrada')->count(),
             'solicitudes_disponibilidad' => SolicitudDisponibilidad::query()->where('estado', 'pendiente')->count(),
@@ -153,6 +155,20 @@ class DashboardOperativoService
         }
 
         return $consulta;
+    }
+
+    private function proyectosPaisajismoPorEstado(): array
+    {
+        $estados = ['solicitado', 'propuesto', 'aprobado', 'en_instalacion', 'entregado'];
+        $conteos = ProyectoPaisajismo::query()
+            ->whereIn('estado', $estados)
+            ->selectRaw('estado, COUNT(*) as total')
+            ->groupBy('estado')
+            ->pluck('total', 'estado');
+
+        return collect($estados)
+            ->mapWithKeys(fn (string $estado) => [$estado => (int) ($conteos[$estado] ?? 0)])
+            ->all();
     }
 
     private function estimarIngresos(Builder $ventas): float

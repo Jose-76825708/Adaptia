@@ -149,6 +149,30 @@
                 </article>
             </section>
 
+            <section class="rounded-2xl border border-[#e2e9df] bg-white p-5 shadow-sm">
+                <div class="mb-5 flex items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-[#153d2c]">Paisajismo</h2>
+                        <p class="mt-1 text-sm text-[#849084]">Proyectos por etapa del proceso</p>
+                    </div>
+                    <a href="{{ route('paisajismo.proyectos.index') }}" class="text-sm font-semibold text-[#4c7b36] hover:underline">Ver proyectos</a>
+                </div>
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+                    @foreach ([
+                        ['label' => 'Solicitados', 'estado' => 'solicitado'],
+                        ['label' => 'Propuestos', 'estado' => 'propuesto'],
+                        ['label' => 'Aprobados', 'estado' => 'aprobado'],
+                        ['label' => 'En instalación', 'estado' => 'en_instalacion'],
+                        ['label' => 'Entregados', 'estado' => 'entregado'],
+                    ] as $etapa)
+                        <div class="rounded-xl bg-[#f7f9f6] p-4">
+                            <p class="text-sm text-[#748174]">{{ $etapa['label'] }}</p>
+                            <p class="mt-2 text-2xl font-bold text-[#153d2c]">{{ number_format($resumen['paisajismo_por_estado'][$etapa['estado']]) }}</p>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+
             <section class="grid grid-cols-1 gap-5 xl:grid-cols-2">
                 <article class="rounded-2xl border border-[#e2e9df] bg-white p-5 shadow-sm">
                     <div class="mb-4 flex items-center justify-between">
