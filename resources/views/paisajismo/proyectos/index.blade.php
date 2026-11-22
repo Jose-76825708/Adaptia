@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="icon" href="{{ asset('images/logo.png') }}">@vite(['resources/css/app.css','resources/js/app.js'])<title>Proyectos de paisajismo</title></head>
+<body class="flex h-screen font-sans">@include('partials.sidebar')
+<main class="flex flex-5 flex-col gap-4 overflow-y-auto bg-[#fbfbfb] p-8">
+<h1 class="text-[2.5em] font-bold text-[#103928]">Proyectos de paisajismo</h1>
+<form method="GET" action="{{ route('paisajismo.proyectos.index') }}" class="rounded-[10px] border border-[#e4ebdf] bg-white p-5">
+<div class="grid gap-4 md:grid-cols-3"><div><label for="pais-admin-estado" class="block text-sm font-semibold text-[#0f3c2b]">Estado</label><select id="pais-admin-estado" name="estado" class="mt-1 w-full rounded-2xl border border-[#d8e2d7] bg-[#f8faf6] px-3 py-2"><option value="">Todos</option>@foreach (['solicitado','propuesto','aprobado','en_instalacion','entregado'] as $opcion)<option value="{{ $opcion }}" @selected(($estado ?? '') === $opcion)>{{ ucfirst(str_replace('_',' ', $opcion)) }}</option>@endforeach</select></div><div class="md:col-span-2"><label for="pais-admin-q" class="block text-sm font-semibold text-[#0f3c2b]">Buscar</label><input id="pais-admin-q" name="q" type="text" value="{{ $q ?? '' }}" class="mt-1 w-full rounded-2xl border border-[#d8e2d7] bg-[#f8faf6] px-3 py-2"></div></div>
+<button type="submit" class="mt-4 rounded-full bg-[#7cb22b] px-5 py-2 text-sm font-semibold text-white">Filtrar</button>
+</form>
+<table class="w-full border-collapse text-sm text-[#1d352d]"><thead><tr class="bg-[#edf8e7] text-[#3b5d2d]"><th scope="col" class="border px-3 py-2 text-center">Código</th><th scope="col" class="border px-3 py-2 text-center">Nombre</th><th scope="col" class="border px-3 py-2 text-center">Solicitante</th><th scope="col" class="border px-3 py-2 text-center">Estado</th></tr></thead><tbody>@foreach ($proyectos as $proyecto)<tr class="even:bg-[#f8faf6]"><td class="border px-3 py-2 text-center"><a href="{{ route('paisajismo.proyectos.show',$proyecto) }}" class="font-semibold underline">{{ $proyecto->codigo }}</a></td><td class="border px-3 py-2 text-center">{{ $proyecto->nombre }}</td><td class="border px-3 py-2 text-center">{{ $proyecto->solicitante?->name ?? 'Sin solicitante' }}</td><td class="border px-3 py-2 text-center">{{ ucfirst(str_replace('_',' ', $proyecto->estado)) }}</td></tr>@endforeach</tbody></table>
+<div class="mt-4">{{ $proyectos->links() }}</div>
+</main></body></html>
