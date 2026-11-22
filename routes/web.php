@@ -190,4 +190,25 @@ Route::middleware(['auth', 'role:cliente'])->group(function () {
     Route::post('/paisajismo/solicitudes/{proyecto}/mantenimiento', [\App\Http\Controllers\PaisajismoEntregaController::class, 'mantenimiento'])->name('paisajismo.solicitudes.mantenimiento');
 });
 
+// Macroproceso: Gestión de inventario
+Route::middleware(['auth', 'role:administrador,vendedor'])->group(function () {
+    Route::get('/gestion-inventario', [\App\Http\Controllers\GestionInventarioController::class, 'index'])->name('gestion-inventario.index');
+    Route::get('/gestion-inventario/crear', [\App\Http\Controllers\GestionInventarioController::class, 'create'])->name('gestion-inventario.create');
+    Route::post('/gestion-inventario', [\App\Http\Controllers\GestionInventarioController::class, 'store'])->name('gestion-inventario.store');
+    Route::get('/gestion-inventario/{gestion}', [\App\Http\Controllers\GestionInventarioController::class, 'show'])->whereNumber('gestion')->name('gestion-inventario.show');
+    Route::post('/gestion-inventario/{gestion}/verificacion', [\App\Http\Controllers\GestionInventarioController::class, 'verificar'])->whereNumber('gestion')->name('gestion-inventario.verificar');
+    Route::post('/gestion-inventario/{gestion}/reposicion', [\App\Http\Controllers\GestionInventarioController::class, 'reposicion'])->whereNumber('gestion')->name('gestion-inventario.reposicion');
+    Route::post('/gestion-inventario/{gestion}/compra', [\App\Http\Controllers\GestionInventarioController::class, 'compra'])->whereNumber('gestion')->name('gestion-inventario.compra');
+    Route::post('/gestion-inventario/{gestion}/recepcion', [\App\Http\Controllers\GestionInventarioController::class, 'recepcion'])->whereNumber('gestion')->name('gestion-inventario.recepcion');
+    Route::post('/gestion-inventario/{gestion}/recepcion/verificar', [\App\Http\Controllers\GestionInventarioController::class, 'verificarRecepcion'])->whereNumber('gestion')->name('gestion-inventario.recepcion.verificar');
+    Route::post('/gestion-inventario/{gestion}/incidencia', [\App\Http\Controllers\GestionInventarioController::class, 'gestionarIncidencia'])->whereNumber('gestion')->name('gestion-inventario.incidencia');
+    Route::post('/gestion-inventario/{gestion}/ingreso', [\App\Http\Controllers\GestionInventarioController::class, 'ingreso'])->whereNumber('gestion')->name('gestion-inventario.ingreso');
+    Route::post('/gestion-inventario/{gestion}/almacenamiento', [\App\Http\Controllers\GestionInventarioController::class, 'almacenar'])->whereNumber('gestion')->name('gestion-inventario.almacenar');
+    Route::post('/gestion-inventario/{gestion}/movimiento', [\App\Http\Controllers\GestionInventarioController::class, 'movimiento'])->whereNumber('gestion')->name('gestion-inventario.movimiento');
+
+    Route::resource('insumos', \App\Http\Controllers\InsumoController::class)
+        ->except(['show'])
+        ->parameters(['insumos' => 'id'])
+        ->whereNumber('id');
+});
 require __DIR__.'/produccion-vegetal.php';

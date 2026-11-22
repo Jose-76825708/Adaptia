@@ -23,6 +23,9 @@
         $navegacionOperativa[] = ['nombre' => 'Asignar sensores', 'ruta' => 'plantas-vendidas.index', 'rutas' => ['plantas-vendidas.*'], 'icono' => 'AS'];
     }
 
+    $navegacionOperativa[] = ['nombre' => 'Gestión de inventario', 'ruta' => 'gestion-inventario.index', 'rutas' => ['gestion-inventario.*'], 'icono' => 'GI'];
+    $navegacionOperativa[] = ['nombre' => 'Insumos', 'ruta' => 'insumos.index', 'rutas' => ['insumos.*'], 'icono' => 'IS'];
+
     $enlaceActivo = fn (array $rutas) => collect($rutas)->contains(fn (string $ruta) => request()->routeIs($ruta));
 @endphp
 
