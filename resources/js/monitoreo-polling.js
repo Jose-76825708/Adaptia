@@ -60,7 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.setInterval(refreshFragment, interval);
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
-            refreshFragment();
+            refreshFragment().catch(error => {
+                console.error('No se pudo actualizar el monitoreo tras el cambio de visibilidad.', error);
+            });
         }
     });
 });

@@ -120,7 +120,8 @@
                                 @if (auth()->user()->rol === 'administrador')
                                     <form method="POST" action="{{ route('planeacion-comercial.solicitudes.disponibilidad', $producto->solicitudDisponibilidad) }}" class="mt-3 grid gap-3 md:grid-cols-[1fr_auto_auto]">
                                         @csrf
-                                        <input name="notas" type="text" maxlength="2000" value="{{ $producto->solicitudDisponibilidad->notas }}" placeholder="Nota de gestión (opcional)" class="rounded-xl border border-[#d8e2d7] bg-white px-3 py-2">
+                                        <label for="notas-solicitud-{{ $producto->solicitudDisponibilidad->id }}" class="sr-only">Nota de gestión para la solicitud {{ $producto->solicitudDisponibilidad->id }}</label>
+                                        <input id="notas-solicitud-{{ $producto->solicitudDisponibilidad->id }}" name="notas" type="text" maxlength="2000" value="{{ $producto->solicitudDisponibilidad->notas }}" placeholder="Nota de gestión (opcional)" class="rounded-xl border border-[#d8e2d7] bg-white px-3 py-2">
                                         <button type="submit" name="estado" value="atendida" class="rounded-full border border-[#dce6d7] px-4 py-2 text-sm font-semibold text-[#3b5b42]">Atendida</button>
                                         <button type="submit" name="estado" value="no_lograda" class="rounded-full bg-[#7cb22b] px-4 py-2 text-sm font-semibold text-white">No lograda</button>
                                     </form>

@@ -19,9 +19,9 @@
             </div>
 
             @if (auth()->user()->rol === 'administrador')
-                <a id="informe-volver" href="{{ route('mantenimiento.casos.show', $caso) }}" class="inline-flex items-center justify-center rounded-[10px] border border-[#dce6d7] bg-white px-5 py-2.5 text-sm font-medium text-[#3b5b42] transition hover:bg-[#f1f7ee]">Volver al detalle</a>
+                <a id="informe-volver" href="{{ route('mantenimiento.casos.show', $caso) }}" class="inline-flex items-center justify-center rounded-[10px] border border-[#dce6d7] bg-white px-5 py-2.5 text-sm font-medium text-[#3b5b42] transition hover:bg-[#f1f7ee]">Volver al detalle del caso</a>
             @else
-                <a id="informe-volver" href="{{ route('mantenimiento.solicitudes.index') }}" class="inline-flex items-center justify-center rounded-[10px] border border-[#dce6d7] bg-white px-5 py-2.5 text-sm font-medium text-[#3b5b42] transition hover:bg-[#f1f7ee]">Volver al detalle</a>
+                <a id="informe-volver" href="{{ route('mantenimiento.solicitudes.index') }}" class="inline-flex items-center justify-center rounded-[10px] border border-[#dce6d7] bg-white px-5 py-2.5 text-sm font-medium text-[#3b5b42] transition hover:bg-[#f1f7ee]">Volver a las solicitudes</a>
             @endif
         </section>
 

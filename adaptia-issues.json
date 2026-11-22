@@ -1,0 +1,493 @@
+﻿{
+    "total":  9,
+    "p":  1,
+    "ps":  100,
+    "paging":  {
+                   "pageIndex":  1,
+                   "pageSize":  100,
+                   "total":  9
+               },
+    "effortTotal":  45,
+    "debtTotal":  45,
+    "issues":  [
+                   {
+                       "key":  "AaIFKX5GkWW_j6D4-1e_",
+                       "rule":  "javascript:S9383",
+                       "severity":  "MAJOR",
+                       "component":  "Jose-76825708_Adaptia:resources/js/monitoreo-polling.js",
+                       "project":  "Jose-76825708_Adaptia",
+                       "line":  63,
+                       "hash":  "64b90318eb02fc1ac1083a33270483de",
+                       "textRange":  {
+                                         "startLine":  63,
+                                         "endLine":  63,
+                                         "startOffset":  12,
+                                         "endOffset":  30
+                                     },
+                       "flows":  [
+
+                                 ],
+                       "status":  "OPEN",
+                       "message":  "Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.",
+                       "effort":  "5min",
+                       "debt":  "5min",
+                       "tags":  [
+                                    "async",
+                                    "es2017",
+                                    "promise",
+                                    "type-dependent"
+                                ],
+                       "creationDate":  "2026-11-22T21:10:03+0000",
+                       "updateDate":  "2026-11-22T21:28:21+0000",
+                       "type":  "BUG",
+                       "organization":  "jose-76825708",
+                       "cleanCodeAttribute":  "LOGICAL",
+                       "cleanCodeAttributeCategory":  "INTENTIONAL",
+                       "impacts":  [
+                                       {
+                                           "softwareQuality":  "RELIABILITY",
+                                           "severity":  "MEDIUM"
+                                       }
+                                   ],
+                       "issueStatus":  "OPEN",
+                       "projectName":  "Adaptia",
+                       "internalTags":  [
+
+                                        ],
+                       "lastChangeAnalysisUuid":  "f863a4a2-040c-4ab6-a9b4-7fd44675b7a0",
+                       "lastChangeSource":  "ANALYSIS",
+                       "producer":  "SCANNER"
+                   },
+                   {
+                       "key":  "AaIFKX4TkWW_j6D4-1e4",
+                       "rule":  "Web:InputWithoutLabelCheck",
+                       "severity":  "MAJOR",
+                       "component":  "Jose-76825708_Adaptia:resources/views/planeacion-comercial/campanas/show.blade.php",
+                       "project":  "Jose-76825708_Adaptia",
+                       "line":  123,
+                       "hash":  "fc9eec789355710028f3cdab1b341b41",
+                       "textRange":  {
+                                         "startLine":  123,
+                                         "endLine":  123,
+                                         "startOffset":  40,
+                                         "endOffset":  248
+                                     },
+                       "flows":  [
+
+                                 ],
+                       "status":  "OPEN",
+                       "message":  "Add an \"id\" attribute to this input field and associate it with a label.",
+                       "effort":  "5min",
+                       "debt":  "5min",
+                       "tags":  [
+                                    "accessibility",
+                                    "wcag2-a"
+                                ],
+                       "creationDate":  "2026-11-21T22:06:09+0000",
+                       "updateDate":  "2026-11-21T22:07:19+0000",
+                       "type":  "BUG",
+                       "organization":  "jose-76825708",
+                       "cleanCodeAttribute":  "CONVENTIONAL",
+                       "cleanCodeAttributeCategory":  "CONSISTENT",
+                       "impacts":  [
+                                       {
+                                           "softwareQuality":  "RELIABILITY",
+                                           "severity":  "MEDIUM"
+                                       }
+                                   ],
+                       "issueStatus":  "OPEN",
+                       "projectName":  "Adaptia",
+                       "internalTags":  [
+
+                                        ],
+                       "lastChangeAnalysisUuid":  "f863a4a2-040c-4ab6-a9b4-7fd44675b7a0",
+                       "lastChangeSource":  "ANALYSIS",
+                       "producer":  "SCANNER"
+                   },
+                   {
+                       "key":  "AaIFKX45kWW_j6D4-1e5",
+                       "rule":  "Web:InputWithoutLabelCheck",
+                       "severity":  "MAJOR",
+                       "component":  "Jose-76825708_Adaptia:resources/views/planeacion-comercial/partials/productos-form.blade.php",
+                       "project":  "Jose-76825708_Adaptia",
+                       "line":  22,
+                       "hash":  "1c6fa6429be045376515347ee36ac95c",
+                       "textRange":  {
+                                         "startLine":  22,
+                                         "endLine":  22,
+                                         "startOffset":  28,
+                                         "endOffset":  152
+                                     },
+                       "flows":  [
+
+                                 ],
+                       "status":  "OPEN",
+                       "message":  "Add an \"id\" attribute to this input field and associate it with a label.",
+                       "effort":  "5min",
+                       "debt":  "5min",
+                       "tags":  [
+                                    "accessibility",
+                                    "wcag2-a"
+                                ],
+                       "creationDate":  "2026-11-21T22:06:09+0000",
+                       "updateDate":  "2026-11-21T22:07:19+0000",
+                       "type":  "BUG",
+                       "organization":  "jose-76825708",
+                       "cleanCodeAttribute":  "CONVENTIONAL",
+                       "cleanCodeAttributeCategory":  "CONSISTENT",
+                       "impacts":  [
+                                       {
+                                           "softwareQuality":  "RELIABILITY",
+                                           "severity":  "MEDIUM"
+                                       }
+                                   ],
+                       "issueStatus":  "OPEN",
+                       "projectName":  "Adaptia",
+                       "internalTags":  [
+
+                                        ],
+                       "lastChangeAnalysisUuid":  "f863a4a2-040c-4ab6-a9b4-7fd44675b7a0",
+                       "lastChangeSource":  "ANALYSIS",
+                       "producer":  "SCANNER"
+                   },
+                   {
+                       "key":  "AaIFKX45kWW_j6D4-1e6",
+                       "rule":  "Web:InputWithoutLabelCheck",
+                       "severity":  "MAJOR",
+                       "component":  "Jose-76825708_Adaptia:resources/views/planeacion-comercial/partials/productos-form.blade.php",
+                       "project":  "Jose-76825708_Adaptia",
+                       "line":  29,
+                       "hash":  "8b3c2fe4c42a6454eb0eab7a0d8b819f",
+                       "textRange":  {
+                                         "startLine":  29,
+                                         "endLine":  29,
+                                         "startOffset":  46,
+                                         "endOffset":  242
+                                     },
+                       "flows":  [
+
+                                 ],
+                       "status":  "OPEN",
+                       "message":  "Add an \"id\" attribute to this input field and associate it with a label.",
+                       "effort":  "5min",
+                       "debt":  "5min",
+                       "tags":  [
+                                    "accessibility",
+                                    "wcag2-a"
+                                ],
+                       "creationDate":  "2026-11-21T22:06:09+0000",
+                       "updateDate":  "2026-11-21T22:07:19+0000",
+                       "type":  "BUG",
+                       "organization":  "jose-76825708",
+                       "cleanCodeAttribute":  "CONVENTIONAL",
+                       "cleanCodeAttributeCategory":  "CONSISTENT",
+                       "impacts":  [
+                                       {
+                                           "softwareQuality":  "RELIABILITY",
+                                           "severity":  "MEDIUM"
+                                       }
+                                   ],
+                       "issueStatus":  "OPEN",
+                       "projectName":  "Adaptia",
+                       "internalTags":  [
+
+                                        ],
+                       "lastChangeAnalysisUuid":  "f863a4a2-040c-4ab6-a9b4-7fd44675b7a0",
+                       "lastChangeSource":  "ANALYSIS",
+                       "producer":  "SCANNER"
+                   },
+                   {
+                       "key":  "AaIFKX45kWW_j6D4-1e7",
+                       "rule":  "Web:InputWithoutLabelCheck",
+                       "severity":  "MAJOR",
+                       "component":  "Jose-76825708_Adaptia:resources/views/planeacion-comercial/partials/productos-form.blade.php",
+                       "project":  "Jose-76825708_Adaptia",
+                       "line":  30,
+                       "hash":  "125d84a74dbc3b8b1fd68c7037a15732",
+                       "textRange":  {
+                                         "startLine":  30,
+                                         "endLine":  30,
+                                         "startOffset":  46,
+                                         "endOffset":  278
+                                     },
+                       "flows":  [
+
+                                 ],
+                       "status":  "OPEN",
+                       "message":  "Add an \"id\" attribute to this input field and associate it with a label.",
+                       "effort":  "5min",
+                       "debt":  "5min",
+                       "tags":  [
+                                    "accessibility",
+                                    "wcag2-a"
+                                ],
+                       "creationDate":  "2026-11-21T22:06:09+0000",
+                       "updateDate":  "2026-11-21T22:07:19+0000",
+                       "type":  "BUG",
+                       "organization":  "jose-76825708",
+                       "cleanCodeAttribute":  "CONVENTIONAL",
+                       "cleanCodeAttributeCategory":  "CONSISTENT",
+                       "impacts":  [
+                                       {
+                                           "softwareQuality":  "RELIABILITY",
+                                           "severity":  "MEDIUM"
+                                       }
+                                   ],
+                       "issueStatus":  "OPEN",
+                       "projectName":  "Adaptia",
+                       "internalTags":  [
+
+                                        ],
+                       "lastChangeAnalysisUuid":  "f863a4a2-040c-4ab6-a9b4-7fd44675b7a0",
+                       "lastChangeSource":  "ANALYSIS",
+                       "producer":  "SCANNER"
+                   },
+                   {
+                       "key":  "AaIFKX45kWW_j6D4-1e8",
+                       "rule":  "Web:InputWithoutLabelCheck",
+                       "severity":  "MAJOR",
+                       "component":  "Jose-76825708_Adaptia:resources/views/planeacion-comercial/partials/productos-form.blade.php",
+                       "project":  "Jose-76825708_Adaptia",
+                       "line":  42,
+                       "hash":  "98ed8ae81d57bdce4a68aa87953a55b6",
+                       "textRange":  {
+                                         "startLine":  42,
+                                         "endLine":  42,
+                                         "startOffset":  16,
+                                         "endOffset":  136
+                                     },
+                       "flows":  [
+
+                                 ],
+                       "status":  "OPEN",
+                       "message":  "Add an \"id\" attribute to this input field and associate it with a label.",
+                       "effort":  "5min",
+                       "debt":  "5min",
+                       "tags":  [
+                                    "accessibility",
+                                    "wcag2-a"
+                                ],
+                       "creationDate":  "2026-11-21T22:06:09+0000",
+                       "updateDate":  "2026-11-21T22:07:19+0000",
+                       "type":  "BUG",
+                       "organization":  "jose-76825708",
+                       "cleanCodeAttribute":  "CONVENTIONAL",
+                       "cleanCodeAttributeCategory":  "CONSISTENT",
+                       "impacts":  [
+                                       {
+                                           "softwareQuality":  "RELIABILITY",
+                                           "severity":  "MEDIUM"
+                                       }
+                                   ],
+                       "issueStatus":  "OPEN",
+                       "projectName":  "Adaptia",
+                       "internalTags":  [
+
+                                        ],
+                       "lastChangeAnalysisUuid":  "f863a4a2-040c-4ab6-a9b4-7fd44675b7a0",
+                       "lastChangeSource":  "ANALYSIS",
+                       "producer":  "SCANNER"
+                   },
+                   {
+                       "key":  "AaIFKX45kWW_j6D4-1e9",
+                       "rule":  "Web:InputWithoutLabelCheck",
+                       "severity":  "MAJOR",
+                       "component":  "Jose-76825708_Adaptia:resources/views/planeacion-comercial/partials/productos-form.blade.php",
+                       "project":  "Jose-76825708_Adaptia",
+                       "line":  49,
+                       "hash":  "590214d4a7875545ca80feda0af37656",
+                       "textRange":  {
+                                         "startLine":  49,
+                                         "endLine":  49,
+                                         "startOffset":  34,
+                                         "endOffset":  179
+                                     },
+                       "flows":  [
+
+                                 ],
+                       "status":  "OPEN",
+                       "message":  "Add an \"id\" attribute to this input field and associate it with a label.",
+                       "effort":  "5min",
+                       "debt":  "5min",
+                       "tags":  [
+                                    "accessibility",
+                                    "wcag2-a"
+                                ],
+                       "creationDate":  "2026-11-21T22:06:09+0000",
+                       "updateDate":  "2026-11-21T22:07:19+0000",
+                       "type":  "BUG",
+                       "organization":  "jose-76825708",
+                       "cleanCodeAttribute":  "CONVENTIONAL",
+                       "cleanCodeAttributeCategory":  "CONSISTENT",
+                       "impacts":  [
+                                       {
+                                           "softwareQuality":  "RELIABILITY",
+                                           "severity":  "MEDIUM"
+                                       }
+                                   ],
+                       "issueStatus":  "OPEN",
+                       "projectName":  "Adaptia",
+                       "internalTags":  [
+
+                                        ],
+                       "lastChangeAnalysisUuid":  "f863a4a2-040c-4ab6-a9b4-7fd44675b7a0",
+                       "lastChangeSource":  "ANALYSIS",
+                       "producer":  "SCANNER"
+                   },
+                   {
+                       "key":  "AaIFKX45kWW_j6D4-1e-",
+                       "rule":  "Web:InputWithoutLabelCheck",
+                       "severity":  "MAJOR",
+                       "component":  "Jose-76825708_Adaptia:resources/views/planeacion-comercial/partials/productos-form.blade.php",
+                       "project":  "Jose-76825708_Adaptia",
+                       "line":  50,
+                       "hash":  "5aa997bac4f8e0e6d7f8a012631a16f8",
+                       "textRange":  {
+                                         "startLine":  50,
+                                         "endLine":  50,
+                                         "startOffset":  34,
+                                         "endOffset":  208
+                                     },
+                       "flows":  [
+
+                                 ],
+                       "status":  "OPEN",
+                       "message":  "Add an \"id\" attribute to this input field and associate it with a label.",
+                       "effort":  "5min",
+                       "debt":  "5min",
+                       "tags":  [
+                                    "accessibility",
+                                    "wcag2-a"
+                                ],
+                       "creationDate":  "2026-11-21T22:06:09+0000",
+                       "updateDate":  "2026-11-21T22:07:19+0000",
+                       "type":  "BUG",
+                       "organization":  "jose-76825708",
+                       "cleanCodeAttribute":  "CONVENTIONAL",
+                       "cleanCodeAttributeCategory":  "CONSISTENT",
+                       "impacts":  [
+                                       {
+                                           "softwareQuality":  "RELIABILITY",
+                                           "severity":  "MEDIUM"
+                                       }
+                                   ],
+                       "issueStatus":  "OPEN",
+                       "projectName":  "Adaptia",
+                       "internalTags":  [
+
+                                        ],
+                       "lastChangeAnalysisUuid":  "f863a4a2-040c-4ab6-a9b4-7fd44675b7a0",
+                       "lastChangeSource":  "ANALYSIS",
+                       "producer":  "SCANNER"
+                   },
+                   {
+                       "key":  "AaH5hUFaK89D1oPWsB8m",
+                       "rule":  "Web:LinksIdenticalTextsDifferentTargetsCheck",
+                       "severity":  "MAJOR",
+                       "component":  "Jose-76825708_Adaptia:resources/views/mantenimiento/casos/informe.blade.php",
+                       "project":  "Jose-76825708_Adaptia",
+                       "line":  24,
+                       "hash":  "f24c3b42d82de3e2e1c75132407d2ac0",
+                       "textRange":  {
+                                         "startLine":  24,
+                                         "endLine":  24,
+                                         "startOffset":  0,
+                                         "endOffset":  287
+                                     },
+                       "flows":  [
+
+                                 ],
+                       "status":  "OPEN",
+                       "message":  "Use a distinct text or label, or point to the same target for this link and the one on line 22.",
+                       "effort":  "5min",
+                       "debt":  "5min",
+                       "tags":  [
+                                    "accessibility"
+                                ],
+                       "creationDate":  "2026-11-20T15:00:50+0000",
+                       "updateDate":  "2026-11-20T15:08:25+0000",
+                       "type":  "CODE_SMELL",
+                       "organization":  "jose-76825708",
+                       "cleanCodeAttribute":  "CONVENTIONAL",
+                       "cleanCodeAttributeCategory":  "CONSISTENT",
+                       "impacts":  [
+                                       {
+                                           "softwareQuality":  "RELIABILITY",
+                                           "severity":  "MEDIUM"
+                                       },
+                                       {
+                                           "softwareQuality":  "MAINTAINABILITY",
+                                           "severity":  "MEDIUM"
+                                       }
+                                   ],
+                       "issueStatus":  "OPEN",
+                       "projectName":  "Adaptia",
+                       "internalTags":  [
+
+                                        ],
+                       "lastChangeAnalysisUuid":  "6d4221e4-c3b4-461f-b505-8acce40352a5",
+                       "lastChangeSource":  "ANALYSIS",
+                       "producer":  "SCANNER"
+                   }
+               ],
+    "components":  [
+                       {
+                           "organization":  "jose-76825708",
+                           "key":  "Jose-76825708_Adaptia:resources/views/planeacion-comercial/campanas/show.blade.php",
+                           "uuid":  "AaIFKXtvkWW_j6D4-1dn",
+                           "enabled":  true,
+                           "qualifier":  "FIL",
+                           "name":  "show.blade.php",
+                           "longName":  "resources/views/planeacion-comercial/campanas/show.blade.php",
+                           "path":  "resources/views/planeacion-comercial/campanas/show.blade.php"
+                       },
+                       {
+                           "organization":  "jose-76825708",
+                           "key":  "Jose-76825708_Adaptia",
+                           "uuid":  "AaFFmOkTkGIYGv2M9Sgp",
+                           "enabled":  true,
+                           "qualifier":  "TRK",
+                           "name":  "Adaptia",
+                           "longName":  "Adaptia"
+                       },
+                       {
+                           "organization":  "jose-76825708",
+                           "key":  "Jose-76825708_Adaptia:resources/views/mantenimiento/casos/informe.blade.php",
+                           "uuid":  "AaH5hT6gK89D1oPWsB8R",
+                           "enabled":  true,
+                           "qualifier":  "FIL",
+                           "name":  "informe.blade.php",
+                           "longName":  "resources/views/mantenimiento/casos/informe.blade.php",
+                           "path":  "resources/views/mantenimiento/casos/informe.blade.php"
+                       },
+                       {
+                           "organization":  "jose-76825708",
+                           "key":  "Jose-76825708_Adaptia:resources/views/planeacion-comercial/partials/productos-form.blade.php",
+                           "uuid":  "AaIFKXtvkWW_j6D4-1dr",
+                           "enabled":  true,
+                           "qualifier":  "FIL",
+                           "name":  "productos-form.blade.php",
+                           "longName":  "resources/views/planeacion-comercial/partials/productos-form.blade.php",
+                           "path":  "resources/views/planeacion-comercial/partials/productos-form.blade.php"
+                       },
+                       {
+                           "organization":  "jose-76825708",
+                           "key":  "Jose-76825708_Adaptia:resources/js/monitoreo-polling.js",
+                           "uuid":  "AaFFmWd2CBoOIVIXSiuf",
+                           "enabled":  true,
+                           "qualifier":  "FIL",
+                           "name":  "monitoreo-polling.js",
+                           "longName":  "resources/js/monitoreo-polling.js",
+                           "path":  "resources/js/monitoreo-polling.js"
+                       }
+                   ],
+    "organizations":  [
+                          {
+                              "key":  "jose-76825708",
+                              "name":  "Jose-76825708"
+                          }
+                      ],
+    "facets":  [
+
+               ]
+}
