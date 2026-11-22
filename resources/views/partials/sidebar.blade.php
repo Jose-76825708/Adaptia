@@ -14,13 +14,15 @@
     if ($rol === 'administrador') {
         $navegacionOperativa[] = ['nombre' => 'Planeación comercial', 'ruta' => 'planeacion-comercial.campanas.index', 'rutas' => ['planeacion-comercial.*'], 'icono' => 'PC'];
         $navegacionOperativa[] = ['nombre' => 'Casos de mantenimiento', 'ruta' => 'mantenimiento.casos.index', 'rutas' => ['mantenimiento.casos.*'], 'icono' => 'MA'];
-        $navegacionOperativa[] = ['nombre' => 'Proyectos de paisajismo', 'ruta' => 'paisajismo.proyectos.index', 'rutas' => ['paisajismo.proyectos.*'], 'icono' => 'PA'];
         $navegacionOperativa[] = ['nombre' => 'Personal', 'ruta' => 'personal.create', 'rutas' => ['personal.*'], 'icono' => 'PE'];
     } elseif ($rol === 'vendedor') {
         $navegacionOperativa[] = ['nombre' => 'Planeación comercial', 'ruta' => 'planeacion-comercial.campanas.index', 'rutas' => ['planeacion-comercial.*'], 'icono' => 'PC'];
         $navegacionOperativa[] = ['nombre' => 'Ventas', 'ruta' => 'ventas.index', 'rutas' => ['ventas.*'], 'icono' => 'VE'];
         $navegacionOperativa[] = ['nombre' => 'Asignar sensores', 'ruta' => 'plantas-vendidas.index', 'rutas' => ['plantas-vendidas.*'], 'icono' => 'AS'];
     }
+
+    $navegacionOperativa[] = ['nombre' => 'Gestión de inventario', 'ruta' => 'gestion-inventario.index', 'rutas' => ['gestion-inventario.*'], 'icono' => 'GI'];
+    $navegacionOperativa[] = ['nombre' => 'Insumos', 'ruta' => 'insumos.index', 'rutas' => ['insumos.*'], 'icono' => 'IS'];
 
     $enlaceActivo = fn (array $rutas) => collect($rutas)->contains(fn (string $ruta) => request()->routeIs($ruta));
 @endphp

@@ -202,49 +202,6 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 - **Bolt 005:** El panel cierre expone evaluar, cerrar y reapertura con prefijo cierre-.
 - **Bolt 006:** El informe es accesible solo a administrador o dueño y muestra 404 sin informe.
 
-### RF-24: Solicitud y registro de proyectos de paisajismo
-
-**Descripción:** El sistema debe permitir al cliente solicitar un proyecto de paisajismo y al administrador registrarlo y darle seguimiento en estados controlados.
-
-**Criterios por Bolt:**
-- **BOLT-001:** Normaliza y valida nombre, ubicación, descripción, área, presupuesto y fecha sin aceptar claves extra.
-- **BOLT-002:** Crea el proyecto solicitado con código PAI-AAAA-NNNNN y aplica la matriz de estados por el servicio central.
-- **BOLT-003:** El cliente puede crear y consultar solo sus proyectos con orden estable y paginación.
-- **BOLT-004:** El administrador puede filtrar, listar y abrir el detalle sin cambiar el estado fuera del servicio.
-- **Corrección tras verificación:** La lista cliente muestra área, fecha de solicitud y acciones condicionales; existe detalle del proyecto; Ver propuesta solo aparece si hay propuestas y Ver resumen solo si está entregado.
-
-### RF-25: Diseño y cotización de proyectos de paisajismo
-
-**Descripción:** El sistema debe normalizar líneas de planta, validar duplicados/cantidades, cotizar costos y permitir aprobar o rechazar la propuesta vigente.
-
-**Criterios por Bolt:**
-- **Corrección tras verificación:** El panel diseno conserva los valores escritos mediante old(), diferencia los campos por prefijo dis-, muestra el historial de todas las versiones por versión/fecha/total/decisión/motivo y avisa al rechazar una versión en solicitado.
-- **BOLT-001:** Líneas de 1 a 10, cantidades de 1 a 1000 y plantas existentes sin repetir.
-- **BOLT-002:** Costo de plantas, tarifa de mano de obra y total redondeado con aviso de presupuesto.
-- **BOLT-003:** Persistencia de versión y precios snapshot en una transacción.
-- **BOLT-004:** Aprobar pasa a aprobado y rechazar con motivo pasa a solicitado.
-- **BOLT-005:** Panel de diseño con 10 filas y página pública de propuesta para el dueño.
-
-### RF-26: Instalación de proyectos paisajismo
-
-**Descripción:** Verifica disponibilidad, inicia instalación descontando stock y registra avances no decrecientes hasta 100.
-
-**Criterios por Bolt:** suficiente/insuficiente, inicio aprobado, salida transaccional, avance válido y panel con veredicto.
-- **Corrección tras verificación:** El panel instalación conserva descripción y porcentaje con nombres ins_ y no comparte old con los demás paneles.
-
-### RF-27: Entrega y satisfacción de proyectos paisajismo
-
-**Descripción:** Registra entrega única al alcanzar 100, genera resumen y permite calificación única del cliente.
-
-**Criterios por Bolt:** exige 100, una entrega, satisfacción 1 a 5, resumen completo y vistas de panel/resumen.
-- **Corrección tras verificación:** El formulario de entrega solo aparece con último avance 100; con avance menor se muestra el porcentaje actual y se oculta el formulario. Los campos usan ent_resumen y ent_recomendaciones para conservar old.
-
-### RF-28: Mantenimiento posterior de proyecto paisajismo
-
-**Descripción:** Permite al dueño solicitar mantenimiento posterior a un proyecto entregado sin modificar el flujo de mantenimiento.
-
-**Criterios por Bolt:** solo dueño y entregado, área verde con nombre del proyecto, descripción con código y ubicación, creación del CasoMantenimiento mediante el servicio existente.
-
 ## 5. TABLA RESUMEN DE REQUERIMIENTOS FUNCIONALES
 
 | Código RF | Nombre del Requerimiento Funcional | Módulo | Fuente de Sustento | Estado |
@@ -273,11 +230,6 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 | RF-24 | Gestión del ciclo de planeación comercial | Planeación comercial | Campañas, productos y estados del macroproceso | Etapas A y B completas |
 | RF-25 | Demanda y evaluación comercial | Planeación comercial | Ventas, catálogo y periodo de campaña | Etapas A y B completas |
 | RF-26 | Asistente interno de consultas comerciales de solo lectura | Asistente interno | Servicios de inventario, ventas y planeación comercial | Etapa C completa |
-| RF-27 | Solicitud y registro de proyectos de paisajismo | Paisajismo | Solicitud del cliente y seguimiento administrativo | En implementación (INT-025-BOLT-001) |
-| RF-28 | Diseño y cotización de proyectos paisajismo | Paisajismo | Líneas de planta, costos y decisión | En implementación (INT-026-BOLT-005) |
-| RF-29 | Instalación de proyectos paisajismo | Paisajismo | Stock, disponibilidad y avances | En implementación (INT-027-BOLT-004) |
-| RF-30 | Entrega y satisfacción de proyectos paisajismo | Paisajismo | Entrega, resumen y calificación | En implementación (INT-028-BOLT-004) |
-| RF-31 | Mantenimiento posterior de proyecto paisajismo | Paisajismo | Creación de caso de mantenimiento | En implementación (INT-028-BOLT-005) |
 
 ## 6. MÓDULO 4: PLANEACIÓN COMERCIAL
 

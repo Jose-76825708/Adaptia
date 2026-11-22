@@ -8,7 +8,6 @@ use App\Models\CasoMantenimiento;
 use App\Models\LecturaSensor;
 use App\Models\MovimientoInventario;
 use App\Models\Planta;
-use App\Models\ProyectoPaisajismo;
 use App\Models\Sensor;
 use App\Models\SolicitudDisponibilidad;
 use App\Models\User;
@@ -36,7 +35,6 @@ class DashboardOperativoService
             'campanas_activas' => CampanaComercial::query()->where('estado', '!=', 'cerrada')->count(),
             'solicitudes_disponibilidad' => SolicitudDisponibilidad::query()->where('estado', 'pendiente')->count(),
             'sensores_activos' => Sensor::query()->where('estado', 'activo')->count(),
-            'paisajismo_por_estado' => $this->proyectosPaisajismoPorEstado(),
             'ventas_recientes' => $this->ventasRecientes(),
             'plantas_criticas' => $this->plantasBajoStock(),
             'casos_recientes' => CasoMantenimiento::query()
@@ -145,18 +143,6 @@ class DashboardOperativoService
                 ])
                 ->all(),
         ];
-    }
-
-    private function proyectosPaisajismoPorEstado(): array
-    {
-        $estados=['solicitado','propuesto','aprobado','en_instalacion','entregado'];
-        $conteos=[];
-
-        foreach ($estados as $estado) {
-            $conteos[$estado]=ProyectoPaisajismo::query()->where('estado',$estado)->count();
-        }
-
-        return $conteos;
     }
 
     private function consultaVentas(?int $vendedorId = null): Builder
