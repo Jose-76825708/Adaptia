@@ -161,6 +161,53 @@ Route::middleware(['auth', 'role:vendedor,administrador'])->group(function () {
         ->middleware('throttle:10,1')
         ->name('asistente.nueva-conversacion');
 });
+Route::middleware(['auth', 'role:administrador'])->group(function () {
+    Route::post('/paisajismo/proyectos/{proyecto}/diseno/propuesta', [\App\Http\Controllers\PaisajismoDisenoController::class, 'propuesta'])->name('paisajismo.proyectos.diseno.propuesta');
+    Route::post('/paisajismo/proyectos/{proyecto}/diseno/decision', [\App\Http\Controllers\PaisajismoDisenoController::class, 'decision'])->name('paisajismo.proyectos.diseno.decision');
+    Route::post('/paisajismo/proyectos/{proyecto}/instalacion/iniciar', [\App\Http\Controllers\PaisajismoInstalacionController::class, 'iniciar'])->name('paisajismo.proyectos.instalacion.iniciar');
+    Route::post('/paisajismo/proyectos/{proyecto}/instalacion/avances', [\App\Http\Controllers\PaisajismoInstalacionController::class, 'avance'])->name('paisajismo.proyectos.instalacion.avances');
+    Route::post('/paisajismo/proyectos/{proyecto}/entrega', [\App\Http\Controllers\PaisajismoEntregaController::class, 'entrega'])->name('paisajismo.proyectos.entrega');
+    Route::get('/paisajismo/proyectos', [\App\Http\Controllers\PaisajismoProyectoController::class, 'index'])
+        ->name('paisajismo.proyectos.index');
+    Route::get('/paisajismo/proyectos/{proyecto}', [\App\Http\Controllers\PaisajismoProyectoController::class, 'show'])
+        ->name('paisajismo.proyectos.show');
+});
 
-// Macroproceso de gestión de inventario (rutas en archivo aparte).
-require __DIR__.'/gestion-inventario.php';
+Route::middleware(['auth', 'role:cliente'])->group(function () {
+    Route::get('/paisajismo/solicitudes', [\App\Http\Controllers\PaisajismoSolicitudController::class, 'index'])
+        ->name('paisajismo.solicitudes.index');
+    Route::get('/paisajismo/solicitudes/crear', [\App\Http\Controllers\PaisajismoSolicitudController::class, 'create'])
+        ->name('paisajismo.solicitudes.create');
+    Route::post('/paisajismo/solicitudes', [\App\Http\Controllers\PaisajismoSolicitudController::class, 'store'])
+        ->name('paisajismo.solicitudes.store');
+    Route::get('/paisajismo/solicitudes/{proyecto}', [\App\Http\Controllers\PaisajismoSolicitudController::class, 'show'])
+        ->whereNumber('proyecto')
+        ->name('paisajismo.solicitudes.show');
+    Route::get('/paisajismo/solicitudes/{proyecto}/propuesta', [\App\Http\Controllers\PaisajismoDisenoController::class, 'propuestaCliente'])
+        ->name('paisajismo.solicitudes.propuesta');
+    Route::get('/paisajismo/solicitudes/{proyecto}/resumen', [\App\Http\Controllers\PaisajismoEntregaController::class, 'resumen'])->name('paisajismo.solicitudes.resumen');
+    Route::post('/paisajismo/solicitudes/{proyecto}/satisfaccion', [\App\Http\Controllers\PaisajismoEntregaController::class, 'satisfaccion'])->name('paisajismo.solicitudes.satisfaccion');
+    Route::post('/paisajismo/solicitudes/{proyecto}/mantenimiento', [\App\Http\Controllers\PaisajismoEntregaController::class, 'mantenimiento'])->name('paisajismo.solicitudes.mantenimiento');
+});
+
+// Macroproceso: Gestión de inventario
+Route::middleware(['auth', 'role:administrador,vendedor'])->group(function () {
+    Route::get('/gestion-inventario', [\App\Http\Controllers\GestionInventarioController::class, 'index'])->name('gestion-inventario.index');
+    Route::get('/gestion-inventario/crear', [\App\Http\Controllers\GestionInventarioController::class, 'create'])->name('gestion-inventario.create');
+    Route::post('/gestion-inventario', [\App\Http\Controllers\GestionInventarioController::class, 'store'])->name('gestion-inventario.store');
+    Route::get('/gestion-inventario/{gestion}', [\App\Http\Controllers\GestionInventarioController::class, 'show'])->whereNumber('gestion')->name('gestion-inventario.show');
+    Route::post('/gestion-inventario/{gestion}/verificacion', [\App\Http\Controllers\GestionInventarioController::class, 'verificar'])->whereNumber('gestion')->name('gestion-inventario.verificar');
+    Route::post('/gestion-inventario/{gestion}/reposicion', [\App\Http\Controllers\GestionInventarioController::class, 'reposicion'])->whereNumber('gestion')->name('gestion-inventario.reposicion');
+    Route::post('/gestion-inventario/{gestion}/compra', [\App\Http\Controllers\GestionInventarioController::class, 'compra'])->whereNumber('gestion')->name('gestion-inventario.compra');
+    Route::post('/gestion-inventario/{gestion}/recepcion', [\App\Http\Controllers\GestionInventarioController::class, 'recepcion'])->whereNumber('gestion')->name('gestion-inventario.recepcion');
+    Route::post('/gestion-inventario/{gestion}/recepcion/verificar', [\App\Http\Controllers\GestionInventarioController::class, 'verificarRecepcion'])->whereNumber('gestion')->name('gestion-inventario.recepcion.verificar');
+    Route::post('/gestion-inventario/{gestion}/incidencia', [\App\Http\Controllers\GestionInventarioController::class, 'gestionarIncidencia'])->whereNumber('gestion')->name('gestion-inventario.incidencia');
+    Route::post('/gestion-inventario/{gestion}/ingreso', [\App\Http\Controllers\GestionInventarioController::class, 'ingreso'])->whereNumber('gestion')->name('gestion-inventario.ingreso');
+    Route::post('/gestion-inventario/{gestion}/almacenamiento', [\App\Http\Controllers\GestionInventarioController::class, 'almacenar'])->whereNumber('gestion')->name('gestion-inventario.almacenar');
+    Route::post('/gestion-inventario/{gestion}/movimiento', [\App\Http\Controllers\GestionInventarioController::class, 'movimiento'])->whereNumber('gestion')->name('gestion-inventario.movimiento');
+
+    Route::resource('insumos', \App\Http\Controllers\InsumoController::class)
+        ->except(['show'])
+        ->parameters(['insumos' => 'id'])
+        ->whereNumber('id');
+});
