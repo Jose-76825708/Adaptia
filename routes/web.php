@@ -134,3 +134,30 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/mantenimiento/casos/{caso}/informe', [\App\Http\Controllers\CierreMantenimientoController::class, 'informe'])
         ->name('mantenimiento.casos.informe');
 });
+
+Route::middleware(['auth', 'role:administrador,vendedor'])
+    ->prefix('planeacion-comercial')
+    ->name('planeacion-comercial.')
+    ->controller(\App\Http\Controllers\PlaneacionComercialController::class)
+    ->group(function () {
+        Route::get('/campanas', 'index')->name('campanas.index');
+        Route::get('/campanas/crear', 'create')->middleware('role:vendedor')->name('campanas.create');
+        Route::post('/campanas', 'store')->middleware('role:vendedor')->name('campanas.store');
+        Route::get('/campanas/{campana}', 'show')->name('campanas.show');
+        Route::post('/campanas/{campana}/transicion', 'transicionar')->name('campanas.transicionar');
+        Route::post('/campanas/{campana}/oferta', 'ajustarOferta')->name('campanas.oferta.ajustar');
+        Route::post('/solicitudes/{solicitud}/disponibilidad', 'gestionarDisponibilidad')
+            ->name('solicitudes.disponibilidad');
+        Route::get('/demanda', 'demanda')->name('demanda');
+    });
+
+Route::middleware(['auth', 'role:vendedor,administrador'])->group(function () {
+    Route::get('/asistente', [\App\Http\Controllers\AsistenteController::class, 'index'])
+        ->name('asistente.index');
+    Route::post('/asistente/chat', [\App\Http\Controllers\AsistenteController::class, 'chat'])
+        ->middleware('throttle:10,1')
+        ->name('asistente.chat');
+    Route::post('/asistente/nueva-conversacion', [\App\Http\Controllers\AsistenteController::class, 'nuevaConversacion'])
+        ->middleware('throttle:10,1')
+        ->name('asistente.nueva-conversacion');
+});

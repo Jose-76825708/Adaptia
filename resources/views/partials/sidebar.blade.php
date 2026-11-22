@@ -1,91 +1,79 @@
-<aside class="sticky top-0 flex h-screen min-h-screen flex-1 flex-col items-left gap-15 overflow-y-auto p-2 bg-[#013623]">
-    <div class="flex items-center justify-center pt-8">
+@php
+    $rol = auth()->user()->rol;
+    $navegacionGeneral = [
+        ['nombre' => 'Inicio', 'ruta' => 'home', 'rutas' => ['home'], 'icono' => 'IN'],
+        ['nombre' => 'Asistente interno', 'ruta' => 'asistente.index', 'rutas' => ['asistente.*'], 'icono' => 'IA'],
+    ];
+    $navegacionOperativa = [
+        ['nombre' => 'Plantas', 'ruta' => 'plantas.index', 'rutas' => ['plantas.*'], 'icono' => 'PL'],
+        ['nombre' => 'Tipos de plantas', 'ruta' => 'tipoPlantas.index', 'rutas' => ['tipoPlantas.*'], 'icono' => 'TP'],
+        ['nombre' => 'Inventario', 'ruta' => 'movimientos-inventario.index', 'rutas' => ['movimientos-inventario.*'], 'icono' => 'IV'],
+        ['nombre' => 'Sensores', 'ruta' => 'sensores.index', 'rutas' => ['sensores.*'], 'icono' => 'IoT'],
+    ];
 
-        <img src="{{ asset('images/logotipo_blanco.png') }}" class="w-[80%] h-auto" alt="logotipo de adaptia">
+    if ($rol === 'administrador') {
+        $navegacionOperativa[] = ['nombre' => 'Planeación comercial', 'ruta' => 'planeacion-comercial.campanas.index', 'rutas' => ['planeacion-comercial.*'], 'icono' => 'PC'];
+        $navegacionOperativa[] = ['nombre' => 'Casos de mantenimiento', 'ruta' => 'mantenimiento.casos.index', 'rutas' => ['mantenimiento.casos.*'], 'icono' => 'MA'];
+        $navegacionOperativa[] = ['nombre' => 'Personal', 'ruta' => 'personal.create', 'rutas' => ['personal.*'], 'icono' => 'PE'];
+    } elseif ($rol === 'vendedor') {
+        $navegacionOperativa[] = ['nombre' => 'Planeación comercial', 'ruta' => 'planeacion-comercial.campanas.index', 'rutas' => ['planeacion-comercial.*'], 'icono' => 'PC'];
+        $navegacionOperativa[] = ['nombre' => 'Ventas', 'ruta' => 'ventas.index', 'rutas' => ['ventas.*'], 'icono' => 'VE'];
+        $navegacionOperativa[] = ['nombre' => 'Asignar sensores', 'ruta' => 'plantas-vendidas.index', 'rutas' => ['plantas-vendidas.*'], 'icono' => 'AS'];
+    }
 
+    $enlaceActivo = fn (array $rutas) => collect($rutas)->contains(fn (string $ruta) => request()->routeIs($ruta));
+@endphp
+
+<aside class="sticky top-0 flex h-screen w-20 shrink-0 flex-col border-r border-white/10 bg-[#092f23] text-white lg:w-64">
+    <a href="{{ route('home') }}" class="flex h-20 items-center justify-center border-b border-white/10 px-3 lg:justify-start lg:px-6" aria-label="Adaptia, inicio">
+        <img src="{{ asset('images/logotipo_blanco.png') }}" class="h-auto w-11 lg:w-44" alt="Adaptia">
+    </a>
+
+    <div class="flex-1 space-y-7 overflow-y-auto px-2 py-6 lg:px-3">
+        <nav aria-label="Navegación principal">
+            <p class="mb-2 hidden px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/40 lg:block">General</p>
+            <ul class="space-y-1">
+                @foreach ($navegacionGeneral as $enlace)
+                    @php $activo = $enlaceActivo($enlace['rutas']); @endphp
+                    <li>
+                        <a href="{{ route($enlace['ruta']) }}" title="{{ $enlace['nombre'] }}" aria-label="{{ $enlace['nombre'] }}" @if ($activo) aria-current="page" @endif
+                           class="group flex min-h-11 items-center justify-center gap-3 rounded-xl px-2 text-sm font-medium transition lg:justify-start lg:px-3 {{ $activo ? 'bg-[#2e6945] text-white shadow-sm' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 text-[10px] font-bold tracking-wide text-[#d7e9c6] group-hover:bg-white/15">{{ $enlace['icono'] }}</span>
+                            <span class="hidden truncate lg:block">{{ $enlace['nombre'] }}</span>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </nav>
+
+        <nav aria-label="Módulos de trabajo">
+            <p class="mb-2 hidden px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/40 lg:block">Operación</p>
+            <ul class="space-y-1">
+                @foreach ($navegacionOperativa as $enlace)
+                    @php $activo = $enlaceActivo($enlace['rutas']); @endphp
+                    <li>
+                        <a href="{{ route($enlace['ruta']) }}" title="{{ $enlace['nombre'] }}" aria-label="{{ $enlace['nombre'] }}" @if ($activo) aria-current="page" @endif
+                           class="group flex min-h-11 items-center justify-center gap-3 rounded-xl px-2 text-sm font-medium transition lg:justify-start lg:px-3 {{ $activo ? 'bg-[#2e6945] text-white shadow-sm' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 text-[10px] font-bold tracking-wide text-[#d7e9c6] group-hover:bg-white/15">{{ $enlace['icono'] }}</span>
+                            <span class="hidden truncate lg:block">{{ $enlace['nombre'] }}</span>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </nav>
     </div>
 
-    <div>
-        <ul class="flex flex-col gap-8 p-3 text-[white]">
-            @if (auth()->user()->rol === 'administrador')
-                <li
-                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] hover:bg-[#6eab26] transition duration-300 cursor-pointer">
-                    <a class="flex w-full h-full items-center gap-3" href="{{ route('personal.create') }}">
-                        <img class="w-5 h-auto" src="{{ asset('images/placeholder-user.png') }}" alt="">
-                        Personal
-                    </a>
-                </li>
-                <li
-                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] transition duration-300 cursor-pointer {{ Route::is('mantenimiento.casos.index') || Route::is('mantenimiento.casos.show') ? 'bg-[#6eab26]' : 'hover:bg-[#6eab26]' }}">
-                    <a class="flex w-full h-full items-center gap-3" href="{{ route('mantenimiento.casos.index') }}">
-                        <img class="w-5 h-auto" src="{{ asset('images/inventario.png') }}" alt="">
-                        Casos de mantenimiento
-                    </a>
-                </li>
-            @endif
-            <li
-                class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
-                <a class="flex w-full h-full items-center gap-3" href="{{ route('tipoPlantas.index') }}"><img class="w-5 h-auto" src="{{ asset('images/tipo-planta.png') }}" alt="">Tipos de plantas</a>
-            </li>
-            <li
-                class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
-                <a class="flex w-full h-full items-center gap-2" href="{{ route('plantas.index') }}"><img class="w-7 h-auto" src="{{ asset('images/plantas.png') }}" alt="">Plantas</a>
-            </li>
-            <li
-                class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
-                <a class="flex w-full h-full items-center gap-3" href="{{ route('movimientos-inventario.index') }}">
-                    <img class="w-5 h-auto" src="{{ asset('images/inventario.png') }}" alt="">
-                    Movimientos de Inventario
-                </a>
-            </li>
-            @if (auth()->user()->rol === 'vendedor')
-                <li
-                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] hover:bg-[#6eab26] transition duration-300 cursor-pointer">
-                    <a class="flex w-full h-full items-center gap-3" href="{{ route('ventas.index') }}">
-                        <img class="w-5 h-auto" src="{{ asset('images/inventario.png') }}" alt="">
-                        Ventas
-                    </a>
-                </li>
-                <li
-                    class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px] hover:bg-[#6eab26] transition duration-300 cursor-pointer">
-                    <a class="flex w-full h-full items-center gap-3" href="{{ route('plantas-vendidas.index') }}">
-                        <img class="w-5 h-auto" src="{{ asset('images/sensores.png') }}" alt="">
-                        Asignar sensores
-                    </a>
-                </li>
-            @endif
-            <li
-                class="flex items-center justify-left p-5 hover:scale-110 rounded-[20px]  hover:bg-[#6eab26] transition duration-300 cursor-pointer">
-                <a class="flex w-full h-full items-center gap-3" href="{{ route('sensores.index') }}">
-                    <img class="w-5 h-auto" src="{{ asset('images/sensores.png') }}" alt="">
-                    Sensores
-                </a>
-            </li>
-        </ul>
-    </div>
-
-    <div class="mt-auto pt-4 border-t border-[#014d33]">
-        <!-- User Info -->
-        <div class="flex items-center space-x-3 p-4">
-            <div class="shrink-0">
-                <img class="w-8 h-8 rounded-full" src="{{ asset('images/placeholder-user.png') }}" alt="Usuario">
-            </div>
-            <div class="flex-1">
-                <div class="font-medium text-white">{{ auth()->user()->name ?? auth()->user()->email }}</div>
-                <div class="text-sm text-white/60">{{ auth()->user()->email }}</div>
-            </div>
+    <div class="border-t border-white/10 p-2 lg:p-4">
+        <div class="mb-3 hidden min-w-0 px-2 lg:block">
+            <p class="truncate text-sm font-semibold text-white">{{ auth()->user()->name }}</p>
+            <p class="truncate text-xs capitalize text-white/50">{{ $rol }}</p>
         </div>
-
-        <!-- Logout Card -->
-        <div class="mt-4">
-            <form id="logout-form" action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit"
-                        class="flex w-full items-center justify-between p-4 bg-[#014d33] rounded-lg hover:bg-[#015d3c] transition duration-300 text-left">
-                    <span class="text-white">Cerrar sesión</span>
-                    <img class="w-5 h-auto" src="{{ asset('images/placeholder-logout.png') }}" alt="">
-                </button>
-            </form>
-        </div>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" title="Cerrar sesión" class="flex w-full items-center justify-center gap-3 rounded-xl bg-white/5 px-3 py-3 text-sm font-medium text-white/75 transition hover:bg-white/10 hover:text-white lg:justify-start">
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 text-xs font-bold">↪</span>
+                <span class="hidden lg:block">Cerrar sesión</span>
+            </button>
+        </form>
     </div>
 </aside>

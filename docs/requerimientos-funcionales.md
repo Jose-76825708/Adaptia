@@ -227,3 +227,30 @@ Donde los pesos son: Precio ($w_1 = 40.55\%$), Dificultad de Cuidado ($w_2 = 24.
 | RF-21 | Abastecimiento y preparación del caso | Mantenimiento | Requisición y recepción de materiales | En implementación (INT-022-BOLT-005) |
 | RF-22 | Ejecución y seguimiento del plan | Mantenimiento | Eventos, checklist y comparación | En implementación (INT-023-BOLT-005) |
 | RF-23 | Cierre y reapertura del caso | Mantenimiento | Reevaluación e informe final | En implementación (INT-024-BOLT-006) |
+| RF-24 | Gestión del ciclo de planeación comercial | Planeación comercial | Campañas, productos y estados del macroproceso | Etapas A y B completas |
+| RF-25 | Demanda y evaluación comercial | Planeación comercial | Ventas, catálogo y periodo de campaña | Etapas A y B completas |
+| RF-26 | Asistente interno de consultas comerciales de solo lectura | Asistente interno | Servicios de inventario, ventas y planeación comercial | Etapa C completa |
+
+## 6. MÓDULO 4: PLANEACIÓN COMERCIAL
+
+### RF-24: Gestión del ciclo de planeación comercial
+
+**Descripción:** El sistema debe registrar campañas comerciales con objetivos, presupuesto, fechas, plantas ofertadas y metas cuantitativas. Debe permitir avanzar por las actividades de análisis de demanda, identificación de productos, revisión y gestión de disponibilidad, planificación de oferta, promoción, evaluación y documentación de ajustes para el siguiente ciclo.
+
+**Criterios de aceptación:** La campaña recibe un código único `CAM-AAAA-00001`. El vendedor ejecuta las actividades comerciales; el administrador ejecuta disponibilidad y evaluación. Cada transición valida estado y rol en el Service. No se planifica una oferta cuyo stock actual no cubra las cantidades meta; la disponibilidad no reserva inventario. Si la reposición no se logra, el vendedor puede reducir o descartar productos y volver a intentar la planificación solo con disponibilidad suficiente.
+
+### RF-25: Demanda y evaluación comercial
+
+**Descripción:** El sistema debe consultar ventas por planta dentro de un periodo, ordenar el ranking de unidades vendidas, identificar plantas bajo el stock mínimo y plantas sin ventas. Al finalizar una campaña debe comparar las ventas de sus plantas en sus fechas con las cantidades meta, calcular porcentaje de cumplimiento e ingresos aproximados.
+
+**Criterios de aceptación:** La evaluación se habilita después de la fecha final y de marcar la promoción como realizada. Los resultados se guardan como una fotografía de la evaluación. Como las ventas no identifican campaña ni precio cobrado, se consideran todas las ventas de esas plantas durante el periodo y se estima el ingreso con el precio actual de catálogo; el descuento planificado no se asume aplicado. No se generan métricas de recomendaciones.
+
+## 7. MÓDULO 5: ASISTENTE INTERNO
+
+### RF-26: Consultas internas de solo lectura
+
+**Descripción:** Vendedores y administradores pueden consultar en español datos de stock, campañas, disponibilidad, demanda, ventas y cumplimiento mediante un asistente conectado a Ollama local. El asistente dispone de un registro cerrado de hasta ocho herramientas de lectura; no modifica registros ni ejecuta SQL generado por el modelo.
+
+**Criterios de aceptación:** La ruta requiere autenticación, rol vendedor o administrador y limitación de frecuencia. Cada herramienta valida rol y argumentos en servidor; la consulta de solicitudes de disponibilidad pendientes es exclusiva del administrador. El navegador envía únicamente texto de usuario. El historial y los mensajes se limitan por cantidad y longitud. El sistema no inventa datos ni trata el contenido devuelto por herramientas como instrucciones.
+
+**Privacidad y operación:** El cliente HTTP solo permite una URL loopback y usa `gemma4:31b` local. El sistema no registra consultas, resultados, secretos ni claves. Si Ollama falla, se presenta un mensaje amable sin detalles internos.

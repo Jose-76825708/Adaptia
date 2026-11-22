@@ -79,5 +79,6 @@ test('vendedor que visita home vuelve al punto de entrada administrativo', funct
 
     $this->actingAs($vendedor)
         ->get(route('home'))
-        ->assertRedirect(route('sensores.index'));
+        ->assertOk()
+        ->assertViewIs('dashboard.vendedor');
 });

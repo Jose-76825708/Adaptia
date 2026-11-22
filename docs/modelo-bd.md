@@ -305,9 +305,54 @@ entity "notificaciones" as notificaciones {
   enviada : boolean
 }
 
+' ---- Capa 3: Planeación comercial ----
+entity "campanas_comerciales" as campanas_comerciales {
+  * id : bigint <<PK>>
+  --
+  codigo : string <<unique>>
+  objetivos : text
+  presupuesto : decimal(12,2)
+  fecha_inicio : date
+  fecha_fin : date
+  estado : string
+  * creador_id : bigint <<FK>>
+  ajustes_siguiente_ciclo : text (nullable)
+  evaluada_en : timestamp (nullable)
+}
+
+entity "productos_campana" as productos_campana {
+  * id : bigint <<PK>>
+  --
+  * campana_id : bigint <<FK>>
+  * planta_id : bigint <<FK>>
+  cantidad_meta : integer
+  descuento_porcentaje : decimal(5,2) (nullable)
+  incluida : boolean
+  cantidad_vendida_evaluada : integer (nullable)
+  porcentaje_cumplimiento : decimal(10,2) (nullable)
+  ingresos_estimados : decimal(14,2) (nullable)
+}
+
+entity "solicitudes_disponibilidad" as solicitudes_disponibilidad {
+  * id : bigint <<PK>>
+  --
+  * producto_campana_id : bigint <<FK>>
+  faltante : integer
+  estado : string
+  notas : text (nullable)
+  gestionada_por_id : bigint <<FK>> (nullable)
+  gestionada_en : timestamp (nullable)
+}
+
 ' ---- Relaciones agrupadas por capa (arriba hacia abajo) ----
 users ||--o| perfiles_cliente
 tipos_planta ||--o{ plantas
+
+users ||--o{ campanas_comerciales : creador_id
+campanas_comerciales ||--o{ productos_campana
+plantas ||--o{ productos_campana
+productos_campana ||--o| solicitudes_disponibilidad
+users ||--o{ solicitudes_disponibilidad : gestionada_por_id
 
 users ||--o{ casos_mantenimiento
 casos_mantenimiento ||--o{ evidencias_caso

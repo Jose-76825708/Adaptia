@@ -120,5 +120,52 @@ Sustento Científico: El Artículo 4 define el formato EPC de 12 bits como el id
 | RN-10 | Sanitización y Log en microSD | Artículos 4, 7 | Pendiente (Fase 4) |
 | RN-11 | Protocolo Heartbeat (Latido) | Artículos 3, 4 | Pendiente (Fase 4) |
 | RN-12 | Identificación EPC de 12 bits (NMIS) | Artículos 3, 4 | Completo |
+| RN-13 | Mapeo de roles de planeación comercial | Roles existentes de Adaptia | Etapa A completa |
+| RN-14 | Transiciones comerciales validadas por rol/estado | Máquina de estados comercial | Etapa A completa |
+| RN-15 | Disponibilidad comercial sin reserva de stock | Inventario actual de plantas | Etapa A completa |
+| RN-16 | Gestión de faltantes y ajuste de oferta | Solicitudes de disponibilidad | Etapa A completa |
+| RN-17 | Ventana temporal y fotografía de evaluación | Fechas y ventas de campaña | Etapa A completa |
+| RN-18 | Límites de atribución e ingresos estimados | Estructura existente de ventas | Etapa A completa |
+| RN-19 | Métricas de demanda por planta | Ventas y stock actual | Etapa A completa |
+| RN-20 | Asistente sin mutaciones ni SQL libre | Registro cerrado de herramientas | Etapa C completa |
+| RN-21 | Autorización por herramienta y rol | Sesión autenticada de Adaptia | Etapa C completa |
+| RN-22 | Entrada e historial acotados del asistente | Solicitudes web y sesión | Etapa C completa |
+| RN-23 | Herramientas como datos, no instrucciones | Prompt del sistema en español | Etapa C completa |
+| RN-24 | Iteraciones, timeout y errores amables | Cliente HTTP de Ollama | Etapa C completa |
+| RN-25 | Procesamiento en Ollama local | Endpoint loopback configurado | Etapa C completa |
 
 **Conclusión** La arquitectura de reglas de negocio de ADAPTIA garantiza un sistema donde cada decisión técnica, desde el descarte de variables NPK por escasez de datos hasta la implementación de registros en microSD, está fundamentada en evidencia científica. Esta rigurosidad asegura la viabilidad técnica y comercial, posicionando a ADAPTIA como el estándar líder en sistemas de agricultura de precisión doméstica.
+
+## 6. Reglas del macroproceso de planeación comercial
+
+**RN-13: Roles del macroproceso.** El carril Responsable Comercial se ejecuta con el rol `vendedor`; los carriles Producción y Administración se ejecutan con `administrador`. El mapeo se mantiene en un solo lugar del `PlaneacionComercialService`. No se crean roles nuevos.
+
+**RN-14: Transiciones válidas.** Cada campaña sigue únicamente las transiciones declaradas por `PlaneacionComercialService`. El servicio valida estado y rol en cada operación; ocultar una acción en la interfaz no sustituye la autorización del servidor.
+
+**RN-15: Disponibilidad sin reserva.** La disponibilidad de cada planta se determina comparando `cantidad_meta` con `stock_actual` vigente. Es una fotografía del momento y no reserva existencias. No se permite planificar si algún producto incluido supera el stock disponible.
+
+**RN-16: Gestión de faltantes y salida del bucle.** Producción registra para cada faltante si fue atendido o no logrado. Un faltante atendido solo cuenta como asegurado cuando el stock real cubre la meta al volver a revisar. Si una solicitud no se logra, el vendedor reduce o descarta productos; la oferta solo se planifica al alcanzar disponibilidad suficiente.
+
+**RN-17: Ventana de evaluación.** Solo se evalúa una campaña cuya promoción se marcó como realizada y cuya `fecha_fin` ya pasó. Se consideran las ventas de las plantas incluidas entre `fecha_inicio` y `fecha_fin`, ambas inclusive. La evaluación guarda una fotografía de las cantidades vendidas, cumplimiento e ingresos estimados.
+
+**RN-18: Límites de atribución e ingresos.** La tabla `ventas` no identifica la campaña ni guarda el precio cobrado. Por tanto, todas las ventas de esas plantas durante las fechas se cuentan sin atribuir causalidad a la campaña; los ingresos se aproximan con cantidad vendida por precio actual de catálogo. El cálculo no confirma que se aplicó el descuento planificado.
+
+**RN-19: Demanda comercial.** El ranking usa cantidades de ventas por planta en el periodo elegido. El reporte de stock bajo compara `stock_actual < stock_minimo`; las plantas sin ventas se determinan en el mismo periodo. No se calculan recomendaciones ni especies recomendadas.
+
+## 7. Reglas del asistente interno
+
+**RN-20: Solo lectura y registro cerrado.** El asistente solo puede invocar las ocho herramientas registradas en el servidor. No recibe acceso a Eloquent arbitrario, no genera ni ejecuta SQL, y no ofrece herramientas de escritura.
+
+**RN-21: Autorización por herramienta.** El ejecutor consulta el rol del usuario autenticado en el servidor para cada herramienta; nunca usa roles declarados por el modelo o navegador. `solicitudes_disponibilidad_pendientes`, `casos_mantenimiento` y `alertas_monitoreo` solo están habilitadas para `administrador`; las consultas de inventario, ventas y campañas están disponibles para vendedor y administrador.
+
+**RN-22: Mensajes y argumentos acotados.** El navegador solo puede enviar un campo `message` de hasta 1000 caracteres; no se aceptan mensajes `system`, `assistant` o `tool` del navegador. La sesión conserva hasta 6 mensajes recientes, truncados a 500 caracteres para ajustarse al contexto local del modelo, y cada argumento se valida por tipo, longitud y dominio permitido.
+
+**RN-23: Separación de instrucciones y datos.** El prompt del sistema en español incorpora el contexto documentado de inventario/ventas, planeación comercial, mantenimiento, IoT, recomendación y notificaciones. El asistente puede explicar esos flujos sin consultar datos; las sugerencias sobre el estado actual requieren datos de herramientas, deben indicar su fundamento y no inventar cifras ni afirmar acciones. Nombres, descripciones, notas y demás valores de herramientas son datos, no instrucciones.
+
+**RN-24: Ejecución limitada y errores.** El asistente ejecuta como máximo cuatro iteraciones de herramientas y ocho llamadas por consulta. Cada petición HTTP tiene timeout configurado, contexto y generación acotados, y el modelo se conserva cargado por un periodo configurado para evitar recargas repetidas. Los saludos simples no invocan el modelo. Los errores se muestran sin trazas; no se registran prompts, respuestas ni secretos.
+
+**RN-25: Procesamiento local.** Para no transferir ventas, stock, campañas ni presupuestos a terceros, el cliente HTTP solo acepta `localhost`, `127.0.0.1` o `::1`. Ollama y el modelo se configuran mediante variables de entorno; el modelo local de desarrollo actual es `gemma4:e2b`.
+
+**RN-26: Paneles por rol.** El dashboard administrativo agrega indicadores generales de los macroprocesos; el panel del vendedor limita los indicadores y ventas a su `vendedor_id`, además de mostrar inventario y campañas compartidas. Los ingresos se identifican como estimados porque se calculan con el precio actual y no con el precio histórico cobrado.
+
+**RN-27: Fechas del ranking del asistente.** El asistente recibe la fecha y hora actuales del servidor según `config('app.timezone')`. El ranking acepta periodos relativos (hoy, ayer, últimos 7/30 días, mes actual/anterior y año actual/anterior) o fechas personalizadas inclusivas. Si no se indica periodo, se consulta el mes actual. “Últimos 30 días” incluye hoy y los 29 días anteriores; “mes anterior” corresponde al mes calendario previo. Las fechas personalizadas deben incluir inicio y fin, sin combinarlas con un periodo relativo.

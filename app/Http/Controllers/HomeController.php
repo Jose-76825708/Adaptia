@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\DashboardOperativoService;
 use App\Services\MonitoreoClienteService;
 use App\Services\RecomendacionService;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,7 @@ class HomeController extends Controller
     public function __construct(
         RecomendacionService $recomendacionService,
         private readonly MonitoreoClienteService $monitoreoClienteService,
+        private readonly DashboardOperativoService $dashboardOperativoService,
     ) {
         $this->recomendacionService = $recomendacionService;
     }
@@ -21,8 +23,16 @@ class HomeController extends Controller
     {
         $user = Auth::user();
 
+        if ($user?->rol === 'administrador') {
+            return view('dashboard.administrador', [
+                'resumen' => $this->dashboardOperativoService->resumenAdministrador(),
+            ]);
+        }
+
         if ($user?->rol === 'vendedor') {
-            return redirect()->route('sensores.index');
+            return view('dashboard.vendedor', [
+                'resumen' => $this->dashboardOperativoService->resumenVendedor($user),
+            ]);
         }
 
         if ($user?->rol !== 'cliente') {
