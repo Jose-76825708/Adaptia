@@ -13,8 +13,6 @@ class SensorService
 {
     /**
      * Obtiene todos los sensores.
-     *
-     * @return Collection
      */
     public function getAll(): Collection
     {
@@ -23,9 +21,6 @@ class SensorService
 
     /**
      * Crea un nuevo sensor.
-     *
-     * @param array $data
-     * @return Model
      */
     public function createSensor(array $data): Model
     {
@@ -35,9 +30,6 @@ class SensorService
     /**
      * Busca un sensor por su ID.
      * Lanza un ModelNotFoundException si no existe (provoca un 404).
-     *
-     * @param string $id
-     * @return Model
      */
     public function getSensorById(string $id): Model
     {
@@ -46,15 +38,12 @@ class SensorService
 
     /**
      * Actualiza un sensor existente.
-     *
-     * @param string $id
-     * @param array $data
-     * @return Model
      */
     public function updateSensor(string $id, array $data): Model
     {
         $sensor = $this->getSensorById($id);
         $sensor->update($data);
+
         return $sensor;
     }
 
@@ -75,9 +64,6 @@ class SensorService
 
     /**
      * Elimina un sensor.
-     *
-     * @param string $id
-     * @return bool
      */
     public function deleteSensor(string $id): bool
     {

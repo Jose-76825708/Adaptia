@@ -14,6 +14,10 @@ if (extension_loaded('pdo_mysql')) {
     }
 }
 
+$mysqlOptions = $mysqlSslCaAttribute === null ? [] : array_filter([
+    $mysqlSslCaAttribute => env('MYSQL_ATTR_SSL_CA'),
+]);
+
 $mysqlConnection = [
     'url' => env('DB_URL'),
     'host' => env('DB_HOST', $defaultHost),
@@ -28,9 +32,7 @@ $mysqlConnection = [
     'prefix_indexes' => true,
     'strict' => true,
     'engine' => null,
-    'options' => $mysqlSslCaAttribute === null ? [] : array_filter([
-        $mysqlSslCaAttribute => env('MYSQL_ATTR_SSL_CA'),
-    ]),
+    'options' => $mysqlOptions,
 ];
 
 $redisConnection = [

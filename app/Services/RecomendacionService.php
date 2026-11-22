@@ -7,10 +7,8 @@ use Illuminate\Http\Request;
 
 class RecomendacionService
 {
-    
     public function limpiarPerfil(Request $request)
     {
-        
         return $request->only([
             'luz_requerida',
             'frecuencia_riego',
@@ -20,21 +18,20 @@ class RecomendacionService
             'toxicidad',
             'estetica',
         ]);
+    }
 
-    } //no hace falta testear
-
-    public function compatibilidadOrdinal (array $orden, string $valorPlanta, string $valorUsuario)
+    public function compatibilidadOrdinal(array $orden, string $valorPlanta, string $valorUsuario)
     {
-        $posicion_usuario = array_search($valorUsuario,$orden);
-        $posicion_planta = array_search($valorPlanta,$orden);
+        $posicion_usuario = array_search($valorUsuario, $orden);
+        $posicion_planta = array_search($valorPlanta, $orden);
 
         $diferencia = abs($posicion_planta - $posicion_usuario);
         $distancia_maxima = count($orden) - 1;
 
-        return  1-($diferencia/$distancia_maxima);
-    } //testeado
+        return 1 - ($diferencia / $distancia_maxima);
+    }
 
-    public function compatibilidadCategoria (string $atributo,array $categoria, string $valorPLanta, string $valorUsuario)
+    public function compatibilidadCategoria(string $atributo, array $categoria, string $valorPLanta, string $valorUsuario)
     {
         if (
             $atributo === 'estetica' &&
@@ -44,8 +41,8 @@ class RecomendacionService
             return 1;
         }
 
-        $posicion_usuario = array_search($valorUsuario,$categoria);
-        $posicion_planta = array_search($valorPLanta,$categoria);
+        $posicion_usuario = array_search($valorUsuario, $categoria);
+        $posicion_planta = array_search($valorPLanta, $categoria);
 
         if (
             ($atributo == 'tipo_ambiente' && $posicion_usuario == 2) ||
@@ -55,95 +52,77 @@ class RecomendacionService
         }
 
         return 0;
-
-        
-    } //testeado
+    }
 
     private function ordenesDisponibles()
     {
         return [
-            'luz_requerida' => ['baja','media','alta','siempre_en_el_sol'],
-            'frecuencia_riego' => ['diario','cada_3_dias','semanal','quincenal','mensualmente'],
-            'nivel_cuidado' => ['principiante','intermedio','experto'],
-            'tamaño_adulto' => ['pequena','mediana','grande']
+            'luz_requerida' => ['baja', 'media', 'alta', 'siempre_en_el_sol'],
+            'frecuencia_riego' => ['diario', 'cada_3_dias', 'semanal', 'quincenal', 'mensualmente'],
+            'nivel_cuidado' => ['principiante', 'intermedio', 'experto'],
+            'tamaño_adulto' => ['pequena', 'mediana', 'grande'],
         ];
-    } //no hace falta testear
+    }
 
     private function categoriasDisponibles()
     {
         return [
-            'tipo_ambiente' => ['interiores','exteriores','ambos'],
-            'estetica' => ['follaje','flor','colgantes','suculenta']
-
+            'tipo_ambiente' => ['interiores', 'exteriores', 'ambos'],
+            'estetica' => ['follaje', 'flor', 'colgantes', 'suculenta'],
         ];
-    } //no hace falta testear
+    }
 
     private function pesosCategoricos()
     {
         return [
-            'luz_requerida' => 1/6,
-            'frecuencia_riego' => 1/6,
-            'nivel_cuidado' => 1/6,
-            'tamaño_adulto' => 1/6,
-            'tipo_ambiente' => 1/6,
-            'estetica' => 1/6
+            'luz_requerida' => 1 / 6,
+            'frecuencia_riego' => 1 / 6,
+            'nivel_cuidado' => 1 / 6,
+            'tamaño_adulto' => 1 / 6,
+            'tipo_ambiente' => 1 / 6,
+            'estetica' => 1 / 6,
         ];
     }
 
     public function calculaScore(Planta $planta, array $perfil_usuario)
     {
-
         $ordenes = $this->ordenesDisponibles();
         $categorias = $this->categoriasDisponibles();
         $pesos = $this->pesosCategoricos();
         $score = 0;
 
-        foreach ($ordenes as $atributo => $orden){
+        foreach ($ordenes as $atributo => $orden) {
+            $valorPlanta = $planta[$atributo];
+            $valorUsuario = $perfil_usuario[$atributo];
+            $peso = $pesos[$atributo];
 
-        $valorPlanta = $planta[$atributo];
-        $valorUsuario = $perfil_usuario[$atributo];
-        $peso = $pesos[$atributo];
-
-        // funcion para atributos ordinales
-        $compatibilidad_ordinal = $this->compatibilidadOrdinal($orden,$valorPlanta,$valorUsuario);
-
-        $score += $compatibilidad_ordinal * $peso;
-
-
+            $compatibilidadOrdinal = $this->compatibilidadOrdinal($orden, $valorPlanta, $valorUsuario);
+            $score += $compatibilidadOrdinal * $peso;
         }
 
-        foreach ($categorias as $atributo => $categoria){
+        foreach ($categorias as $atributo => $categoria) {
+            $valorPlanta = $planta[$atributo];
+            $valorUsuario = $perfil_usuario[$atributo];
+            $peso = $pesos[$atributo];
 
-        $valorPlanta = $planta[$atributo];
-        $valorUsuario = $perfil_usuario[$atributo];
-        $peso = $pesos[$atributo];
-
-        $compatibilidad_categorica = $this->compatibilidadCategoria($atributo, $categoria,$valorPlanta,$valorUsuario);
-
-        $score += $compatibilidad_categorica * $peso;
-
+            $compatibilidadCategorica = $this->compatibilidadCategoria($atributo, $categoria, $valorPlanta, $valorUsuario);
+            $score += $compatibilidadCategorica * $peso;
         }
 
         return $score;
+    }
 
-    
-    } //testeado
-
-    public function plantasNoToxicas ()
+    public function plantasNoToxicas()
     {
-        return Planta::where('toxicidad',false)->get();
-    }//testead
+        return Planta::where('toxicidad', false)->get();
+    }
 
-    public function generarRecomendaciones (array $perfil_usuario)
+    public function generarRecomendaciones(array $perfil_usuario)
     {
         if ($perfil_usuario['toxicidad']) {
-
             $plantas = $this->plantasNoToxicas();
-
-        }else{
-
+        } else {
             $plantas = Planta::all();
-
         }
 
         return $plantas->map(function (Planta $planta) use ($perfil_usuario) {
@@ -154,8 +133,8 @@ class RecomendacionService
 
             return $planta;
         })
-        ->sortByDesc('compatibilidad_porcentaje')
-        ->take(10)
-        ->values();
+            ->sortByDesc('compatibilidad_porcentaje')
+            ->take(10)
+            ->values();
     }
 }

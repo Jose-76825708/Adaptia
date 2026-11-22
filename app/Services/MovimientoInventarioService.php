@@ -15,8 +15,6 @@ class MovimientoInventarioService
 {
     /**
      * Obtiene todos los movimientos de inventario con sus relaciones.
-     *
-     * @return Collection
      */
     public function getAll(): Collection
     {
@@ -25,9 +23,6 @@ class MovimientoInventarioService
 
     /**
      * Busca un movimiento de inventario por su ID.
-     *
-     * @param string $id
-     * @return Model
      */
     public function getById(string $id): Model
     {
@@ -36,9 +31,6 @@ class MovimientoInventarioService
 
     /**
      * Crea un nuevo movimiento de inventario.
-     *
-     * @param array $data
-     * @return Model
      */
     public function createMovimiento(array $data): Model
     {
@@ -62,18 +54,18 @@ class MovimientoInventarioService
             if ($planta->stock_actual < $planta->stock_minimo) {
                 // Flash message para feedback inmediato al usuario
                 Session::flash('stock_warning',
-                    "Advertencia: El stock de {$planta->nombre} está bajo el mínimo. " .
+                    "Advertencia: El stock de {$planta->nombre} está bajo el mínimo. ".
                     "Actual: {$planta->stock_actual}, Mínimo: {$planta->stock_minimo}"
                 );
 
                 // Entrada en log para historial permanente y auditoría
-                Log::warning("Stock bajo detectado tras movimiento de inventario", [
+                Log::warning('Stock bajo detectado tras movimiento de inventario', [
                     'planta_id' => $planta->id,
                     'planta_nombre' => $planta->nombre,
                     'stock_actual' => $planta->stock_actual,
                     'stock_minimo' => $planta->stock_minimo,
                     'tipo_movimiento' => $data['tipo'],
-                    'cantidad' => $data['cantidad']
+                    'cantidad' => $data['cantidad'],
                 ]);
             }
 
@@ -83,10 +75,6 @@ class MovimientoInventarioService
 
     /**
      * Actualiza un movimiento de inventario existente.
-     *
-     * @param string $id
-     * @param array $data
-     * @return Model
      */
     public function updateMovimiento(string $id, array $data): Model
     {
@@ -126,12 +114,12 @@ class MovimientoInventarioService
             if ($planta->stock_actual < $planta->stock_minimo) {
                 // Flash message para feedback inmediato al usuario
                 Session::flash('stock_warning',
-                    "Advertencia: El stock de {$planta->nombre} está bajo el mínimo. " .
+                    "Advertencia: El stock de {$planta->nombre} está bajo el mínimo. ".
                     "Actual: {$planta->stock_actual}, Mínimo: {$planta->stock_minimo}"
                 );
 
                 // Entrada en log para historial permanente y auditoría
-                Log::warning("Stock bajo detectado tras actualización de movimiento", [
+                Log::warning('Stock bajo detectado tras actualización de movimiento', [
                     'planta_id' => $planta->id,
                     'planta_nombre' => $planta->nombre,
                     'stock_actual' => $planta->stock_actual,
@@ -140,7 +128,7 @@ class MovimientoInventarioService
                     'nuevo_tipo_movimiento' => $data['tipo'] ?? $movimiento->tipo,
                     'cantidad_original' => $movimiento->cantidad,
                     'nueva_cantidad' => $data['cantidad'] ?? $movimiento->cantidad,
-                    'diferencia_stock' => $diferencia
+                    'diferencia_stock' => $diferencia,
                 ]);
             }
 
@@ -150,9 +138,6 @@ class MovimientoInventarioService
 
     /**
      * Elimina un movimiento de inventario.
-     *
-     * @param string $id
-     * @return bool
      */
     public function deleteMovimiento(string $id): bool
     {
@@ -178,18 +163,18 @@ class MovimientoInventarioService
             if ($planta->stock_actual < $planta->stock_minimo) {
                 // Flash message para feedback inmediato al usuario
                 Session::flash('stock_warning',
-                    "Advertencia: El stock de {$planta->nombre} está bajo el mínimo. " .
+                    "Advertencia: El stock de {$planta->nombre} está bajo el mínimo. ".
                     "Actual: {$planta->stock_actual}, Mínimo: {$planta->stock_minimo}"
                 );
 
                 // Entrada en log para historial permanente y auditoría
-                Log::warning("Stock bajo detectado tras eliminación de movimiento", [
+                Log::warning('Stock bajo detectado tras eliminación de movimiento', [
                     'planta_id' => $planta->id,
                     'planta_nombre' => $planta->nombre,
                     'stock_actual' => $planta->stock_actual,
                     'stock_minimo' => $planta->stock_minimo,
                     'tipo_movimiento' => $movimiento->tipo,
-                    'cantidad_revertida' => $movimiento->cantidad
+                    'cantidad_revertida' => $movimiento->cantidad,
                 ]);
             }
 

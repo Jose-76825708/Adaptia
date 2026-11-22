@@ -201,7 +201,7 @@ function initializeProfileWizard() {
         if (currentStep < steps.length - 1) {
             showStep(currentStep + 1, 1);
         } else {
-            void handleSubmit().catch(error => {
+            handleSubmit().catch(error => {
                 console.error(error);
                 alert('Error de conexión. Por favor intenta nuevamente.');
                 setLoading(false);

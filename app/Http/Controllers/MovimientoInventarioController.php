@@ -25,6 +25,7 @@ class MovimientoInventarioController extends Controller
     public function create()
     {
         $plantas = Planta::all();
+
         return view('movimientos-inventario.create', compact('plantas'));
     }
 

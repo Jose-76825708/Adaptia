@@ -31,13 +31,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            $user = Auth::user();
-
-            return match ($user->rol) {
-                'vendedor' => redirect()->intended(route('home')),
-                'administrador' => redirect()->intended(route('home')),
-                default => redirect()->intended(route('home')),
-            };
+            return redirect()->intended(route('home'));
         }
 
         return back()->withErrors([

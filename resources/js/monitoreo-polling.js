@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                throw new Error(`La consulta de monitoreo respondió con estado ${response.status}.`);
+                throw new TypeError(`La consulta de monitoreo respondió con estado ${response.status}.`);
             }
 
             const html = await response.text();
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.setInterval(refreshFragment, interval);
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
-            void refreshFragment();
+            refreshFragment();
         }
     });
 });

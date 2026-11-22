@@ -30,7 +30,7 @@ class SensorController extends Controller
     {
         $validar_datos = $request->validate([
             'identificador_fisico' => 'required|string|unique:sensores,identificador_fisico',
-            'estado' => 'required|in:activo,inactivo'
+            'estado' => 'required|in:activo,inactivo',
         ]);
 
         $this->service->createSensor($validar_datos);
@@ -50,7 +50,7 @@ class SensorController extends Controller
     {
         $validar_datos = $request->validate([
             'identificador_fisico' => 'required|string|unique:sensores,identificador_fisico,'.$id,
-            'estado' => 'required|in:activo,inactivo'
+            'estado' => 'required|in:activo,inactivo',
         ]);
 
         $this->service->updateSensor($id, $validar_datos);

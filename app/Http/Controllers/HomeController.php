@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Services\DashboardOperativoService;
 use App\Services\MonitoreoClienteService;
 use App\Services\RecomendacionService;
@@ -23,22 +24,20 @@ class HomeController extends Controller
     {
         $user = Auth::user();
 
-        if ($user?->rol === 'administrador') {
-            return view('dashboard.administrador', [
+        return match ($user?->rol) {
+            'administrador' => view('dashboard.administrador', [
                 'resumen' => $this->dashboardOperativoService->resumenAdministrador(),
-            ]);
-        }
-
-        if ($user?->rol === 'vendedor') {
-            return view('dashboard.vendedor', [
+            ]),
+            'vendedor' => view('dashboard.vendedor', [
                 'resumen' => $this->dashboardOperativoService->resumenVendedor($user),
-            ]);
-        }
+            ]),
+            'cliente' => $this->vistaCliente($user),
+            default => view('home'),
+        };
+    }
 
-        if ($user?->rol !== 'cliente') {
-            return view('home');
-        }
-
+    private function vistaCliente(User $user)
+    {
         $perfil = $user->perfilCliente;
         $recomendaciones = $perfil ? $this->recomendacionService->generarRecomendaciones($perfil->toArray()) : [];
         $sensoresAsignados = $this->monitoreoClienteService->obtenerSensoresAsignados($user);
