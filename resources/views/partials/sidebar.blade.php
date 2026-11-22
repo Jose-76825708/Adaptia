@@ -14,6 +14,8 @@
     if ($rol === 'administrador') {
         $navegacionOperativa[] = ['nombre' => 'Planeación comercial', 'ruta' => 'planeacion-comercial.campanas.index', 'rutas' => ['planeacion-comercial.*'], 'icono' => 'PC'];
         $navegacionOperativa[] = ['nombre' => 'Casos de mantenimiento', 'ruta' => 'mantenimiento.casos.index', 'rutas' => ['mantenimiento.casos.*'], 'icono' => 'MA'];
+        $navegacionOperativa[] = ['nombre' => 'Proyectos de paisajismo', 'ruta' => 'paisajismo.proyectos.index', 'rutas' => ['paisajismo.proyectos.*'], 'icono' => 'PA'];
+        $navegacionOperativa[] = ['nombre' => 'Producción vegetal', 'ruta' => 'produccion-vegetal.lotes.index', 'rutas' => ['produccion-vegetal.*'], 'icono' => 'PV'];
         $navegacionOperativa[] = ['nombre' => 'Personal', 'ruta' => 'personal.create', 'rutas' => ['personal.*'], 'icono' => 'PE'];
     } elseif ($rol === 'vendedor') {
         $navegacionOperativa[] = ['nombre' => 'Planeación comercial', 'ruta' => 'planeacion-comercial.campanas.index', 'rutas' => ['planeacion-comercial.*'], 'icono' => 'PC'];

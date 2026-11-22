@@ -211,3 +211,4 @@ Route::middleware(['auth', 'role:administrador,vendedor'])->group(function () {
         ->parameters(['insumos' => 'id'])
         ->whereNumber('id');
 });
+require __DIR__.'/produccion-vegetal.php';
