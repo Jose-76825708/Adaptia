@@ -189,3 +189,5 @@ Route::middleware(['auth', 'role:cliente'])->group(function () {
     Route::post('/paisajismo/solicitudes/{proyecto}/satisfaccion', [\App\Http\Controllers\PaisajismoEntregaController::class, 'satisfaccion'])->name('paisajismo.solicitudes.satisfaccion');
     Route::post('/paisajismo/solicitudes/{proyecto}/mantenimiento', [\App\Http\Controllers\PaisajismoEntregaController::class, 'mantenimiento'])->name('paisajismo.solicitudes.mantenimiento');
 });
+
+require __DIR__.'/produccion-vegetal.php';
