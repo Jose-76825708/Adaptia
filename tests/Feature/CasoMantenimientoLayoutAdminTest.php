@@ -22,7 +22,7 @@ test('la bandeja y el detalle administrativos usan el layout de administrador y 
     $response->assertSee('Casos de mantenimiento');
     $response->assertSee('Personal');
     $response->assertSee('Tipos de plantas');
-    $response->assertSee('bg-[#6eab26]', false);
+    $response->assertSee('bg-[#2e6945]', false);
     $response->assertDontSee('Cómo funciona');
     $response->assertDontSee('Nosotros');
     $response->assertDontSee('Empezar');

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PerfilCliente;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use App\Models\PerfilCliente;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -34,8 +34,8 @@ class AuthController extends Controller
             $user = Auth::user();
 
             return match ($user->rol) {
-                'vendedor' => redirect()->route('sensores.index'),
-                'administrador' => redirect()->intended(route('sensores.index')),
+                'vendedor' => redirect()->intended(route('home')),
+                'administrador' => redirect()->intended(route('home')),
                 default => redirect()->intended(route('home')),
             };
         }

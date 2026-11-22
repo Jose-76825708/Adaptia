@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Hash;
 
 uses(RefreshDatabase::class);
 
-test('vendedor inicia sesión y llega al CRUD compartido con el administrador', function () {
+test('vendedor inicia sesión y llega a su dashboard comercial', function () {
     $user = User::factory()->create([
         'email' => 'vendedor@example.com',
         'password' => Hash::make('password'),
@@ -15,11 +15,11 @@ test('vendedor inicia sesión y llega al CRUD compartido con el administrador', 
 
     $response = $this->withSession(['url.intended' => route('home')])
         ->post(route('login'), [
-        'email' => $user->email,
-        'password' => 'password',
-    ]);
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
 
-    $response->assertRedirect(route('sensores.index'));
+    $response->assertRedirect(route('home'));
     $this->assertAuthenticatedAs($user);
 
     $this->get(route('sensores.index'))
@@ -56,7 +56,7 @@ test('formulario público de registro no ofrece selector de rol', function () {
         ->assertDontSee('Administrador');
 });
 
-test('administrador conserva su redirección al CRUD después del login', function () {
+test('administrador inicia sesión y llega a su dashboard operativo', function () {
     $user = User::factory()->create([
         'email' => 'administrador@example.com',
         'password' => Hash::make('password'),
@@ -68,7 +68,7 @@ test('administrador conserva su redirección al CRUD después del login', functi
         'password' => 'password',
     ]);
 
-    $response->assertRedirect(route('sensores.index'));
+    $response->assertRedirect(route('home'));
     $this->assertAuthenticatedAs($user);
 });
 

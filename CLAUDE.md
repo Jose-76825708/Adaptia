@@ -125,5 +125,12 @@ pieza sea fácil de explicar en una sustentación.
 - Etapa C (asistente de IA interno de solo lectura): implementada y probada con `Http::fake`; Gemma 4 tiene tool calling nativo.
 - Mapeo único de carriles en `PlaneacionComercialService`: Responsable Comercial = vendedor; Producción y Administración = administrador.
 - La disponibilidad usa stock actual sin reservas. La evaluación estima ingresos con precio actual y no atribuye ventas a una campaña porque `ventas` no guarda campaña ni precio cobrado.
-- El asistente usa `gemma4:31b` en Ollama local y solo admite hosts loopback para evitar enviar datos comerciales a terceros. El `Modelfile` existente se conserva sin cambios.
-- La herramienta `solicitudes_disponibilidad_pendientes` es exclusiva del administrador; el resto de herramientas de consulta se comparte entre vendedor y administrador.
+- El asistente amplía su contexto para explicar inventario y ventas, planeación comercial, mantenimiento, monitoreo IoT y las limitaciones del recomendador/notificaciones. Las sugerencias son orientativas y de solo lectura.
+- Las herramientas de mantenimiento, monitoreo IoT y solicitudes de disponibilidad pendientes son exclusivas del administrador; las consultas de inventario, ventas y campañas están disponibles para vendedor y administrador.
+- El asistente conserva Ollama local y solo admite hosts loopback. En el entorno local usa `gemma4:e2b`, `keep_alive=5m`, contexto de 2048 tokens, `think=false` y respuesta máxima de 256 tokens; saludos simples se contestan sin invocar Ollama.
+
+## Paneles internos
+- El acceso `/home` muestra un dashboard distinto para administrador y vendedor. El administrador ve indicadores generales de inventario, ventas, mantenimiento, monitoreo IoT, campañas y movimientos.
+- El vendedor ve únicamente sus propias ventas, además de inventario compartido, campañas activas y atajos de venta/consulta.
+- Los ingresos del dashboard son aproximados con el precio actual de la planta, pues `ventas` no conserva el precio histórico cobrado.
+- Después del login, administrador y vendedor ingresan a su dashboard. El sidebar distingue navegación por rol y enlaza al asistente interno.

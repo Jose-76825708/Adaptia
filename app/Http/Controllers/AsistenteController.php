@@ -9,9 +9,18 @@ use Illuminate\Validation\ValidationException;
 
 class AsistenteController extends Controller
 {
-    public function index()
+    public function index(Request $request, AsistenteService $service)
     {
-        return view('asistente.index');
+        return view('asistente.index', [
+            'historial' => $service->obtenerHistorial($request->user()),
+        ]);
+    }
+
+    public function nuevaConversacion(Request $request, AsistenteService $service)
+    {
+        $service->reiniciarConversacion($request->user());
+
+        return response()->json(['reiniciada' => true]);
     }
 
     public function chat(Request $request, AsistenteService $service)

@@ -29,7 +29,8 @@ export class FakeElement {
         this.id = id;
         this.dataset = { ...dataset };
         this.classList = new FakeClassList(className);
-        this.textContent = textContent;
+        this._textContent = textContent;
+        this.children = [];
         this.value = value;
         this.checked = checked;
         this.requiredSelects = requiredSelects;
@@ -38,6 +39,17 @@ export class FakeElement {
         this.disabled = false;
         this.inert = false;
         this.ownerDocument = null;
+        this.scrollTop = 0;
+        this.scrollHeight = 0;
+    }
+
+    get textContent() {
+        return this._textContent + this.children.map(child => child.textContent).join('');
+    }
+
+    set textContent(value) {
+        this._textContent = String(value);
+        this.children = [];
     }
 
     addEventListener(type, listener) {
@@ -47,10 +59,34 @@ export class FakeElement {
     }
 
     click() {
+        let resultado;
         for (const listener of this.listeners.get('click') ?? []) {
-            listener({ type: 'click' });
+            resultado = listener({ type: 'click' });
+        }
+
+        return resultado;
+    }
+
+    dispatchEvent(event) {
+        for (const listener of this.listeners.get(event.type) ?? []) {
+            listener(event);
         }
     }
+
+    appendChild(element) {
+        element.ownerDocument = this.ownerDocument;
+        this.children.push(element);
+        this.scrollHeight = this.children.length;
+        return element;
+    }
+
+    replaceChildren(...elements) {
+        this.children = [];
+        this._textContent = '';
+        elements.forEach(element => this.appendChild(element));
+    }
+
+    focus() {}
 
     setAttribute(name, value) {
         this.attributes[name] = value;
@@ -110,7 +146,23 @@ export class FakeDocument {
     }
 
     querySelectorAll(selector) {
-        return selector === '.wizard-step' ? this.steps : [];
+        if (selector === '.wizard-step') {
+            return this.steps;
+        }
+
+        if (selector === '[data-asistente-sugerencia]') {
+            return [...this.elements.values()].filter(element => element.dataset.asistenteSugerencia);
+        }
+
+        return [];
+    }
+
+    createElement(tagName) {
+        const element = new FakeElement();
+        element.tagName = tagName;
+        element.ownerDocument = this;
+
+        return element;
     }
 }
 

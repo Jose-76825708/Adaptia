@@ -37,8 +37,12 @@ return [
 
     'ollama' => [
         'base_url' => env('OLLAMA_BASE_URL'),
-        'model' => env('OLLAMA_MODEL'),
-        'timeout' => env('OLLAMA_TIMEOUT'),
+        'model' => env('OLLAMA_MODEL', 'gemma4:e2b'),
+        'timeout' => env('OLLAMA_TIMEOUT', 180),
+        'keep_alive' => env('OLLAMA_KEEP_ALIVE', '5m'),
+        'num_ctx' => env('OLLAMA_NUM_CTX', 2048),
+        'num_predict' => env('OLLAMA_NUM_PREDICT', 256),
+        'think' => env('OLLAMA_THINK', false),
     ],
 
 ];

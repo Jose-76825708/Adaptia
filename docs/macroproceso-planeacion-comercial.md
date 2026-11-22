@@ -56,6 +56,16 @@ Las pantallas están bajo `/planeacion-comercial`; las acciones de cada estado s
 
 ## Asistente interno de consultas
 
-El asistente de consulta se ofrece en `/asistente` a vendedor y administrador. Su registro tiene ocho consultas de solo lectura: stock por nombre, plantas bajo stock mínimo, disponibilidad de campaña, estado y productos de campaña, campañas por estado, ranking de ventas por periodo, avance de campaña y solicitudes de disponibilidad pendientes. Esta última consulta es exclusiva del administrador.
+El asistente de consulta se ofrece en `/asistente` a vendedor y administrador. Incluye una interfaz de conversación con sugerencias rápidas e historial de sesión. Su registro cerrado conserva ocho herramientas de solo lectura: stock por nombre, plantas bajo stock mínimo, detalle de campaña (incluye disponibilidad y avance), campañas por estado, ranking de ventas por periodo, solicitudes de disponibilidad pendientes, casos de mantenimiento y alertas/lecturas IoT. Los tres últimos accesos de administración son exclusivos del administrador; vendedor no recibe datos de casos ni monitoreo de clientes.
 
-El cliente web solo envía el texto de usuario; el servidor arma system/history/tool messages. El ejecutor valida de nuevo el rol y los argumentos. Ollama se sirve localmente con `gemma4:31b`; la URL configurada debe ser loopback. La ficha oficial de [Gemma 4 en Ollama](https://ollama.com/library/gemma4) anuncia function calling nativo; la [API de tool calling](https://docs.ollama.com/capabilities/tool-calling) documenta el flujo de `/api/chat`.
+El asistente también incorpora contexto estático de los macroprocesos para explicar etapas, roles y limitaciones, y puede formular sugerencias basadas en resultados de herramientas. Para el ranking de ventas, el periodo puede expresarse como relativo (hoy, ayer, últimos 7 o 30 días, mes actual o anterior, año actual o anterior) o como fechas personalizadas inclusivas. Si no se especifica uno, se usa el mes actual. El servidor entrega la fecha y hora actual según `config('app.timezone')` y calcula los rangos, para que el modelo no tenga que inventar fechas.
+
+Debe distinguir datos consultados de recomendaciones, no completar datos faltantes y no afirmar que ejecutó acciones. Los valores que retornan las herramientas siempre se tratan como datos, nunca instrucciones.
+
+El cliente web solo envía el texto de usuario; el servidor arma system/history/tool messages. El ejecutor valida de nuevo el rol y los argumentos. Ollama se sirve localmente con el modelo definido en `OLLAMA_MODEL` (en desarrollo, `gemma4:e2b`); la URL configurada debe ser loopback. La ficha oficial de [Gemma 4 en Ollama](https://ollama.com/library/gemma4) anuncia function calling nativo; la [API de tool calling](https://docs.ollama.com/capabilities/tool-calling) documenta el flujo de `/api/chat`.
+
+Para el uso local, el modelo se mantiene cargado durante 5 minutos, el contexto se limita a 2048 tokens, se desactiva el modo de razonamiento extendido y la generación se limita a 256 tokens. Los saludos simples se responden sin llamar al modelo. La primera consulta después de reiniciar Ollama puede tardar más mientras el modelo se carga en memoria.
+
+## Paneles de administrador y vendedor
+
+`/home` presenta un panel de administración con métricas de inventario, ventas agregadas, casos activos, alertas, campañas y movimientos recientes. El panel del vendedor limita los indicadores y el listado de ventas a `vendedor_id` del usuario autenticado; el inventario y las campañas son datos compartidos del negocio. Las ventas e ingresos mostrados son estimados con el precio actual, no con el precio histórico cobrado.

@@ -157,4 +157,7 @@ Route::middleware(['auth', 'role:vendedor,administrador'])->group(function () {
     Route::post('/asistente/chat', [\App\Http\Controllers\AsistenteController::class, 'chat'])
         ->middleware('throttle:10,1')
         ->name('asistente.chat');
+    Route::post('/asistente/nueva-conversacion', [\App\Http\Controllers\AsistenteController::class, 'nuevaConversacion'])
+        ->middleware('throttle:10,1')
+        ->name('asistente.nueva-conversacion');
 });
