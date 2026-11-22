@@ -1,0 +1,14 @@
+@extends('layouts.app')
+@section('title','Propuesta de paisajismo')
+@section('content')
+<main class="mx-auto max-w-5xl px-4 py-10">
+<section class="rounded-[10px] border border-[#e4ebdf] bg-white p-6 shadow-sm">
+<div class="flex items-center justify-between gap-4"><div><p class="text-xs font-bold uppercase tracking-[0.18em] text-[#7a965f]">{{ $proyecto->codigo }}</p><h1 class="mt-2 text-3xl font-bold text-[#0f3c2b]">Propuesta de diseño</h1></div><a href="{{ route('paisajismo.solicitudes.index') }}" class="rounded-full border border-[#dce6d7] px-5 py-2.5 text-sm font-semibold text-[#3b5b42]">Volver</a></div>
+<div class="mt-5 grid gap-3 md:grid-cols-3"><p class="rounded-[10px] border border-[#e4ebdf] p-3 text-center"><strong>Versión {{ $propuesta->version }}</strong></p><p class="rounded-[10px] border border-[#e4ebdf] p-3 text-center"><strong>Fecha</strong><br>{{ $propuesta->created_at?->format('d/m/Y') ?? 'Sin fecha' }}</p><p class="rounded-[10px] border border-[#e4ebdf] p-3 text-center"><strong>Estado</strong><br>{{ $propuesta->decision === 'aprobada' ? 'Aprobada' : ($propuesta->decision === 'rechazada' ? 'Rechazada' : 'Pendiente de decisión') }}</p></div>
+@if ($propuesta->decision === 'rechazada' && $propuesta->motivo_decision)<p class="mt-4 rounded-[10px] border border-red-200 bg-red-50 p-3 text-sm text-red-700"><strong>Motivo:</strong> {{ $propuesta->motivo_decision }}</p>@endif
+<p class="mt-5 whitespace-pre-line text-[#1d352d]">{{ $propuesta->concepto }}</p>
+<table class="mt-5 w-full border-collapse text-sm text-[#1d352d]"><thead><tr class="bg-[#edf8e7] text-[#3b5d2d]"><th scope="col" class="border border-[#dce6d7] px-3 py-2 text-center">Planta</th><th scope="col" class="border border-[#dce6d7] px-3 py-2 text-center">Cantidad</th><th scope="col" class="border border-[#dce6d7] px-3 py-2 text-center">Precio</th></tr></thead><tbody>@foreach ($propuesta->plantas as $linea)<tr class="even:bg-[#f8faf6]"><td class="border border-[#e4ebdf] px-3 py-2 text-center">{{ $linea->planta->nombre }}</td><td class="border border-[#e4ebdf] px-3 py-2 text-center">{{ $linea->cantidad }}</td><td class="border border-[#e4ebdf] px-3 py-2 text-center">S/ {{ number_format((float)$linea->precio_unitario,2) }}</td></tr>@endforeach</tbody></table>
+<div class="mt-5 grid gap-3 md:grid-cols-3"><p class="rounded-[10px] border border-[#e4ebdf] p-3 text-center"><strong>Plantas</strong><br>S/ {{ number_format((float)$propuesta->costo_plantas,2) }}</p><p class="rounded-[10px] border border-[#e4ebdf] p-3 text-center"><strong>Mano de obra</strong><br>S/ {{ number_format((float)$propuesta->costo_mano_obra,2) }}</p><p class="rounded-[10px] border border-[#e4ebdf] p-3 text-center"><strong>Total</strong><br>S/ {{ number_format((float)$propuesta->total,2) }}</p></div>
+</section>
+</main>
+@endsection

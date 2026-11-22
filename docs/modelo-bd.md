@@ -62,10 +62,70 @@ entity "plantas" as plantas {
   luz_max : decimal (nullable)
 }
 
-' ---- Capa 3: Mantenimiento ----
-entity "casos_mantenimiento" as casos_mantenimiento {
+' ---- Capa 3: Paisajismo ----
+entity "proyectos_paisajismo" as proyectos_paisajismo {
   * id : bigint <<PK>>
   --
+  * codigo : string <<unique>>
+  * solicitante_id : bigint <<FK>>
+  nombre : string
+  ubicacion : string
+  descripcion : text
+  area_m2 : decimal(10,2)
+  presupuesto_estimado : decimal(12,2) (nullable)
+  fecha_deseada : date (nullable)
+  estado : string
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+' ---- Capa 3: Mantenimiento ----
+entity "propuestas_diseno" as propuestas_diseno {
+  * id : bigint <<PK>>
+  --
+  * proyecto_id : bigint <<FK>>
+  * autor_id : bigint <<FK>>
+  * version : integer
+  concepto : text
+  costo_plantas : decimal(12,2)
+  costo_mano_obra : decimal(12,2)
+  total : decimal(12,2)
+  decision : string (nullable)
+  motivo_decision : text (nullable)
+  decidida_en : timestamp (nullable)
+}
+
+entity "propuesta_plantas" as propuesta_plantas {
+  * id : bigint <<PK>>
+  --
+  * propuesta_id : bigint <<FK>>
+  * planta_id : bigint <<FK>>
+  cantidad : integer
+  precio_unitario : decimal(10,2)
+}
+
+entity "avances_instalacion" as avances_instalacion {
+  * id : bigint <<PK>>
+  --
+  * proyecto_id : bigint <<FK>>
+  * autor_id : bigint <<FK>>
+  descripcion : text
+  porcentaje : integer
+}
+
+entity "entregas_proyecto" as entregas_proyecto {
+  * id : bigint <<PK>>
+  --
+  * proyecto_id : bigint <<FK>> <<unique>>
+  * autor_id : bigint <<FK>>
+  resumen : text
+  recomendaciones : text
+  calificacion : integer (nullable)
+  comentario : text (nullable)
+  calificado_en : timestamp (nullable)
+}
+
+entity "casos_mantenimiento" as casos_mantenimiento {  * id : bigint <<PK>>  --
   * solicitante_id : bigint <<FK>>
   codigo : string <<unique>>
   area_verde : string
@@ -355,6 +415,15 @@ productos_campana ||--o| solicitudes_disponibilidad
 users ||--o{ solicitudes_disponibilidad : gestionada_por_id
 
 users ||--o{ casos_mantenimiento
+users ||--o{ proyectos_paisajismo
+proyectos_paisajismo ||--o{ propuestas_diseno
+users ||--o{ propuestas_diseno
+propuestas_diseno ||--o{ propuesta_plantas
+plantas ||--o{ propuesta_plantas
+proyectos_paisajismo ||--o{ avances_instalacion
+users ||--o{ avances_instalacion
+proyectos_paisajismo ||--o| entregas_proyecto
+users ||--o{ entregas_proyecto
 casos_mantenimiento ||--o{ evidencias_caso
 users ||--o{ evidencias_caso
 casos_mantenimiento ||--o{ planes_mantenimiento
