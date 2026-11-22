@@ -224,6 +224,9 @@ it('informa cuando el stock cambió y ya no alcanza para registrar la salida', f
 it('lista gestiones con filtros por estado, tipo y búsqueda', function () {
     $planta = gi_planta(5);
     $insumo = gi_insumo(5);
+    $planta->update(['nombre' => 'Planta de filtro única']);
+    $insumo->update(['nombre' => 'Insumo de búsqueda única']);
+
     GestionInventario::factory()->create(['planta_id' => $planta->id, 'estado' => 'stock_suficiente']);
     GestionInventario::factory()->create(['tipo_item' => 'insumo', 'planta_id' => null, 'recurso_id' => $insumo->id, 'estado' => 'cerrada']);
 
