@@ -19,7 +19,7 @@ entity "perfiles_cliente" as perfiles_cliente {
   * id : bigint <<PK>>
   --
   * user_id : bigint <<FK>>
-  tamaño_adulto : string
+  tamano_adulto : string
   luz_requerida : string
   toxicidad : boolean
   frecuencia_riego : string
@@ -45,7 +45,7 @@ entity "plantas" as plantas {
   toxicidad : boolean
   luz_requerida : enum(baja, media, alta, siempre_en_el_sol)
   frecuencia_riego : enum(diario,cada_3_dias,semanal,quincenal,mensualmente)
-  tamaño_adulto : enum(pequena, mediana, grande)
+  tamano_adulto : enum(pequena, mediana, grande)
   nivel_cuidado : enum(principiante, intermedio, experto)
   tipo_ambiente : enum(interiores, exteriores, ambos)
   estetica : enum(follaje,flor,colgantes,suculentas)

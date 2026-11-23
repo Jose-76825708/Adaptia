@@ -65,7 +65,7 @@ test('vendedor no puede acceder a vistas o acciones exclusivas del cliente', fun
     }
 
     $this->post(route('perfil.update'), [
-        'tamaño_adulto' => 'mediana',
+        'tamano_adulto' => 'mediana',
         'luz_requerida' => 'media',
         'frecuencia_riego' => 'semanal',
         'tipo_ambiente' => 'interiores',

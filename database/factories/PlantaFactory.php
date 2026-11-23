@@ -25,7 +25,7 @@ class PlantaFactory extends Factory
             'imagen' => fake()->word() .'.jpg',
             'luz_requerida' => fake()->randomElement(['baja','media','alta','siempre_en_el_sol']),
             'frecuencia_riego' => fake()->randomElement(['diario','cada_3_dias','semanal','quincenal','mensualmente']),
-            'tamaño_adulto' => fake()->randomElement(['pequena','mediana','grande']),
+            'tamano_adulto' => fake()->randomElement(['pequena','mediana','grande']),
             'nivel_cuidado' => fake()->randomElement(['principiante','intermedio','experto']),
             'tipo_ambiente' => fake()->randomElement(['interiores','exteriores','ambos']),
             'toxicidad' => fake()->boolean(20),

@@ -51,7 +51,7 @@
                     $completion = 0;
                     if ($perfil) {
                         $fields = [
-                            $perfil->tamaño_adulto,
+                            $perfil->tamano_adulto,
                             $perfil->luz_requerida,
                             $perfil->frecuencia_riego,
                             $perfil->tipo_ambiente,
@@ -82,7 +82,7 @@
                     <div class="min-w-0">
                         <h4 class="text-sm font-medium text-[#718071]">Tamaño adulto</h4>
                         <p class="mt-1 break-words text-lg font-bold text-[#0f3c2b]">
-                            {{ ucfirst(Auth::user()->perfilCliente->tamaño_adulto ?? 'No especificado') }}
+                            {{ ucfirst(Auth::user()->perfilCliente->tamano_adulto ?? 'No especificado') }}
                         </p>
                     </div>
                 </div>

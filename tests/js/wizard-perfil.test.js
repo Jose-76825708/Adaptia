@@ -59,7 +59,7 @@ test('valida, navega, envía cambios del perfil y presenta errores del servidor'
         await new Promise(resolve => setImmediate(resolve));
 
         assert.equal(requests.length, 2);
-        assert.equal(JSON.parse(requests[1][1].body).tamaño_adulto, 'mediana');
+        assert.equal(JSON.parse(requests[1][1].body).tamano_adulto, 'mediana');
         assert.equal(globalThis.window.location.href, '/home');
     } finally {
         environment.restore();

@@ -142,17 +142,17 @@
                 <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:gap-8">
                     <div class="rounded-2xl border border-[#edf1e9] bg-[#fbfcfa] px-4 py-6 sm:px-5 sm:py-7">
                         <label for="wizard-tamanio" class="mb-2 block text-sm font-semibold text-[#344638]">Tamaño adulto de planta preferido</label>
-                        <select name="tamaño_adulto" id="wizard-tamanio"
+                        <select name="tamano_adulto" id="wizard-tamanio"
                                 class="profile-select w-full"
                                 required>
                             <option value="">Selecciona una opción</option>
-                            <option value="pequena" {{ old('tamaño_adulto', optional($perfil)->tamaño_adulto) == 'pequena' ? 'selected' : '' }}>
+                            <option value="pequena" {{ old('tamano_adulto', optional($perfil)->tamano_adulto) == 'pequena' ? 'selected' : '' }}>
                                 Pequeña (Estante/Mesa)
                             </option>
-                            <option value="mediana" {{ old('tamaño_adulto', optional($perfil)->tamaño_adulto) == 'mediana' ? 'selected' : '' }}>
+                            <option value="mediana" {{ old('tamano_adulto', optional($perfil)->tamano_adulto) == 'mediana' ? 'selected' : '' }}>
                                 Mediana (Habitación)
                             </option>
-                            <option value="grande" {{ old('tamaño_adulto', optional($perfil)->tamaño_adulto) == 'grande' ? 'selected' : '' }}>
+                            <option value="grande" {{ old('tamano_adulto', optional($perfil)->tamano_adulto) == 'grande' ? 'selected' : '' }}>
                                 Grande (Jardín/Patio)
                             </option>
                         </select>

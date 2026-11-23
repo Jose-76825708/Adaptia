@@ -75,7 +75,7 @@
                                 </div>
                                 <div class="rounded-xl bg-[#f7f9f5] p-3">
                                     <dt class="text-xs font-medium text-[#82907e]">Tamaño</dt>
-                                    <dd class="mt-1 font-semibold text-[#34533b]">{{ ucfirst($planta->tamaño_adulto) }}</dd>
+                                    <dd class="mt-1 font-semibold text-[#34533b]">{{ ucfirst($planta->tamano_adulto) }}</dd>
                                 </div>
                                 <div class="rounded-xl bg-[#f7f9f5] p-3">
                                     <dt class="text-xs font-medium text-[#82907e]">Cuidado</dt>

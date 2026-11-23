@@ -65,7 +65,7 @@ test('cliente consulta y actualiza su perfil conservando solo sus preferencias',
     $otroCliente = User::factory()->create(['rol' => 'cliente']);
     $perfilAjeno = PerfilCliente::create([
         'user_id' => $otroCliente->id,
-        'tamaño_adulto' => 'grande',
+        'tamano_adulto' => 'grande',
         'luz_requerida' => 'alta',
         'toxicidad' => true,
         'nivel_cuidado' => 'experto',
@@ -81,7 +81,7 @@ test('cliente consulta y actualiza su perfil conservando solo sus preferencias',
         ->assertViewHas('perfil', null);
 
     $preferencias = [
-        'tamaño_adulto' => 'mediana',
+        'tamano_adulto' => 'mediana',
         'luz_requerida' => 'media',
         'frecuencia_riego' => 'semanal',
         'tipo_ambiente' => 'interiores',
@@ -101,7 +101,7 @@ test('cliente consulta y actualiza su perfil conservando solo sus preferencias',
         ->toMatchArray($preferencias)
         ->and((bool) $perfil->toArray()['toxicidad'])->toBeFalse()
         ->and($perfil->user->is($cliente))->toBeTrue()
-        ->and($perfilAjeno->fresh()->tamaño_adulto)->toBe('grande');
+        ->and($perfilAjeno->fresh()->tamano_adulto)->toBe('grande');
 
     $this->get(route('perfil.edit'))
         ->assertOk()

@@ -8,7 +8,7 @@ $perfilIdeal = [
     'luz_requerida' => 'media',
     'frecuencia_riego' => 'semanal',
     'nivel_cuidado' => 'principiante',
-    'tamaño_adulto' => 'pequena',
+    'tamano_adulto' => 'pequena',
     'tipo_ambiente' => 'interiores',
     'estetica' => 'follaje',
 ];
@@ -21,14 +21,14 @@ $perfilDeCompatibilidadNula = array_replace($perfilIdeal, [
     'luz_requerida' => 'siempre_en_el_sol',
     'frecuencia_riego' => 'mensualmente',
     'nivel_cuidado' => 'experto',
-    'tamaño_adulto' => 'grande',
+    'tamano_adulto' => 'grande',
     'tipo_ambiente' => 'exteriores',
     'estetica' => 'flor',
 ]);
 $perfilDeCompatibilidadParcial = array_replace($perfilIdeal, [
     'luz_requerida' => 'baja',
     'frecuencia_riego' => 'diario',
-    'tamaño_adulto' => 'grande',
+    'tamano_adulto' => 'grande',
     'tipo_ambiente' => 'exteriores',
     'estetica' => 'flor',
 ]);
@@ -85,7 +85,7 @@ test('la estetica suculenta coincide si el perfil y la planta difieren en numero
 
 test('rechaza explícitamente el cálculo si falta un criterio del perfil', function () use ($perfilIdeal, $plantaIdeal) {
     $perfilIncompleto = $perfilIdeal;
-    unset($perfilIncompleto['tamaño_adulto']);
+    unset($perfilIncompleto['tamano_adulto']);
 
     expect(fn () => (new RecomendacionService)->calculaScore(
         new Planta($plantaIdeal),
@@ -95,19 +95,18 @@ test('rechaza explícitamente el cálculo si falta un criterio del perfil', func
 
 test('devuelve una colección vacía cuando el perfil almacenado está incompleto', function () use ($perfilIdeal) {
     $perfilIncompleto = $perfilIdeal;
-    unset($perfilIncompleto['tamaño_adulto']);
+    unset($perfilIncompleto['tamano_adulto']);
 
     expect((new RecomendacionService)->generarRecomendaciones($perfilIncompleto))->toBeEmpty();
 });
 
-test('normaliza el nombre legado de tamaño adulto con mojibake', function () use ($perfilIdeal, $plantaIdeal) {
-    $perfilLegado = $perfilIdeal;
-    unset($perfilLegado['tamaño_adulto']);
-    $perfilLegado['tamaÃ±o_adulto'] = 'pequena';
+test('interpreta tamaño adulto con el nombre canónico', function () use ($perfilIdeal, $plantaIdeal) {
+    $perfilCanonico = $perfilIdeal;
+    $perfilCanonico['tamano_adulto'] = 'pequena';
 
     $resultado = (new RecomendacionService)->calculaScore(
         new Planta($plantaIdeal),
-        $perfilLegado
+        $perfilCanonico
     );
 
     expect(round($resultado, 2))->toBe(1.0);
@@ -118,7 +117,7 @@ test('limpia el perfil conservando solo los campos usados para recomendar', func
     $request = Request::create('/', 'POST', [
         'luz_requerida' => 'media',
         'frecuencia_riego' => 'semanal',
-        'tamaño_adulto' => 'mediana',
+        'tamano_adulto' => 'mediana',
         'nivel_cuidado' => 'principiante',
         'tipo_ambiente' => 'interiores',
         'toxicidad' => '1',
@@ -129,7 +128,7 @@ test('limpia el perfil conservando solo los campos usados para recomendar', func
     expect($service->limpiarPerfil($request))->toBe([
         'luz_requerida' => 'media',
         'frecuencia_riego' => 'semanal',
-        'tamaño_adulto' => 'mediana',
+        'tamano_adulto' => 'mediana',
         'nivel_cuidado' => 'principiante',
         'tipo_ambiente' => 'interiores',
         'toxicidad' => '1',

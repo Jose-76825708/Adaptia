@@ -100,15 +100,15 @@
                             </div>
 
                             <div class="flex flex-col gap-2">
-                                <label for="tamaño_adulto" class="text-[#304e42] font-semibold text-[1.1em]">Tamaño de Adulto</label>
-                                <select name="tamaño_adulto" id="tamaño_adulto"
-                                        class="p-4 bg-[#f3f5f3] border-2 @error('tamaño_adulto') border-red-500 @else border-[#ecedea] @enderror rounded-[10px] outline-none focus:border-[#629f22] transition duration-300" required>
+                                <label for="tamano_adulto" class="text-[#304e42] font-semibold text-[1.1em]">Tamaño de Adulto</label>
+                                <select name="tamano_adulto" id="tamano_adulto"
+                                        class="p-4 bg-[#f3f5f3] border-2 @error('tamano_adulto') border-red-500 @else border-[#ecedea] @enderror rounded-[10px] outline-none focus:border-[#629f22] transition duration-300" required>
                                     <option value="" disabled selected>Seleccione espacio...</option>
-                                    <option value="pequena" {{ old('tamaño_adulto') == 'pequena' ? 'selected' : '' }}>Pequeña</option>
-                                    <option value="mediana" {{ old('tamaño_adulto') == 'mediana' ? 'selected' : '' }}>Mediana</option>
-                                    <option value="grande" {{ old('tamaño_adulto') == 'grande' ? 'selected' : '' }}>Grande</option>
+                                    <option value="pequena" {{ old('tamano_adulto') == 'pequena' ? 'selected' : '' }}>Pequeña</option>
+                                    <option value="mediana" {{ old('tamano_adulto') == 'mediana' ? 'selected' : '' }}>Mediana</option>
+                                    <option value="grande" {{ old('tamano_adulto') == 'grande' ? 'selected' : '' }}>Grande</option>
                                 </select>
-                                @error('tamaño_adulto') <span class="text-red-500 text-[0.9em] font-medium">{{ $message }}</span> @enderror
+                                @error('tamano_adulto') <span class="text-red-500 text-[0.9em] font-medium">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="flex flex-col gap-2">

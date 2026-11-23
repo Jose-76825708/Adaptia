@@ -88,7 +88,7 @@
                             </div>
                             <div class="flex justify-between border-b border-[#ecedea] pb-2">
                                 <span class="text-[#8b8d8f]">Espacio:</span>
-                                <span class="text-[#304e42] font-bold">{{ ucfirst($find->espacio_requerido) }}</span>
+                                <span class="text-[#304e42] font-bold">{{ ucfirst($find->tamano_adulto) }}</span>
                             </div>
                             <div class="flex justify-between border-b border-[#ecedea] pb-2">
                                 <span class="text-[#8b8d8f]">Estética:</span>

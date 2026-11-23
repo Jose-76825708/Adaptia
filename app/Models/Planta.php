@@ -18,7 +18,7 @@ class Planta extends Model
         'imagen',
         'luz_requerida',
         'frecuencia_riego',
-        'tamaño_adulto',
+        'tamano_adulto',
         'nivel_cuidado',
         'tipo_ambiente',
         'toxicidad',

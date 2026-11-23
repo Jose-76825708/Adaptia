@@ -67,7 +67,7 @@ class AuthController extends Controller
 
         PerfilCliente::create([
             'user_id' => $user->id,
-            'tamaño_adulto' => null,
+            'tamano_adulto' => null,
             'luz_requerida' => null,
             'toxicidad' => false,
             'nivel_cuidado' => null,

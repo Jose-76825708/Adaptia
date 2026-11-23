@@ -81,7 +81,7 @@ function initializeProfileWizard() {
         setLoading(true);
 
         const formData = {
-            tamaño_adulto: document.getElementById('wizard-tamanio').value,
+            tamano_adulto: document.getElementById('wizard-tamanio').value,
             luz_requerida: document.getElementById('wizard-luz').value,
             frecuencia_riego: document.getElementById('wizard-riego').value,
             tipo_ambiente: document.getElementById('wizard-ambiente').value,
@@ -91,7 +91,7 @@ function initializeProfileWizard() {
         };
 
         const requiredFields = [
-            'tamaño_adulto',
+            'tamano_adulto',
             'luz_requerida',
             'frecuencia_riego',
             'tipo_ambiente',

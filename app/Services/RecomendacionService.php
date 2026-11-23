@@ -14,7 +14,7 @@ class RecomendacionService
         return $request->only([
             'luz_requerida',
             'frecuencia_riego',
-            'tamaño_adulto',
+            'tamano_adulto',
             'nivel_cuidado',
             'tipo_ambiente',
             'toxicidad',
@@ -62,7 +62,7 @@ class RecomendacionService
             'luz_requerida' => ['baja', 'media', 'alta', 'siempre_en_el_sol'],
             'frecuencia_riego' => ['diario', 'cada_3_dias', 'semanal', 'quincenal', 'mensualmente'],
             'nivel_cuidado' => ['principiante', 'intermedio', 'experto'],
-            'tamaño_adulto' => ['pequena', 'mediana', 'grande'],
+            'tamano_adulto' => ['pequena', 'mediana', 'grande'],
         ];
     }
 
@@ -80,7 +80,7 @@ class RecomendacionService
             'luz_requerida' => 1 / 6,
             'frecuencia_riego' => 1 / 6,
             'nivel_cuidado' => 1 / 6,
-            'tamaño_adulto' => 1 / 6,
+            'tamano_adulto' => 1 / 6,
             'tipo_ambiente' => 1 / 6,
             'estetica' => 1 / 6,
         ];
@@ -122,21 +122,6 @@ class RecomendacionService
 
     private function normalizarPerfil(array $perfil): array
     {
-        $aliasesTamanoAdulto = [
-            'tamaÃ±o_adulto',
-            'tama�o_adulto',
-            'tamano_adulto',
-        ];
-
-        if (! array_key_exists('tamaño_adulto', $perfil)) {
-            foreach ($aliasesTamanoAdulto as $alias) {
-                if (array_key_exists($alias, $perfil)) {
-                    $perfil['tamaño_adulto'] = $perfil[$alias];
-                    break;
-                }
-            }
-        }
-
         return $perfil;
     }
 

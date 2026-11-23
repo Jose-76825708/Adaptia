@@ -14,7 +14,7 @@ class PerfilCliente extends Model
 
     protected $fillable = [
         'user_id',
-        'tamaño_adulto',
+        'tamano_adulto',
         'luz_requerida',
         'toxicidad',
         'nivel_cuidado',

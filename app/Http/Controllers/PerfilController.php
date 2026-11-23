@@ -27,7 +27,7 @@ class PerfilController extends Controller
         $user = Auth::user();
 
         $validar_datos = $request->validate([
-            'tamaño_adulto' => 'required|string|in:pequena,mediana,grande',
+            'tamano_adulto' => 'required|string|in:pequena,mediana,grande',
             'luz_requerida' => 'required|string|in:baja,media,alta,siempre_en_el_sol',
             'frecuencia_riego' => 'required|string|in:diario,cada_3_dias,semanal,quincenal,mensualmente',
             'tipo_ambiente' => 'required|string|in:interiores,exteriores,ambos',
