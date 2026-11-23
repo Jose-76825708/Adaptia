@@ -16,7 +16,7 @@ services:
       - key: APP_KEY
         sync: false
       - key: APP_URL
-        sync: false
+        value: https://adaptia-jf4h.onrender.com
       - key: LOG_CHANNEL
         value: stderr
       - key: DB_CONNECTION

@@ -56,6 +56,27 @@ test('formulario público de registro no ofrece selector de rol', function () {
         ->assertDontSee('Administrador');
 });
 
+test('el proxy HTTPS de Render genera urls seguras para vite y rutas', function () {
+    $this->withHeader('X-Forwarded-Proto', 'https')
+        ->get('/login')
+        ->assertOk()
+        ->assertSee('href="https://localhost/build/assets/', false)
+        ->assertSee('action="https://localhost/login"', false);
+
+    $this->withHeader('X-Forwarded-Proto', 'https')
+        ->get('/home')
+        ->assertOk()
+        ->assertSee('href="https://localhost/build/assets/', false)
+        ->assertSee('src="https://localhost/build/assets/', false)
+        ->assertSee('https://localhost/login', false);
+});
+
+test('sin cabecera de proxy las urls locales conservan el esquema de la petición', function () {
+    $this->get('/login')
+        ->assertOk()
+        ->assertSee('action="http://localhost/login"', false);
+});
+
 test('administrador inicia sesión y llega a su dashboard operativo', function () {
     $user = User::factory()->create([
         'email' => 'administrador@example.com',

@@ -4,7 +4,7 @@
 
 `render.yaml` describe un Web Service Docker llamado `adaptia`, en Ohio, plan Free, desde la rama `main`, con chequeo de salud en `/up`. No se configura un comando de migración durante el build o el arranque.
 
-El Blueprint declara `APP_KEY`, `APP_URL`, datos de conexión Aiven y credenciales Cloudinary como valores `sync: false`. Se deben ingresan únicamente en **Environment** de Render, nunca en el repositorio. La ruta SSL `MYSQL_ATTR_SSL_CA` apunta al certificado incluido en la imagen por el Dockerfile.
+El Blueprint declara `APP_KEY`, datos de conexión Aiven y credenciales Cloudinary como valores `sync: false`. Se deben ingresar únicamente en **Environment** de Render, nunca en el repositorio. `APP_URL` está fijado a la URL HTTPS del servicio. Laravel confía en el protocolo reenviado por el proxy de Render para generar URLs HTTPS en las peticiones. La ruta SSL `MYSQL_ATTR_SSL_CA` apunta al certificado incluido en la imagen por el Dockerfile.
 
 No regenerar `APP_KEY`: reutilizar la clave existente de la aplicación en el servicio de Render.
 
