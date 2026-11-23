@@ -25,3 +25,6 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 .scannerwork/
+# Respaldos locales de bases de datos
+/adaptia_backup_*.sql
+/*.sql
