@@ -29,6 +29,8 @@ use App\Http\Controllers\TipoPlantaController;
 use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 
+Route::redirect('/', '/home');
+
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 // Rutas de Autenticación

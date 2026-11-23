@@ -1,5 +1,14 @@
 <?php
 
+it('redirige la ruta raíz a la landing pública de home', function () {
+    $this->get('/')
+        ->assertRedirect('/home');
+
+    $this->get('/home')
+        ->assertOk()
+        ->assertSee('Encuentra la planta perfecta para tu');
+});
+
 it('el boton empezar del layout publica apunta a login sin sesion', function () {
     $contenido = file_get_contents(resource_path('views/layouts/app.blade.php'));
 
