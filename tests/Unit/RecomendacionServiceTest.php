@@ -83,6 +83,36 @@ test('la estetica suculenta coincide si el perfil y la planta difieren en numero
         ))->toBe(1);
 });
 
+test('rechaza explícitamente el cálculo si falta un criterio del perfil', function () use ($perfilIdeal, $plantaIdeal) {
+    $perfilIncompleto = $perfilIdeal;
+    unset($perfilIncompleto['tamaño_adulto']);
+
+    expect(fn () => (new RecomendacionService)->calculaScore(
+        new Planta($plantaIdeal),
+        $perfilIncompleto
+    ))->toThrow(InvalidArgumentException::class, 'El perfil no contiene todos los criterios requeridos');
+});
+
+test('devuelve una colección vacía cuando el perfil almacenado está incompleto', function () use ($perfilIdeal) {
+    $perfilIncompleto = $perfilIdeal;
+    unset($perfilIncompleto['tamaño_adulto']);
+
+    expect((new RecomendacionService)->generarRecomendaciones($perfilIncompleto))->toBeEmpty();
+});
+
+test('normaliza el nombre legado de tamaño adulto con mojibake', function () use ($perfilIdeal, $plantaIdeal) {
+    $perfilLegado = $perfilIdeal;
+    unset($perfilLegado['tamaño_adulto']);
+    $perfilLegado['tamaÃ±o_adulto'] = 'pequena';
+
+    $resultado = (new RecomendacionService)->calculaScore(
+        new Planta($plantaIdeal),
+        $perfilLegado
+    );
+
+    expect(round($resultado, 2))->toBe(1.0);
+});
+
 test('limpia el perfil conservando solo los campos usados para recomendar', function () {
     $service = new RecomendacionService;
     $request = Request::create('/', 'POST', [

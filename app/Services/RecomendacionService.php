@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Planta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 class RecomendacionService
 {
@@ -86,6 +88,12 @@ class RecomendacionService
 
     public function calculaScore(Planta $planta, array $perfil_usuario)
     {
+        $perfilUsuario = $this->normalizarPerfil($perfil_usuario);
+
+        if (! $this->perfilCriteriosCompleto($perfilUsuario)) {
+            throw new InvalidArgumentException('El perfil no contiene todos los criterios requeridos para calcular recomendaciones.');
+        }
+
         $ordenes = $this->ordenesDisponibles();
         $categorias = $this->categoriasDisponibles();
         $pesos = $this->pesosCategoricos();
@@ -93,7 +101,7 @@ class RecomendacionService
 
         foreach ($ordenes as $atributo => $orden) {
             $valorPlanta = $planta[$atributo];
-            $valorUsuario = $perfil_usuario[$atributo];
+            $valorUsuario = $perfilUsuario[$atributo];
             $peso = $pesos[$atributo];
 
             $compatibilidadOrdinal = $this->compatibilidadOrdinal($orden, $valorPlanta, $valorUsuario);
@@ -102,7 +110,7 @@ class RecomendacionService
 
         foreach ($categorias as $atributo => $categoria) {
             $valorPlanta = $planta[$atributo];
-            $valorUsuario = $perfil_usuario[$atributo];
+            $valorUsuario = $perfilUsuario[$atributo];
             $peso = $pesos[$atributo];
 
             $compatibilidadCategorica = $this->compatibilidadCategoria($atributo, $categoria, $valorPlanta, $valorUsuario);
@@ -112,23 +120,73 @@ class RecomendacionService
         return $score;
     }
 
+    private function normalizarPerfil(array $perfil): array
+    {
+        $aliasesTamanoAdulto = [
+            'tamaÃ±o_adulto',
+            'tama�o_adulto',
+            'tamano_adulto',
+        ];
+
+        if (! array_key_exists('tamaño_adulto', $perfil)) {
+            foreach ($aliasesTamanoAdulto as $alias) {
+                if (array_key_exists($alias, $perfil)) {
+                    $perfil['tamaño_adulto'] = $perfil[$alias];
+                    break;
+                }
+            }
+        }
+
+        return $perfil;
+    }
+
+    private function perfilCriteriosCompleto(array $perfil): bool
+    {
+        foreach (array_keys($this->ordenesDisponibles()) as $atributo) {
+            if (! array_key_exists($atributo, $perfil) || ! is_string($perfil[$atributo]) || trim($perfil[$atributo]) === '') {
+                return false;
+            }
+        }
+
+        foreach (array_keys($this->categoriasDisponibles()) as $atributo) {
+            if (! array_key_exists($atributo, $perfil) || ! is_string($perfil[$atributo]) || trim($perfil[$atributo]) === '') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function perfilCompleto(array $perfil): bool
+    {
+        return $this->perfilCriteriosCompleto($perfil)
+            && array_key_exists('toxicidad', $perfil)
+            && $perfil['toxicidad'] !== null;
+    }
+
     public function plantasNoToxicas()
     {
         return Planta::where('toxicidad', false)->get();
     }
 
-    public function generarRecomendaciones(array $perfil_usuario)
+    public function generarRecomendaciones(array $perfil_usuario): Collection
     {
-        if ($perfil_usuario['toxicidad']) {
+        $perfilUsuario = $this->normalizarPerfil($perfil_usuario);
+
+        if (! $this->perfilCompleto($perfilUsuario)) {
+            return collect();
+        }
+
+        if ((bool) $perfilUsuario['toxicidad']) {
             $plantas = $this->plantasNoToxicas();
         } else {
             $plantas = Planta::all();
         }
 
-        return $plantas->map(function (Planta $planta) use ($perfil_usuario) {
+        return $plantas->map(function (Planta $planta) use ($perfilUsuario) {
             $planta->setAttribute(
                 'compatibilidad_porcentaje',
-                $this->calculaScore($planta, $perfil_usuario) * 100
+                $this->calculaScore($planta, $perfilUsuario) * 100
             );
 
             return $planta;

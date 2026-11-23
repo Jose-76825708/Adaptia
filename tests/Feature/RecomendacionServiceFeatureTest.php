@@ -187,3 +187,22 @@ test('el panel del cliente muestra el porcentaje calculado de compatibilidad', f
         ->assertSee('Aloe Vera')
         ->assertSee('Compatibilidad 100.0%');
 });
+
+test('el home no falla cuando el perfil del cliente todavía está incompleto', function () {
+    $cliente = User::factory()->create(['rol' => 'cliente']);
+
+    PerfilCliente::create([
+        'user_id' => $cliente->id,
+        'luz_requerida' => null,
+        'frecuencia_riego' => null,
+        'nivel_cuidado' => null,
+        'tamaño_adulto' => null,
+        'tipo_ambiente' => null,
+        'estetica' => null,
+        'toxicidad' => false,
+    ]);
+
+    $this->actingAs($cliente)
+        ->get(route('home'))
+        ->assertOk();
+});

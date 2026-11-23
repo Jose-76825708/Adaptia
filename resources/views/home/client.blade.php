@@ -21,7 +21,7 @@
             </p>
             <div class="relative mt-6 flex flex-wrap items-center justify-center gap-3 text-sm text-white/85">
                 <div class="flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 backdrop-blur">
-                    <img class="h-4 w-4 brightness-0 invert" src="{{ asset('images/user.png') }}" alt="">
+                    <img class="h-4 w-4 brightness-0 invert" src="{{ asset('images/placeholder-user.png') }}" alt="">
                     <span class="font-semibold">{{ ucfirst(Auth::user()->rol) }}</span>
                 </div>
                 <div class="flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 backdrop-blur">
@@ -90,7 +90,7 @@
                 <!-- Luz requerida -->
                 <div class="group flex items-center gap-4 rounded-2xl border border-[#e8ede4] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
                     <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
-                        <img class="h-6 w-6" src="{{ asset('images/sun.png') }}" alt="">
+                        <img class="h-6 w-6" src="{{ asset('images/sol.png') }}" alt="">
                     </div>
                     <div class="min-w-0">
                         <h4 class="text-sm font-medium text-[#718071]">Luz requerida</h4>
@@ -103,7 +103,7 @@
                 <!-- Frecuencia de riego -->
                 <div class="group flex items-center gap-4 rounded-2xl border border-[#e8ede4] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
                     <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
-                        <img class="h-6 w-6" src="{{ asset('images/water.png') }}" alt="">
+                        <img class="h-6 w-6" src="{{ asset('images/gota.png') }}" alt="">
                     </div>
                     <div class="min-w-0">
                         <h4 class="text-sm font-medium text-[#718071]">Frecuencia de riego</h4>
@@ -116,7 +116,7 @@
                 <!-- Tipo de ambiente -->
                 <div class="group flex items-center gap-4 rounded-2xl border border-[#e8ede4] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
                     <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
-                        <img class="h-6 w-6" src="{{ asset('images/environment.png') }}" alt="">
+                        <img class="h-6 w-6" src="{{ asset('images/hoja.png') }}" alt="">
                     </div>
                     <div class="min-w-0">
                         <h4 class="text-sm font-medium text-[#718071]">Tipo de ambiente</h4>
@@ -129,7 +129,7 @@
                 <!-- Estética preferida -->
                 <div class="group flex items-center gap-4 rounded-2xl border border-[#e8ede4] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
                     <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
-                        <img class="h-6 w-6" src="{{ asset('images/style.png') }}" alt="">
+                        <img class="h-6 w-6" src="{{ asset('images/hoja_verde.png') }}" alt="">
                     </div>
                     <div class="min-w-0">
                         <h4 class="text-sm font-medium text-[#718071]">Estética preferida</h4>
@@ -142,7 +142,7 @@
                 <!-- Evita plantas tóxicas -->
                 <div class="group flex items-center gap-4 rounded-2xl border border-[#e8ede4] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
                     <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
-                        <img class="h-6 w-6" src="{{ asset('images/toxicity.png') }}" alt="">
+                        <img class="h-6 w-6" src="{{ asset('images/corazon.png') }}" alt="">
                     </div>
                     <div class="min-w-0">
                         <h4 class="text-sm font-medium text-[#718071]">Evita plantas tóxicas</h4>
@@ -162,7 +162,7 @@
             </div>
             <a href="{{ Auth::check() ? route('perfil.edit') : route('login') }}"
                class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#7cb22b] px-6 py-3 font-bold text-white shadow-md shadow-[#7cb22b]/20 transition duration-200 hover:-translate-y-0.5 hover:bg-[#6eab26] hover:shadow-lg">
-                Actualizar mi perfil <img class="h-4 w-4 brightness-0 invert" src="{{ asset('images/refresh.png') }}" alt="">
+                Actualizar mi perfil <img class="h-4 w-4 brightness-0 invert" src="{{ asset('images/regreso-flecha.png') }}" alt="">
             </a>
         </section>
     @endif
@@ -277,7 +277,7 @@
             <a href="{{ route('historial-alertas') }}"
                class="group flex min-h-48 flex-col rounded-2xl border border-[#e5ebdf] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#cdddbe] hover:shadow-lg sm:p-6">
                 <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eff6e8] transition group-hover:bg-[#e4f0d8]">
-                    <img class="h-6 w-6" src="{{ asset('images/historial.png') }}" alt="">
+                    <img class="h-6 w-6" src="{{ asset('images/reloj.png') }}" alt="">
                 </div>
                 <span class="font-bold text-[#0f3c2b]">Historial y alertas</span>
                 <span class="mt-1 text-sm leading-5 text-[#718071]">Consulta lecturas y notificaciones</span>

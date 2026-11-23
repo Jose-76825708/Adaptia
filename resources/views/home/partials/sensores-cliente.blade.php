@@ -18,7 +18,7 @@
                     <div class="mb-5 flex items-center justify-between gap-4">
                         <div class="flex min-w-0 items-center gap-3">
                             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eff6e8]">
-                                <img class="h-6 w-6" src="{{ asset('images/sensor.png') }}" alt="">
+                                <img class="h-6 w-6" src="{{ asset('images/sensores.png') }}" alt="">
                             </div>
                             <div class="min-w-0">
                                 <p class="text-xs font-bold uppercase tracking-wider text-[#82907e]">Sensor asignado</p>

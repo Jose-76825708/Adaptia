@@ -7,6 +7,21 @@ use Tests\Support\MonitoreoFixtures;
 
 uses(RefreshDatabase::class);
 
+test('las vistas del cliente no referencian iconos inexistentes', function () {
+    foreach ([
+        resource_path('views/home/client.blade.php'),
+        resource_path('views/home/partials/sensores-cliente.blade.php'),
+    ] as $vista) {
+        $contenido = file_get_contents($vista);
+
+        preg_match_all("/asset\\(['\"]images\\/([^'\"]+)['\"]\\)/", $contenido, $coincidencias);
+
+        foreach ($coincidencias[1] as $imagen) {
+            expect(public_path("images/{$imagen}"))->toBeFile();
+        }
+    }
+});
+
 test('cliente ve sus sensores asignados aunque todavía no tengan lecturas', function () {
     $cliente = MonitoreoFixtures::cliente();
     $otroCliente = MonitoreoFixtures::cliente();
