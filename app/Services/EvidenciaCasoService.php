@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Exceptions\CloudinaryImageException;
 use App\Models\CasoMantenimiento;
 use App\Models\EvidenciaCaso;
 use App\Models\PlantaVendida;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -72,23 +74,31 @@ class EvidenciaCasoService
         }
 
         $rutaDescripcion = $this->normalizarDescripcion($descripcion);
-        $rutaDestino = 'evidencias/' . $caso->id;
-        $rutaArchivo = $archivo->storeAs($rutaDestino, $archivo->hashName(), 'public');
+        $asset = $this->cloudinaryImages()->upload($archivo, 'adaptia/evidencias/' . $caso->id);
 
-        if ($rutaArchivo === false) {
-            throw ValidationException::withMessages([
-                'archivo' => 'No se pudo guardar la foto.',
+        try {
+            return EvidenciaCaso::create([
+                'caso_id' => $caso->id,
+                'autor_id' => $autorId,
+                'tipo' => 'foto',
+                'contenido' => null,
+                'ruta' => $asset['secure_url'],
+                'public_id' => $asset['public_id'],
+                'ruta_local' => null,
+                'descripcion' => $rutaDescripcion,
             ]);
-        }
+        } catch (QueryException $exception) {
+            try {
+                $this->cloudinaryImages()->delete($asset['public_id']);
+            } catch (CloudinaryImageException $cleanupException) {
+                throw new CloudinaryImageException(
+                    "No se pudo guardar la evidencia ni limpiar la foto cargada en Cloudinary (public_id: {$asset['public_id']}).",
+                    previous: $cleanupException,
+                );
+            }
 
-        return EvidenciaCaso::create([
-            'caso_id' => $caso->id,
-            'autor_id' => $autorId,
-            'tipo' => 'foto',
-            'contenido' => null,
-            'ruta' => $rutaArchivo,
-            'descripcion' => $rutaDescripcion,
-        ]);
+            throw $exception;
+        }
     }
 
     public function compilar(CasoMantenimiento $caso, ?CarbonInterface $hoy = null): array
@@ -197,11 +207,20 @@ class EvidenciaCasoService
             ]);
         }
 
-        if ($evidencia->ruta) {
-            Storage::disk('public')->delete($evidencia->ruta);
+        if ($evidencia->public_id) {
+            $this->cloudinaryImages()->delete($evidencia->public_id);
+        } elseif ($evidencia->ruta && !Storage::disk('public')->delete($evidencia->ruta)) {
+            throw ValidationException::withMessages([
+                'evidencia' => 'No se pudo eliminar el archivo local de la foto.',
+            ]);
         }
 
         $evidencia->delete();
+    }
+
+    private function cloudinaryImages(): CloudinaryImageService
+    {
+        return app(CloudinaryImageService::class);
     }
 
     public function resumirLecturas(array $lecturas): array

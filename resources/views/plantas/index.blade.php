@@ -28,6 +28,12 @@
             </div>
         </section>
 
+        @if (session('warning') || session('error'))
+            <div class="rounded-[10px] border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-800" role="status">
+                {{ session('warning') ?: session('error') }}
+            </div>
+        @endif
+
         @if ($plantasStockBajo->isNotEmpty())
             <section class="flex p-6 bg-[#fff8f8] text-[#991b1b] rounded-[10px] shadow-lg mb-6">
                 <div class="flex-4">

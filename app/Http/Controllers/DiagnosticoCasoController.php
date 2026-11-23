@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\CloudinaryImageException;
 use App\Models\CasoMantenimiento;
 use App\Models\EvidenciaCaso;
 use App\Services\DiagnosticoCasoService;
@@ -45,6 +46,9 @@ class DiagnosticoCasoController extends Controller
             );
 
             return redirect()->route('mantenimiento.casos.show', $caso)->with('success', 'Foto registrada correctamente.');
+        } catch (CloudinaryImageException $exception) {
+            return redirect()->route('mantenimiento.casos.show', $caso)
+                ->withErrors(['archivo' => $exception->getMessage()], 'diagnostico');
         } catch (ValidationException|\InvalidArgumentException $exception) {
             $mensajes = $exception instanceof ValidationException
                 ? $exception->errors()
@@ -60,6 +64,9 @@ class DiagnosticoCasoController extends Controller
         try {
             $service->eliminarFoto($caso, $evidencia);
             return redirect()->route('mantenimiento.casos.show', $caso)->with('success', 'Foto eliminada correctamente.');
+        } catch (CloudinaryImageException $exception) {
+            return redirect()->route('mantenimiento.casos.show', $caso)
+                ->withErrors(['evidencia' => $exception->getMessage()], 'diagnostico');
         } catch (ValidationException|\InvalidArgumentException $exception) {
             $mensajes = $exception instanceof ValidationException
                 ? $exception->errors()
@@ -98,6 +105,9 @@ class DiagnosticoCasoController extends Controller
 
             return redirect()->route('mantenimiento.casos.show.etapa', ['caso' => $caso, 'etapa' => 'diagnostico'])
                 ->with('success', 'Diagnóstico guardado y evaluado correctamente.');
+        } catch (CloudinaryImageException $exception) {
+            return redirect()->route('mantenimiento.casos.show.etapa', ['caso' => $caso, 'etapa' => 'diagnostico'])
+                ->withErrors(['archivo' => $exception->getMessage()], 'diagnostico');
         } catch (ValidationException|\InvalidArgumentException $exception) {
             $mensajes = $exception instanceof ValidationException
                 ? $exception->errors()

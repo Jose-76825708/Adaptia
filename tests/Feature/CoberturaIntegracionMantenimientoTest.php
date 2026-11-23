@@ -20,6 +20,7 @@ use App\Services\DiagnosticoCasoService;
 use App\Services\EjecucionMantenimientoService;
 use App\Services\EstadoTareaChecklistService;
 use App\Services\EvidenciaCasoService;
+use App\Services\CloudinaryImageService;
 use App\Services\EvaluadorEstadoAreaService;
 use App\Services\RequisicionMantenimientoService;
 use Illuminate\Database\Schema\Blueprint;
@@ -60,7 +61,7 @@ beforeEach(function () {
     Schema::create('evidencias_caso', function (Blueprint $table) {
         $table->id(); $table->foreignId('caso_id')->constrained('casos_mantenimiento')->onDelete('restrict');
         $table->foreignId('autor_id')->constrained('users')->onDelete('restrict'); $table->string('tipo'); $table->text('contenido')->nullable();
-        $table->string('ruta')->nullable(); $table->string('descripcion')->nullable(); $table->timestamps();
+        $table->string('ruta')->nullable(); $table->string('public_id')->nullable(); $table->string('ruta_local')->nullable(); $table->string('descripcion')->nullable(); $table->timestamps();
     });
     Schema::create('diagnosticos_caso', function (Blueprint $table) {
         $table->id(); $table->foreignId('caso_id')->constrained('casos_mantenimiento')->onDelete('restrict');
@@ -122,9 +123,16 @@ beforeEach(function () {
     });
 });
 
-it('evidencia registra nota y elimina foto del disco', function () {
+it('evidencia registra nota y elimina foto de Cloudinary', function () {
     $autor = User::factory()->create(['rol'=>'administrador']);
     $caso = CasoMantenimiento::create(['codigo'=>'MAN-EV-1','solicitante_id'=>$autor->id,'area_verde'=>'Patio','descripcion'=>'Necesito revisión','tipo_mantenimiento'=>'general','urgencia'=>'media','estado'=>'abierto']);
+    $cloudinaryImages = Mockery::mock(CloudinaryImageService::class);
+    $cloudinaryImages->shouldReceive('upload')->once()->andReturn([
+        'secure_url' => 'https://res.cloudinary.com/demo/image/upload/evidencia.jpg',
+        'public_id' => 'adaptia/evidencias/' . $caso->id . '/evidencia',
+    ]);
+    $cloudinaryImages->shouldReceive('delete')->once()->with('adaptia/evidencias/' . $caso->id . '/evidencia');
+    $this->app->instance(CloudinaryImageService::class, $cloudinaryImages);
     $service = new EvidenciaCasoService();
 
     $nota = $service->registrarNota($caso,$autor->id,'Hay hojas secas');

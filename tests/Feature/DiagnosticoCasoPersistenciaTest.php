@@ -72,6 +72,8 @@ beforeEach(function () {
         $table->string('tipo');
         $table->text('contenido')->nullable();
         $table->string('ruta')->nullable();
+        $table->string('public_id')->nullable();
+        $table->string('ruta_local')->nullable();
         $table->string('descripcion')->nullable();
         $table->timestamps();
     });

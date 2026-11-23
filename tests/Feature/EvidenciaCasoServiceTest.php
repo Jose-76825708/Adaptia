@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\CasoMantenimiento;
+use App\Models\EvidenciaCaso;
 use App\Models\LecturaSensor;
 use App\Models\Planta;
 use App\Models\PlantaVendida;
@@ -8,6 +9,7 @@ use App\Models\Sensor;
 use App\Models\TipoPlanta;
 use App\Models\User;
 use App\Models\Venta;
+use App\Services\CloudinaryImageService;
 use App\Services\EvidenciaCasoService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -42,16 +44,27 @@ test('rechaza una nota si el caso esta cerrado', function () {
     expect(fn () => $this->service->registrarNota($this->caso, $this->autor->id, 'Nota de prueba'))->toThrow(\Illuminate\Validation\ValidationException::class);
 });
 
-test('guarda una foto valida en storage publico y guarda la descripcion como texto', function () {
+test('guarda la URL segura y public_id de una foto de evidencia', function () {
     Storage::fake('public');
     $archivo = UploadedFile::fake()->create('inspeccion.jpg', 100, 'image/jpeg');
+    $cloudinaryImages = Mockery::mock(CloudinaryImageService::class);
+    $cloudinaryImages->shouldReceive('upload')->once()->with($archivo, 'adaptia/evidencias/' . $this->caso->id)->andReturn([
+        'secure_url' => 'https://res.cloudinary.com/demo/image/upload/evidencia-1.jpg',
+        'public_id' => 'adaptia/evidencias/' . $this->caso->id . '/evidencia-1',
+    ]);
+    $cloudinaryImages->shouldReceive('delete')->once()->with('adaptia/evidencias/' . $this->caso->id . '/evidencia-1');
+    $this->app->instance(CloudinaryImageService::class, $cloudinaryImages);
 
     $evidencia = $this->service->registrarFoto($this->caso, $this->autor->id, $archivo, 'Vista frontal del área');
 
     expect($evidencia->tipo)->toBe('foto')
         ->and($evidencia->descripcion)->toBe('Vista frontal del área')
-        ->and($evidencia->ruta)->not->toBeNull()
-        ->and(Storage::disk('public')->exists($evidencia->ruta))->toBeTrue();
+        ->and($evidencia->ruta)->toBe('https://res.cloudinary.com/demo/image/upload/evidencia-1.jpg')
+        ->and($evidencia->public_id)->toBe('adaptia/evidencias/' . $this->caso->id . '/evidencia-1')
+        ->and($evidencia->foto_url)->toBe($evidencia->ruta);
+
+    $this->service->eliminarFoto($this->caso, $evidencia);
+    expect(EvidenciaCaso::whereKey($evidencia->id)->exists())->toBeFalse();
 });
 
 test('rechaza una foto con mime no permitido', function () {
@@ -59,6 +72,55 @@ test('rechaza una foto con mime no permitido', function () {
     $archivo = UploadedFile::fake()->create('archivo.svg', 100, 'image/svg+xml');
 
     expect(fn () => $this->service->registrarFoto($this->caso, $this->autor->id, $archivo, 'Texto'))->toThrow(\Illuminate\Validation\ValidationException::class);
+});
+
+test('no registra evidencia cuando falla la carga en Cloudinary', function () {
+    $archivo = UploadedFile::fake()->create('inspeccion.jpg', 100, 'image/jpeg');
+    $cloudinaryImages = Mockery::mock(CloudinaryImageService::class);
+    $cloudinaryImages->shouldReceive('upload')->once()->andThrow(
+        new \App\Exceptions\CloudinaryImageException('No se pudo cargar la imagen en Cloudinary.'),
+    );
+    $this->app->instance(CloudinaryImageService::class, $cloudinaryImages);
+
+    expect(fn () => $this->service->registrarFoto($this->caso, $this->autor->id, $archivo))
+        ->toThrow(\App\Exceptions\CloudinaryImageException::class);
+    expect(EvidenciaCaso::where('caso_id', $this->caso->id)->where('tipo', 'foto')->exists())->toBeFalse();
+});
+
+test('mantiene la evidencia cuando Cloudinary rechaza su eliminación', function () {
+    $evidencia = EvidenciaCaso::factory()->create([
+        'caso_id' => $this->caso->id,
+        'tipo' => 'foto',
+        'contenido' => null,
+        'ruta' => 'https://res.cloudinary.com/demo/image/upload/foto.jpg',
+        'public_id' => 'adaptia/evidencias/foto',
+    ]);
+    $cloudinaryImages = Mockery::mock(CloudinaryImageService::class);
+    $cloudinaryImages->shouldReceive('delete')->once()->with('adaptia/evidencias/foto')
+        ->andThrow(new \App\Exceptions\CloudinaryImageException('No se pudo eliminar la imagen de Cloudinary.'));
+    $this->app->instance(CloudinaryImageService::class, $cloudinaryImages);
+
+    expect(fn () => $this->service->eliminarFoto($this->caso, $evidencia))
+        ->toThrow(\App\Exceptions\CloudinaryImageException::class);
+    expect($evidencia->fresh())->not->toBeNull();
+});
+
+test('resuelve y elimina una foto heredada del disco publico', function () {
+    Storage::fake('public');
+    $evidencia = EvidenciaCaso::factory()->create([
+        'caso_id' => $this->caso->id,
+        'tipo' => 'foto',
+        'contenido' => null,
+        'ruta' => 'evidencias/' . $this->caso->id . '/antigua.jpg',
+    ]);
+    Storage::disk('public')->put($evidencia->ruta, 'foto');
+
+    expect($evidencia->foto_url)->toBe(Storage::disk('public')->url($evidencia->ruta));
+
+    $this->service->eliminarFoto($this->caso, $evidencia);
+
+    Storage::disk('public')->assertMissing('evidencias/' . $this->caso->id . '/antigua.jpg');
+    expect(EvidenciaCaso::whereKey($evidencia->id)->exists())->toBeFalse();
 });
 
 test('compila el paquete de evidencia con caso, evidencias y lecturas del solicitante', function () {

@@ -2,11 +2,22 @@
 
 use App\Models\Planta;
 use App\Models\User;
+use App\Services\CloudinaryImageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    $cloudinaryImages = Mockery::mock(CloudinaryImageService::class);
+    $cloudinaryImages->shouldReceive('upload')->zeroOrMoreTimes()->andReturn([
+        'secure_url' => 'https://res.cloudinary.com/demo/image/upload/test-plant.jpg',
+        'public_id' => 'adaptia/plantas/test-plant',
+    ]);
+    $cloudinaryImages->shouldReceive('delete')->zeroOrMoreTimes();
+    $this->app->instance(CloudinaryImageService::class, $cloudinaryImages);
+});
 
 function validPlantaPayload(array $overrides = []): array
 {

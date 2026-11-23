@@ -22,6 +22,8 @@ class EvidenciaCasoFactory extends Factory
             'tipo' => 'nota',
             'contenido' => 'Se registró una nota de prueba.',
             'ruta' => null,
+            'public_id' => null,
+            'ruta_local' => null,
             'descripcion' => null,
         ];
     }

@@ -42,6 +42,8 @@ entity "plantas" as plantas {
   nombre : string
   descripcion : text
   imagen : string
+  imagen_public_id : string (nullable)
+  imagen_ruta_local : string (nullable)
   toxicidad : boolean
   luz_requerida : enum(baja, media, alta, siempre_en_el_sol)
   frecuencia_riego : enum(diario,cada_3_dias,semanal,quincenal,mensualmente)
@@ -87,6 +89,8 @@ entity "evidencias_caso" as evidencias_caso {
   tipo : enum(nota, foto)
   contenido : text (nullable)
   ruta : string (nullable)
+  public_id : string (nullable)
+  ruta_local : string (nullable)
   descripcion : string (nullable)
   created_at : timestamp
   updated_at : timestamp

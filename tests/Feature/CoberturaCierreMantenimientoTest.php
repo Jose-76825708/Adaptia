@@ -33,7 +33,7 @@ beforeEach(function () {
     });
     Schema::create('evidencias_caso', function (Blueprint $table) {
         $table->id(); $table->foreignId('caso_id')->constrained('casos_mantenimiento')->onDelete('restrict'); $table->foreignId('autor_id')->constrained('users')->onDelete('restrict');
-        $table->string('tipo'); $table->text('contenido')->nullable(); $table->string('ruta')->nullable(); $table->string('descripcion')->nullable(); $table->timestamps();
+        $table->string('tipo'); $table->text('contenido')->nullable(); $table->string('ruta')->nullable(); $table->string('public_id')->nullable(); $table->string('ruta_local')->nullable(); $table->string('descripcion')->nullable(); $table->timestamps();
     });
     Schema::create('diagnosticos_caso', function (Blueprint $table) {
         $table->id(); $table->foreignId('caso_id')->constrained('casos_mantenimiento')->onDelete('restrict'); $table->foreignId('autor_id')->constrained('users')->onDelete('restrict');

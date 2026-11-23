@@ -43,7 +43,7 @@
                                 </span>
                             @endif
                             @if ($planta->imagen)
-                                <img src="{{ asset('storage/' . $planta->imagen) }}"
+                                <img src="{{ $planta->imagen_url }}"
                                      alt="{{ $planta->nombre }}"
                                      class="h-full max-h-44 w-3/4 object-contain transition duration-500 group-hover:scale-105">
                             @else

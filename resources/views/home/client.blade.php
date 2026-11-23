@@ -188,7 +188,7 @@
                         <div class="relative flex h-56 items-center justify-center overflow-hidden bg-gradient-to-br from-[#f3f8ee] to-[#eaf2e3] p-6">
                             <span class="absolute left-4 top-4 rounded-full border border-white/80 bg-white/85 px-3 py-1 text-xs font-bold text-[#52752d] shadow-sm">Recomendada</span>
                             @if ($planta->imagen)
-                                <img src="{{ asset('storage/' . $planta->imagen) }}"
+                                <img src="{{ $planta->imagen_url }}"
                                      alt="{{ $planta->nombre }}"
                                      class="h-full max-h-44 w-3/4 object-contain transition duration-500 group-hover:scale-105">
                             @else

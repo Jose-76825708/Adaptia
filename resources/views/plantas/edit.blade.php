@@ -30,9 +30,20 @@
 
         <section class="flex justify-center pb-10">
             <div class="flex flex-col p-10 bg-[#fefdfe] rounded-[20px] shadow-xl w-full gap-8 border border-[#ecedea]">
-                <form action="{{ route('plantas.update', $find->id) }}" method="POST" class="flex flex-col gap-10">
+                <form action="{{ route('plantas.update', $find->id) }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-10">
                     @csrf
                     @method('PUT')
+
+                    <div class="flex flex-col gap-3">
+                        <label for="imagen" class="text-[#304e42] font-semibold text-[1.1em]">Imagen de la Planta</label>
+                        @if ($find->imagen_url)
+                            <img src="{{ $find->imagen_url }}" alt="{{ $find->nombre }}" class="h-40 w-40 rounded-xl border border-[#ecedea] object-contain">
+                        @endif
+                        <input type="file" name="imagen" id="imagen" accept="image/jpeg,image/png,image/gif"
+                               class="p-3 bg-[#f3f5f3] border-2 @error('imagen') border-red-500 @else border-[#ecedea] @enderror rounded-[10px] outline-none focus:border-[#629f22] transition duration-300 text-[#304e42] file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#629f22] file:text-white hover:file:bg-[#4d7d1a] cursor-pointer">
+                        <p class="text-sm text-[#8b8d8f]">Deja el campo vacío para conservar la imagen actual.</p>
+                        @error('imagen') <span class="text-red-500 text-[0.9em] font-medium">{{ $message }}</span> @enderror
+                    </div>
 
                     <!-- SECCIÓN 1: INFORMACIÓN GENERAL -->
                     <div class="flex flex-col gap-6">

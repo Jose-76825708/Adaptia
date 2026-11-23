@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\CloudinaryImageException;
 use App\Services\PlantaService;
 use App\Services\TipoPlantaService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class PlantaController extends Controller
 
@@ -55,13 +55,11 @@ class PlantaController extends Controller
         // Manejo del checkbox es_toxica -> toxicidad en DB
         $validar_datos['toxicidad'] = $request->has('es_toxica') ? 1 : 0;
 
-        // Procesar la imagen
-        if ($request->hasFile('imagen')) {
-            $path = $request->file('imagen')->store('plantas', 'public');
-            $validar_datos['imagen'] = $path;
+        try {
+            $this->plantaService->createPlanta($validar_datos);
+        } catch (CloudinaryImageException $exception) {
+            return back()->withInput()->withErrors(['imagen' => $exception->getMessage()]);
         }
-
-        $this->plantaService->createPlanta($validar_datos);
 
         return redirect()->route('plantas.index');
     }
@@ -102,26 +100,30 @@ class PlantaController extends Controller
         // Manejo del checkbox es_toxica -> toxicidad en DB
         $validar_datos['toxicidad'] = $request->has('es_toxica') ? 1 : 0;
 
-        if ($request->hasFile('imagen')) {
-            $planta = $this->plantaService->getPlantaById($id);
-
-            // Eliminar imagen anterior si existe para no llenar el servidor de basura
-            if ($planta->imagen) {
-                Storage::disk('public')->delete($planta->imagen);
+        try {
+            $this->plantaService->updatePlanta($id, $validar_datos);
+        } catch (CloudinaryImageException $exception) {
+            if ($exception->recordUpdated) {
+                return redirect()->route('plantas.index')->with('warning', $exception->getMessage());
             }
 
-            $path = $request->file('imagen')->store('plantas', 'public');
-            $validar_datos['imagen'] = $path;
+            return back()->withInput()->withErrors(['imagen' => $exception->getMessage()]);
         }
-
-        $this->plantaService->updatePlanta($id, $validar_datos);
 
         return redirect()->route('plantas.index');
     }
 
     public function destroy(string $id)
     {
-        $this->plantaService->deletePlanta($id);
+        try {
+            $this->plantaService->deletePlanta($id);
+        } catch (CloudinaryImageException $exception) {
+            if ($exception->recordDeleted) {
+                return redirect()->route('plantas.index')->with('warning', $exception->getMessage());
+            }
+
+            return back()->with('error', $exception->getMessage());
+        }
 
         return redirect()->route('plantas.index');
     }

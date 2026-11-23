@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Planta extends Model
 {
@@ -16,6 +17,8 @@ class Planta extends Model
         'nombre',
         'descripcion',
         'imagen',
+        'imagen_public_id',
+        'imagen_ruta_local',
         'luz_requerida',
         'frecuencia_riego',
         'tamano_adulto',
@@ -39,6 +42,19 @@ class Planta extends Model
     public function tipoPlanta(): BelongsTo
     {
         return $this->belongsTo(TipoPlanta::class, 'tipo_planta_id');
+    }
+
+    public function getImagenUrlAttribute(): ?string
+    {
+        if (!$this->imagen) {
+            return null;
+        }
+
+        if ($this->imagen_public_id || filter_var($this->imagen, FILTER_VALIDATE_URL)) {
+            return $this->imagen;
+        }
+
+        return Storage::disk('public')->url($this->imagen);
     }
 
     public function ventas(): HasMany

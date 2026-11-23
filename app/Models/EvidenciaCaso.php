@@ -6,6 +6,7 @@ use Database\Factories\EvidenciaCasoFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class EvidenciaCaso extends Model
 {
@@ -20,8 +21,23 @@ class EvidenciaCaso extends Model
         'tipo',
         'contenido',
         'ruta',
+        'public_id',
+        'ruta_local',
         'descripcion',
     ];
+
+    public function getFotoUrlAttribute(): ?string
+    {
+        if (!$this->ruta) {
+            return null;
+        }
+
+        if ($this->public_id || filter_var($this->ruta, FILTER_VALIDATE_URL)) {
+            return $this->ruta;
+        }
+
+        return Storage::disk('public')->url($this->ruta);
+    }
 
     public function caso(): BelongsTo
     {

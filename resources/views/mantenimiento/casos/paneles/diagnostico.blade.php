@@ -37,8 +37,8 @@
             @foreach ($evidencias as $evidencia)
                 @if ($evidencia->tipo === 'foto')
                     <div id="diag-foto-contenedor-{{ $evidencia->id }}" class="mt-3 rounded-[10px] border border-[#e4ebdf] bg-[#f8faf6] p-3">
-                        <a href="{{ asset('storage/' . $evidencia->ruta) }}" target="_blank" rel="noopener" class="block" title="Ampliar foto">
-                            <img id="diag-foto-{{ $evidencia->id }}" src="{{ asset('storage/' . $evidencia->ruta) }}" alt="{{ $evidencia->descripcion ?: 'Evidencia fotográfica del caso' }}" class="h-48 w-full max-w-[20rem] object-contain rounded-[10px] bg-[#f8faf6] border border-[#e4ebdf]">
+                        <a href="{{ $evidencia->foto_url }}" target="_blank" rel="noopener" class="block" title="Ampliar foto">
+                            <img id="diag-foto-{{ $evidencia->id }}" src="{{ $evidencia->foto_url }}" alt="{{ $evidencia->descripcion ?: 'Evidencia fotográfica del caso' }}" class="h-48 w-full max-w-[20rem] object-contain rounded-[10px] bg-[#f8faf6] border border-[#e4ebdf]">
                         </a>
                         <form method="POST" action="{{ route('mantenimiento.casos.diagnostico.fotos.eliminar', ['caso' => $caso, 'evidencia' => $evidencia]) }}" class="mt-3">
                             @csrf

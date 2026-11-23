@@ -50,6 +50,12 @@
                     </div>
                 </div>
 
+                @if ($find->imagen_url)
+                    <div class="flex justify-center border-b border-[#ecedea] pb-6">
+                        <img src="{{ $find->imagen_url }}" alt="{{ $find->nombre }}" class="max-h-80 max-w-full rounded-2xl object-contain">
+                    </div>
+                @endif
+
                 <!-- CUADRÍCULA DE INFORMACIÓN -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 

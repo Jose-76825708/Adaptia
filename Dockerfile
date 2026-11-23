@@ -3,7 +3,7 @@ FROM node:24-bookworm-slim AS frontend
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --registry=https://registry.yarnpkg.com
 
 COPY resources ./resources
 COPY vite.config.js ./
@@ -14,7 +14,8 @@ RUN npm run build
 
 FROM php:8.2-apache-bookworm
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources \
+    && apt-get update && apt-get install -y --no-install-recommends \
     git unzip libzip-dev libicu-dev libonig-dev \
     && docker-php-ext-install pdo_mysql mbstring bcmath zip intl \
     && a2enmod rewrite headers \
