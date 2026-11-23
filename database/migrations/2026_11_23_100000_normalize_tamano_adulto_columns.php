@@ -109,13 +109,7 @@ return new class extends Migration
         }
 
         if ($driver === 'mysql') {
-            $database = (string) DB::getDatabaseName();
-            $rows = DB::select(
-                'SELECT column_name FROM information_schema.columns WHERE table_schema = ? AND table_name = ?',
-                [$database, $table]
-            );
-
-            return array_map(fn ($row): string => (string) $row->column_name, $rows);
+             return Schema::getColumnListing($table);
         }
 
         return Schema::getColumnListing($table);
